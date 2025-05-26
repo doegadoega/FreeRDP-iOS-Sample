@@ -1,0 +1,476 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 54;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1FB954DDEE683F685D104E34 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0410A4566C7E704DE1888CE /* LaunchScreen.storyboard */; };
+		20B530EAFC3BDAB2A0F9666C /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B5188A167594C45AED9ABB5A /* libc++.tbd */; };
+		2495BC47D0FA14A6184B501B /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B4AB80129000F8DD501B04E3 /* libz.tbd */; };
+		35215918A221A9B5C897001E /* RDPScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F9C0AFDCEBC8776EFCD228 /* RDPScreenView.swift */; };
+		4F90C6E03636F6CA8D8FB464 /* AWSIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55787D7F07071FE1597B4A9D /* AWSIntegration.swift */; };
+		6A4C7E3BB696A049BC33A3E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21572F28047C83358508F9F7 /* AppDelegate.swift */; };
+		6AD93496CE4501DC29873F00 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50AAB4645FE08D05D2EAA7E /* ViewController.swift */; };
+		978FA5686DC35ACF1D67BAE1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC3A1EB563722694A39327A1 /* Main.storyboard */; };
+		A197785F4A0AF23F3148B9BE /* CredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A75BDCE29AE7FD27701890 /* CredentialStore.swift */; };
+		B15DF8D2F9F3E7AF83530D71 /* project.yml in Resources */ = {isa = PBXBuildFile; fileRef = 317151E3ECBD3B79F97F9A0C /* project.yml */; };
+		B4A1ED77E3182273B23FE66D /* RDPConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1D99FE2953A625C9EC358D /* RDPConnectionManager.swift */; };
+		CB7B6BF18AA75944B35069CA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C847D06531DAFDBCF83F76E2 /* Assets.xcassets */; };
+		D2A2D6FAB3552B6553A9A681 /* Pods_MyRDPApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7AD0E660D85950300EA25A8D /* Pods_MyRDPApp.framework */; };
+		DE835CD9D1B92BAFF4410C04 /* test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE0B87563C152ED25D770EB /* test.swift */; };
+		EBAA4DD87EE70B6D4D9FA119 /* FreeRDPBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = DE85A7A3F433FE9B9E588284 /* FreeRDPBridge.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		21572F28047C83358508F9F7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		317151E3ECBD3B79F97F9A0C /* project.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = project.yml; sourceTree = "<group>"; };
+		44D092BC93F7609A7B65036B /* MyRDPApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MyRDPApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		46A35F41ADBB342A0B136C2A /* FreeRDPBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FreeRDPBridge.h; sourceTree = "<group>"; };
+		55787D7F07071FE1597B4A9D /* AWSIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWSIntegration.swift; sourceTree = "<group>"; };
+		61A75BDCE29AE7FD27701890 /* CredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialStore.swift; sourceTree = "<group>"; };
+		6CA3B4D65073CF1F0EDBE715 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7AD0E660D85950300EA25A8D /* Pods_MyRDPApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyRDPApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BE0B87563C152ED25D770EB /* test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = test.swift; sourceTree = "<group>"; };
+		8A1D99FE2953A625C9EC358D /* RDPConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPConnectionManager.swift; sourceTree = "<group>"; };
+		9EBD7F0A7362CEA69BBB43C9 /* MyRDPApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MyRDPApp-Bridging-Header.h"; sourceTree = "<group>"; };
+		A0410A4566C7E704DE1888CE /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		AD7DCAA0E5A710F5AD6EB261 /* MyRDPApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MyRDPApp-Bridging-Header.h"; sourceTree = "<group>"; };
+		B4AB80129000F8DD501B04E3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		B5188A167594C45AED9ABB5A /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		BC3A1EB563722694A39327A1 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		C847D06531DAFDBCF83F76E2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D2ED1E96B508F6E55D543BC5 /* Pods-MyRDPApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyRDPApp.release.xcconfig"; path = "Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp.release.xcconfig"; sourceTree = "<group>"; };
+		D8F9C0AFDCEBC8776EFCD228 /* RDPScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPScreenView.swift; sourceTree = "<group>"; };
+		DE85A7A3F433FE9B9E588284 /* FreeRDPBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FreeRDPBridge.m; sourceTree = "<group>"; };
+		E50AAB4645FE08D05D2EAA7E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		FE2F5675D9FEA2E36615E598 /* Pods-MyRDPApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyRDPApp.debug.xcconfig"; path = "Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A88671861C334ABF82752E7A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				20B530EAFC3BDAB2A0F9666C /* libc++.tbd in Frameworks */,
+				2495BC47D0FA14A6184B501B /* libz.tbd in Frameworks */,
+				D2A2D6FAB3552B6553A9A681 /* Pods_MyRDPApp.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		23F414DF54F6F01B38BB6494 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B5188A167594C45AED9ABB5A /* libc++.tbd */,
+				B4AB80129000F8DD501B04E3 /* libz.tbd */,
+				7AD0E660D85950300EA25A8D /* Pods_MyRDPApp.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		2C165820477F96D24526811E = {
+			isa = PBXGroup;
+			children = (
+				EB03371C27FCBA27790F27ED /* MyRDPApp */,
+				23F414DF54F6F01B38BB6494 /* Frameworks */,
+				8BFB6254F2D1880BDDB37B80 /* Products */,
+				C3428663569888820B8D80F4 /* Pods */,
+			);
+			indentWidth = 4;
+			sourceTree = "<group>";
+			tabWidth = 4;
+			usesTabs = 0;
+		};
+		723A006DEEB9886F0F242A19 /* RDP */ = {
+			isa = PBXGroup;
+			children = (
+				46A35F41ADBB342A0B136C2A /* FreeRDPBridge.h */,
+				DE85A7A3F433FE9B9E588284 /* FreeRDPBridge.m */,
+				AD7DCAA0E5A710F5AD6EB261 /* MyRDPApp-Bridging-Header.h */,
+				8A1D99FE2953A625C9EC358D /* RDPConnectionManager.swift */,
+				D8F9C0AFDCEBC8776EFCD228 /* RDPScreenView.swift */,
+			);
+			path = RDP;
+			sourceTree = "<group>";
+		};
+		8BFB6254F2D1880BDDB37B80 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				44D092BC93F7609A7B65036B /* MyRDPApp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C3428663569888820B8D80F4 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				FE2F5675D9FEA2E36615E598 /* Pods-MyRDPApp.debug.xcconfig */,
+				D2ED1E96B508F6E55D543BC5 /* Pods-MyRDPApp.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		EB03371C27FCBA27790F27ED /* MyRDPApp */ = {
+			isa = PBXGroup;
+			children = (
+				21572F28047C83358508F9F7 /* AppDelegate.swift */,
+				C847D06531DAFDBCF83F76E2 /* Assets.xcassets */,
+				55787D7F07071FE1597B4A9D /* AWSIntegration.swift */,
+				61A75BDCE29AE7FD27701890 /* CredentialStore.swift */,
+				6CA3B4D65073CF1F0EDBE715 /* Info.plist */,
+				A0410A4566C7E704DE1888CE /* LaunchScreen.storyboard */,
+				BC3A1EB563722694A39327A1 /* Main.storyboard */,
+				9EBD7F0A7362CEA69BBB43C9 /* MyRDPApp-Bridging-Header.h */,
+				317151E3ECBD3B79F97F9A0C /* project.yml */,
+				7BE0B87563C152ED25D770EB /* test.swift */,
+				E50AAB4645FE08D05D2EAA7E /* ViewController.swift */,
+				723A006DEEB9886F0F242A19 /* RDP */,
+			);
+			path = MyRDPApp;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C8243B9FDC3E542C3FAB5CBA /* MyRDPApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B61A024BE40C0EB4DF8ACC23 /* Build configuration list for PBXNativeTarget "MyRDPApp" */;
+			buildPhases = (
+				4F792A0CFF75B8834FD22B48 /* [CP] Check Pods Manifest.lock */,
+				72BB445A25C772D0A915F4F8 /* Copy FreeRDP Libraries */,
+				47810D3D8F139736FE2C6ACE /* Sources */,
+				108EFA84AAE2415305A1AE27 /* Resources */,
+				A88671861C334ABF82752E7A /* Frameworks */,
+				F2010110C9D680A516D60D70 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MyRDPApp;
+			productName = MyRDPApp;
+			productReference = 44D092BC93F7609A7B65036B /* MyRDPApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F30909F9BE2BD46ABA844E77 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1630;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = C7E28247F0D626A0BC32458A /* Build configuration list for PBXProject "MyRDPApp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 2C165820477F96D24526811E;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 54;
+			productRefGroup = 8BFB6254F2D1880BDDB37B80 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C8243B9FDC3E542C3FAB5CBA /* MyRDPApp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		108EFA84AAE2415305A1AE27 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CB7B6BF18AA75944B35069CA /* Assets.xcassets in Resources */,
+				1FB954DDEE683F685D104E34 /* LaunchScreen.storyboard in Resources */,
+				978FA5686DC35ACF1D67BAE1 /* Main.storyboard in Resources */,
+				B15DF8D2F9F3E7AF83530D71 /* project.yml in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		4F792A0CFF75B8834FD22B48 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MyRDPApp-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		72BB445A25C772D0A915F4F8 /* Copy FreeRDP Libraries */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy FreeRDP Libraries";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/Libraries/libfreerdp3.a",
+				"$(BUILT_PRODUCTS_DIR)/Libraries/libwinpr3.a",
+				"$(BUILT_PRODUCTS_DIR)/Libraries/libssl.a",
+				"$(BUILT_PRODUCTS_DIR)/Libraries/libcrypto.a",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# シミュレータと実機でライブラリを切り替え\nmkdir -p \"$BUILT_PRODUCTS_DIR/Libraries\"\nif [[ \"$PLATFORM_NAME\" == \"iphonesimulator\" ]]; then\n  cp -f \"$PROJECT_DIR/Libraries/freerdp-simulator/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\n  cp -f \"$PROJECT_DIR/Libraries/openssl-simulator/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\nelse\n  cp -f \"$PROJECT_DIR/Libraries/freerdp/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\n  cp -f \"$PROJECT_DIR/Libraries/openssl/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\nfi\n";
+		};
+		F2010110C9D680A516D60D70 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		47810D3D8F139736FE2C6ACE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F90C6E03636F6CA8D8FB464 /* AWSIntegration.swift in Sources */,
+				6A4C7E3BB696A049BC33A3E9 /* AppDelegate.swift in Sources */,
+				A197785F4A0AF23F3148B9BE /* CredentialStore.swift in Sources */,
+				EBAA4DD87EE70B6D4D9FA119 /* FreeRDPBridge.m in Sources */,
+				B4A1ED77E3182273B23FE66D /* RDPConnectionManager.swift in Sources */,
+				35215918A221A9B5C897001E /* RDPScreenView.swift in Sources */,
+				6AD93496CE4501DC29873F00 /* ViewController.swift in Sources */,
+				DE835CD9D1B92BAFF4410C04 /* test.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		35E9A88BAC05D485B7F8BDF7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		8502E25BCA2AE7C7E92E32FE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FE2F5675D9FEA2E36615E598 /* Pods-MyRDPApp.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_TESTABILITY = YES;
+				INFOPLIST_FILE = MyRDPApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.MyRDPApp;
+				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "MyRDPApp/MyRDPApp-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9391273F1A75797D143E85AE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		E3C62F12E59604DC69A2241E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D2ED1E96B508F6E55D543BC5 /* Pods-MyRDPApp.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = MyRDPApp/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.MyRDPApp;
+				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "MyRDPApp/MyRDPApp-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B61A024BE40C0EB4DF8ACC23 /* Build configuration list for PBXNativeTarget "MyRDPApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8502E25BCA2AE7C7E92E32FE /* Debug */,
+				E3C62F12E59604DC69A2241E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		C7E28247F0D626A0BC32458A /* Build configuration list for PBXProject "MyRDPApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				35E9A88BAC05D485B7F8BDF7 /* Debug */,
+				9391273F1A75797D143E85AE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F30909F9BE2BD46ABA844E77 /* Project object */;
+}
