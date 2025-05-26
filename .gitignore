@@ -1,0 +1,77 @@
+# External libraries
+iOSApp/Libraries/
+
+# Build artifacts
+build/
+*.o
+*.a
+*.dylib
+*.framework
+
+# Xcode
+.DS_Store
+xcuserdata/
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+*.xcworkspace/*
+!*.xcworkspace/contents.xcworkspacedata
+!*.xcworkspace/xcshareddata/
+
+# CocoaPods
+Pods/
+*.xcworkspace
+Podfile.lock
+
+# Other
+.DS_Store
+*.swp
+*.swo
+*~
+
+# External libraries (legacy)
+external/
+
+# Xcode
+.DS_Store
+xcuserdata/
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcworkspace/contents.xcworkspacedata
+**/xcshareddata/WorkspaceSettings.xcsettings
+
+# Build
+DerivedData/
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+# CocoaPods
+Pods/
+*.xcworkspace
+
+# Other
+*.lock
+
+# IDE
+.idea/
+.vscode/
+
+# macOS
+.AppleDouble
+.LSOverride
+
+# Xcode
+*.xccheckout
+*.hmap
+*.ipa
+*.xcuserstate
+*.xcarchive 
