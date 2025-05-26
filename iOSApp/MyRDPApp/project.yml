@@ -1,0 +1,55 @@
+name: MyRDPApp
+options:
+  bundleIdPrefix: com.example
+  deploymentTarget:
+    iOS: 15.0
+  xcodeVersion: "14.0"
+  createIntermediateGroups: true
+
+packages:
+  FreeRDP:
+    path: ../Libraries
+  OpenSSL:
+    path: ../Libraries
+
+targets:
+  MyRDPApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+    settings:
+      base:
+        INFOPLIST_FILE: Sources/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.myrdpapp
+        DEVELOPMENT_TEAM: ""  # ここに開発チームIDを設定
+        CODE_SIGN_STYLE: Automatic
+        TARGETED_DEVICE_FAMILY: 1,2  # iPhone and iPad
+        SWIFT_VERSION: 5.0
+        ENABLE_BITCODE: NO
+        VALID_ARCHS: arm64
+        LIBRARY_SEARCH_PATHS: $(PROJECT_DIR)/../Libraries/lib
+        HEADER_SEARCH_PATHS: $(PROJECT_DIR)/../Libraries/include
+        OTHER_LDFLAGS: -lssl -lcrypto -lfreerdp-client -lfreerdp
+        SWIFT_OBJC_BRIDGING_HEADER: Sources/MyRDPApp-Bridging-Header.h
+    dependencies:
+      - package: FreeRDP
+      - package: OpenSSL
+    info:
+      path: Sources/Info.plist
+      properties:
+        CFBundleDisplayName: MyRDP
+        UILaunchStoryboardName: LaunchScreen
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations:
+            UIWindowSceneSessionRoleApplication:
+              - UISceneConfigurationName: Default Configuration
+                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).SceneDelegate
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+        NSCameraUsageDescription: "カメラへのアクセスが必要です"
+        NSMicrophoneUsageDescription: "マイクへのアクセスが必要です"
+        NSPhotoLibraryUsageDescription: "写真ライブラリへのアクセスが必要です"
+        NSLocalNetworkUsageDescription: "ローカルネットワークへのアクセスが必要です"
+        NSBonjourServices: ["_rdp._tcp"] 
