@@ -16,11 +16,7 @@ class ViewController: UIViewController {
     private var rdpScreenView: RDPScreenView?
     private var connectionAlertController: UIAlertController?
     
-    // EC2接続情報
-    private let ec2Instances = []
-    
     // MARK: - Lifecycle Methods
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -60,14 +56,7 @@ class ViewController: UIViewController {
             action: #selector(showConnectionDialog)
         )
         
-        let ec2Button = UIBarButtonItem(
-            title: "EC2接続",
-            style: .plain,
-            target: self,
-            action: #selector(showEC2ConnectionOptions)
-        )
-        
-        navigationItem.rightBarButtonItems = [connectButton, ec2Button]
+        navigationItem.rightBarButtonItems = [connectButton]
         
         // RDP表示用ビューの設定
         rdpScreenView = RDPScreenView(frame: view.bounds)
@@ -189,52 +178,7 @@ class ViewController: UIViewController {
             popoverController.barButtonItem = navigationItem.rightBarButtonItems?[1]
         }
         
-        // EC2インスタンスの選択肢を追加
-        for (index, instance) in ec2Instances.enumerated() {
-            if let host = instance["host"] {
-                let action = UIAlertAction(title: host, style: .default) { [weak self] _ in
-                    self?.showEC2PasswordPrompt(instanceIndex: index)
-                }
-                alertController.addAction(action)
-            }
-        }
-        
         let cancelAction = UIAlertAction(title: "キャンセル", style: .cancel)
-        alertController.addAction(cancelAction)
-        
-        present(alertController, animated: true)
-    }
-    
-    private func showEC2PasswordPrompt(instanceIndex: Int) {
-        guard instanceIndex < ec2Instances.count,
-              let host = ec2Instances[instanceIndex]["host"],
-              let username = ec2Instances[instanceIndex]["username"] else {
-            return
-        }
-        
-        let alertController = UIAlertController(
-            title: "パスワード入力",
-            message: "\(host)\nユーザー名: \(username)",
-            preferredStyle: .alert
-        )
-        
-        alertController.addTextField { textField in
-            textField.placeholder = "パスワード"
-            textField.isSecureTextEntry = true
-        }
-        
-        let connectAction = UIAlertAction(title: "接続", style: .default) { [weak self, weak alertController] _ in
-            guard let password = alertController?.textFields?[0].text, !password.isEmpty else {
-                self?.showErrorAlert(message: "パスワードを入力してください")
-                return
-            }
-            
-            self?.connectToEC2(host: host, username: username, password: password)
-        }
-        
-        let cancelAction = UIAlertAction(title: "キャンセル", style: .cancel)
-        
-        alertController.addAction(connectAction)
         alertController.addAction(cancelAction)
         
         present(alertController, animated: true)
