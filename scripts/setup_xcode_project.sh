@@ -96,17 +96,8 @@ setup_xcode_project() {
     if [ -d "$XCODEPROJ_PATH" ]; then
         log_success "Xcode project created successfully!"
         log_info "Project location: $XCODEPROJ_PATH"
-        
-        # Install CocoaPods dependencies
-        log_info "Installing CocoaPods dependencies..."
-        pod install
-        
-        if [ $? -ne 0 ]; then
-            handle_error "Failed to install CocoaPods dependencies"
-        fi
-        
+                
         if [ -d "$XCWORKSPACE_PATH" ]; then
-            log_success "CocoaPods dependencies installed successfully!"
             log_info "Workspace location: $XCWORKSPACE_PATH"
             log_info "Please open the workspace instead of the project file."
             
