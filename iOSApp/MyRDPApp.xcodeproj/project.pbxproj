@@ -212,7 +212,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# シミュレータと実機でライブラリを切り替え\nmkdir -p \"$BUILT_PRODUCTS_DIR/Libraries\"\nif [[ \"$PLATFORM_NAME\" == \"iphonesimulator\" ]]; then\n  cp -f \"$PROJECT_DIR/Libraries/freerdp-simulator/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\n  cp -f \"$PROJECT_DIR/Libraries/openssl-simulator/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\nelse\n  cp -f \"$PROJECT_DIR/Libraries/freerdp/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\n  cp -f \"$PROJECT_DIR/Libraries/openssl/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\nfi\n";
+			shellScript = "# ライブラリコピー先ディレクトリの作成\nmkdir -p \"$BUILT_PRODUCTS_DIR/Libraries\"\n\n# シミュレータと実機でライブラリを切り替え\nif [[ \"$PLATFORM_NAME\" == \"iphonesimulator\" ]]; then\n  echo \"Copying simulator libraries...\"\n  cp -f \"$PROJECT_DIR/Libraries/freerdp-simulator/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\n  cp -f \"$PROJECT_DIR/Libraries/openssl-simulator/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\nelse\n  echo \"Copying device libraries...\"\n  cp -f \"$PROJECT_DIR/Libraries/freerdp/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\n  cp -f \"$PROJECT_DIR/Libraries/openssl/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\nfi\n\n# コピーされたファイルの確認\nls -la \"$BUILT_PRODUCTS_DIR/Libraries/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -306,10 +306,31 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_TESTABILITY = YES;
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Libraries/freerdp/include",
+					"$(PROJECT_DIR)/Libraries/openssl/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Libraries/freerdp-simulator/include",
+					"$(PROJECT_DIR)/Libraries/openssl-simulator/include",
+				);
 				INFOPLIST_FILE = MyRDPApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)/Libraries",
+				);
+				OTHER_LDFLAGS = (
+					"-lfreerdp3",
+					"-lwinpr3",
+					"-lssl",
+					"-lcrypto",
+					"-lz",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.MyRDPApp;
 				SDKROOT = iphoneos;
@@ -382,10 +403,31 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Libraries/freerdp/include",
+					"$(PROJECT_DIR)/Libraries/openssl/include",
+				);
+				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Libraries/freerdp-simulator/include",
+					"$(PROJECT_DIR)/Libraries/openssl-simulator/include",
+				);
 				INFOPLIST_FILE = MyRDPApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(BUILT_PRODUCTS_DIR)/Libraries",
+				);
+				OTHER_LDFLAGS = (
+					"-lfreerdp3",
+					"-lwinpr3",
+					"-lssl",
+					"-lcrypto",
+					"-lz",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.MyRDPApp;
 				SDKROOT = iphoneos;
