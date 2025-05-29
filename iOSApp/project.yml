@@ -30,46 +30,57 @@ targets:
           - -lwinpr3
           - -lssl
           - -lcrypto
-          - -lz
+          - -v
       configs:
         Debug:
           ENABLE_TESTABILITY: "YES"
           # デバッグ用ライブラリ・ヘッダーパス
           LIBRARY_SEARCH_PATHS[sdk=iphoneos*]:
             - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp/lib
+            - $(PROJECT_DIR)/Libraries/Device/lib
             - $(PROJECT_DIR)/Libraries/openssl/lib
           LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]:
             - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib
+            - $(PROJECT_DIR)/Libraries/Simulator/lib
             - $(PROJECT_DIR)/Libraries/openssl-simulator/lib
           HEADER_SEARCH_PATHS[sdk=iphoneos*]:
             - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp/include
+            - $(PROJECT_DIR)/Libraries/Device/include
+            - $(PROJECT_DIR)/Libraries/Device/include/freerdp3
+            - $(PROJECT_DIR)/Libraries/Device/include/freerdp3/freerdp
+            - $(PROJECT_DIR)/Libraries/Device/include/freerdp
+            - $(PROJECT_DIR)/Libraries/Device/include/winpr3
             - $(PROJECT_DIR)/Libraries/openssl/include
           HEADER_SEARCH_PATHS[sdk=iphonesimulator*]:
             - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include
+            - $(PROJECT_DIR)/Libraries/Simulator/include
+            - $(PROJECT_DIR)/Libraries/Simulator/include/freerdp3
+            - $(PROJECT_DIR)/Libraries/Simulator/include/freerdp3/freerdp
+            - $(PROJECT_DIR)/Libraries/Simulator/include/winpr3
             - $(PROJECT_DIR)/Libraries/openssl-simulator/include
         Release:
           SWIFT_OPTIMIZATION_LEVEL: "-Owholemodule"
           # リリース用ライブラリ・ヘッダーパス
           LIBRARY_SEARCH_PATHS[sdk=iphoneos*]:
             - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp/lib
+            - $(PROJECT_DIR)/Libraries/Device/lib
             - $(PROJECT_DIR)/Libraries/openssl/lib
           LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]:
             - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib
+            - $(PROJECT_DIR)/Libraries/Simulator/lib
             - $(PROJECT_DIR)/Libraries/openssl-simulator/lib
           HEADER_SEARCH_PATHS[sdk=iphoneos*]:
             - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp/include
-            - $(PROJECT_DIR)/Libraries/openssl/include
+            - $(PROJECT_DIR)/Libraries/Device/include
+            - $(PROJECT_DIR)/Libraries/Device/include/freerdp3
+            - $(PROJECT_DIR)/Libraries/Device/include/freerdp3/freerdp
+            - $(PROJECT_DIR)/Libraries/Device/include/winpr3
           HEADER_SEARCH_PATHS[sdk=iphonesimulator*]:
             - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include
-            - $(PROJECT_DIR)/Libraries/openssl-simulator/include
+            - $(PROJECT_DIR)/Libraries/Simulator/include
+            - $(PROJECT_DIR)/Libraries/Simulator/include/freerdp3
+            - $(PROJECT_DIR)/Libraries/Simulator/include/freerdp3/freerdp
+            - $(PROJECT_DIR)/Libraries/Simulator/include/winpr3
     dependencies:
       - sdk: libc++.tbd
       - sdk: libz.tbd
