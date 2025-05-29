@@ -21,9 +21,9 @@
 #import <Foundation/Foundation.h>
 
 // FreeRDPライブラリのヘッダー（iOSApp/Librariesディレクトリに配置されています）
-// #import <freerdp3/freerdp/freerdp.h>
-// #import <freerdp3/freerdp/client/client.h>
-// #import <freerdp3/freerdp/channels/channels.h>
-// #import <freerdp3/freerdp/gdi/gdi.h>
+#import <freerdp3/freerdp/freerdp.h>
+#import <freerdp3/freerdp/client/client.h>
+#import <freerdp3/freerdp/channels/channels.h>
+#import <freerdp3/freerdp/gdi/gdi.h>
 
 #endif /* MyRDPApp_Bridging_Header_h */
