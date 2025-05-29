@@ -18,7 +18,7 @@ EXTERNAL_DIR="${PROJECT_ROOT}/iOSApp/Libraries"
 FREERDP_VERSION="3.15.0"
 FREERDP_REPO="https://github.com/FreeRDP/FreeRDP.git"
 FREERDP_BUILD_DIR="${BUILD_DIR}/freerdp"
-FREERDP_INSTALL_DIR="${EXTERNAL_DIR}/freerdp"
+FREERDP_INSTALL_DIR="${EXTERNAL_DIR}/freerdp-device"
 FREERDP_SIM_INSTALL_DIR="${EXTERNAL_DIR}/freerdp-simulator"
 
 # OpenSSL関連の設定

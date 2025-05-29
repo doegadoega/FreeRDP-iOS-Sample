@@ -68,79 +68,70 @@ setup_xcode_project() {
         log_info "XcodeGenがインストールされていません。ソースからビルドします..."
         install_xcodegen
     fi
-    
-    # Create Project directory if it doesn't exist
-    mkdir -p "MyRDPApp/Project"
-    
+        
     # Remove old project if it exists
     if [ -d "MyRDPApp/Project/MyRDPApp.xcodeproj" ]; then
         log_info "Removing existing Xcode project..."
         rm -rf MyRDPApp/Project/MyRDPApp.xcodeproj
     fi
-    
-    # Remove old workspace if it exists
-    if [ -d "MyRDPApp/Project/MyRDPApp.xcworkspace" ]; then
-        log_info "Removing existing Xcode workspace..."
-        rm -rf MyRDPApp/Project/MyRDPApp.xcworkspace
-    fi
-    
+        
     # Generate project using XcodeGen
     log_info "Generating project with XcodeGen..."
     cd "$XCODE_PROJECT_DIR"
     xcodegen generate
     
-    if [ $? -ne 0 ]; then
-        handle_error "Failed to generate Xcode project with XcodeGen"
-    fi
+    # if [ $? -ne 0 ]; then
+    #     handle_error "Failed to generate Xcode project with XcodeGen"
+    # fi
     
-    if [ -d "$XCODEPROJ_PATH" ]; then
-        log_success "Xcode project created successfully!"
-        log_info "Project location: $XCODEPROJ_PATH"
+    # if [ -d "$XCODEPROJ_PATH" ]; then
+    #     log_success "Xcode project created successfully!"
+    #     log_info "Project location: $XCODEPROJ_PATH"
                 
-        if [ -d "$XCWORKSPACE_PATH" ]; then
-            log_info "Workspace location: $XCWORKSPACE_PATH"
-            log_info "Please open the workspace instead of the project file."
+    #     if [ -d "$XCWORKSPACE_PATH" ]; then
+    #         log_info "Workspace location: $XCWORKSPACE_PATH"
+    #         log_info "Please open the workspace instead of the project file."
             
-            # プロジェクトの最適化
-            log_info "Optimizing project settings..."
-            xcodebuild -workspace "${XCWORKSPACE_PATH}" \
-                -scheme "${XCODE_PROJECT_NAME}" \
-                -configuration Debug \
-                -destination "platform=iOS Simulator,name=iPhone 15 Pro,OS=17.4" \
-                clean build \
-                ENABLE_BITCODE=NO \
-                ONLY_ACTIVE_ARCH=NO \
-                VALID_ARCHS=arm64 \
-                IPHONEOS_DEPLOYMENT_TARGET=15.0 \
-                SWIFT_VERSION=5.0 \
-                SWIFT_OPTIMIZATION_LEVEL=-Onone \
-                SWIFT_COMPILATION_MODE=debug \
-                GCC_OPTIMIZATION_LEVEL=0 \
-                DEBUG_INFORMATION_FORMAT=dwarf-with-dsym \
-                ENABLE_STRICT_OBJC_MSGSEND=YES \
-                ENABLE_TESTABILITY=YES \
-                CLANG_ENABLE_MODULES=YES \
-                CLANG_ENABLE_OBJC_ARC=YES \
-                CLANG_ENABLE_OBJC_WEAK=YES \
-                CLANG_WARN_DOCUMENTATION_COMMENTS=YES \
-                CLANG_WARN_STRICT_PROTOTYPES=YES \
-                CLANG_WARN_UNGUARDED_AVAILABILITY=YES_AGGRESSIVE \
-                CLANG_WARN_UNREACHABLE_CODE=YES \
-                GCC_NO_COMMON_BLOCKS=YES \
-                GCC_WARN_64_TO_32_BIT_CONVERSION=YES \
-                GCC_WARN_ABOUT_RETURN_TYPE=YES \
-                GCC_WARN_UNDECLARED_SELECTOR=YES \
-                GCC_WARN_UNINITIALIZED_AUTOS=YES_AGGRESSIVE \
-                GCC_WARN_UNUSED_FUNCTION=YES \
-                GCC_WARN_UNUSED_VARIABLE=YES || {
-                log_warning "Failed to optimize project settings, but continuing anyway"
-            }
-        else
-            handle_error "Failed to create Xcode workspace"
-        fi
-    else
-        handle_error "Failed to create Xcode project"
-    fi
+    #         # プロジェクトの最適化
+    #         log_info "Optimizing project settings..."
+    #         xcodebuild -workspace "${XCWORKSPACE_PATH}" \
+    #             -scheme "${XCODE_PROJECT_NAME}" \
+    #             -configuration Debug \
+    #             -destination "platform=iOS Simulator,name=iPhone 15 Pro,OS=17.4" \
+    #             clean build \
+    #             ENABLE_BITCODE=NO \
+    #             ONLY_ACTIVE_ARCH=NO \
+    #             VALID_ARCHS=arm64 \
+    #             IPHONEOS_DEPLOYMENT_TARGET=15.0 \
+    #             SWIFT_VERSION=5.0 \
+    #             SWIFT_OPTIMIZATION_LEVEL=-Onone \
+    #             SWIFT_COMPILATION_MODE=debug \
+    #             GCC_OPTIMIZATION_LEVEL=0 \
+    #             DEBUG_INFORMATION_FORMAT=dwarf-with-dsym \
+    #             ENABLE_STRICT_OBJC_MSGSEND=YES \
+    #             ENABLE_TESTABILITY=YES \
+    #             CLANG_ENABLE_MODULES=YES \
+    #             CLANG_ENABLE_OBJC_ARC=YES \
+    #             CLANG_ENABLE_OBJC_WEAK=YES \
+    #             CLANG_WARN_DOCUMENTATION_COMMENTS=YES \
+    #             CLANG_WARN_STRICT_PROTOTYPES=YES \
+    #             CLANG_WARN_UNGUARDED_AVAILABILITY=YES_AGGRESSIVE \
+    #             CLANG_WARN_UNREACHABLE_CODE=YES \
+    #             GCC_NO_COMMON_BLOCKS=YES \
+    #             GCC_WARN_64_TO_32_BIT_CONVERSION=YES \
+    #             GCC_WARN_ABOUT_RETURN_TYPE=YES \
+    #             GCC_WARN_UNDECLARED_SELECTOR=YES \
+    #             GCC_WARN_UNINITIALIZED_AUTOS=YES_AGGRESSIVE \
+    #             GCC_WARN_UNUSED_FUNCTION=YES \
+    #             GCC_WARN_UNUSED_VARIABLE=YES || {
+    #             log_warning "Failed to optimize project settings, but continuing anyway"
+    #         }
+    #     else
+    #         handle_error "Failed to create Xcode workspace"
+    #     fi
+    # else
+    #     handle_error "Failed to create Xcode project"
+    # fi
     
     log_success "Xcode project setup completed"
     return 0

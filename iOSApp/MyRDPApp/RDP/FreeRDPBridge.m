@@ -15,10 +15,10 @@
 
 // FreeRDPライブラリのヘッダーをインポート
 // 注: FreeRDPライブラリはiOSApp/Librariesディレクトリにあります
-// #import <freerdp3/freerdp/freerdp.h>
-// #import <freerdp3/freerdp/client/client.h>
-// #import <freerdp3/freerdp/channels/channels.h>
-// #import <freerdp3/freerdp/gdi/gdi.h>
+#import <freerdp3/freerdp/freerdp.h>
+#import <freerdp3/freerdp/channels/channels.h>
+#import <freerdp3/freerdp/gdi/gdi.h>
+#import <freerdp3/freerdp/client.h>
 
 @interface FreeRDPBridge ()
 
