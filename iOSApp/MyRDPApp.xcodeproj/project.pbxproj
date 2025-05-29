@@ -3,11 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0B71EB9C8245196AEC0DB223 /* Pods_MyRDPApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C1F144CC84093832BF4E312 /* Pods_MyRDPApp.framework */; };
 		1FB954DDEE683F685D104E34 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0410A4566C7E704DE1888CE /* LaunchScreen.storyboard */; };
 		20B530EAFC3BDAB2A0F9666C /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B5188A167594C45AED9ABB5A /* libc++.tbd */; };
 		2495BC47D0FA14A6184B501B /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B4AB80129000F8DD501B04E3 /* libz.tbd */; };
@@ -27,16 +26,13 @@
 /* Begin PBXFileReference section */
 		21572F28047C83358508F9F7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		317151E3ECBD3B79F97F9A0C /* project.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = project.yml; sourceTree = "<group>"; };
-		44D092BC93F7609A7B65036B /* MyRDPApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyRDPApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		44D092BC93F7609A7B65036B /* MyRDPApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MyRDPApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		46A35F41ADBB342A0B136C2A /* FreeRDPBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FreeRDPBridge.h; sourceTree = "<group>"; };
 		55787D7F07071FE1597B4A9D /* AWSIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWSIntegration.swift; sourceTree = "<group>"; };
-		5C1F144CC84093832BF4E312 /* Pods_MyRDPApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyRDPApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		61A75BDCE29AE7FD27701890 /* CredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialStore.swift; sourceTree = "<group>"; };
 		6CA3B4D65073CF1F0EDBE715 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		7BE0B87563C152ED25D770EB /* test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = test.swift; sourceTree = "<group>"; };
-		80714C3D4B4FA82457A21A3C /* Pods-MyRDPApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyRDPApp.release.xcconfig"; path = "Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp.release.xcconfig"; sourceTree = "<group>"; };
 		8A1D99FE2953A625C9EC358D /* RDPConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPConnectionManager.swift; sourceTree = "<group>"; };
-		9740FD03E5ADC5BB175547FC /* Pods-MyRDPApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyRDPApp.debug.xcconfig"; path = "Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp.debug.xcconfig"; sourceTree = "<group>"; };
 		9EBD7F0A7362CEA69BBB43C9 /* MyRDPApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MyRDPApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		A0410A4566C7E704DE1888CE /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		B4AB80129000F8DD501B04E3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -55,19 +51,24 @@
 			files = (
 				20B530EAFC3BDAB2A0F9666C /* libc++.tbd in Frameworks */,
 				2495BC47D0FA14A6184B501B /* libz.tbd in Frameworks */,
-				0B71EB9C8245196AEC0DB223 /* Pods_MyRDPApp.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B3AC3CB8FA02D9397952C3B /* FreeRDPModule */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = FreeRDPModule;
+			sourceTree = "<group>";
+		};
 		23F414DF54F6F01B38BB6494 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				B5188A167594C45AED9ABB5A /* libc++.tbd */,
 				B4AB80129000F8DD501B04E3 /* libz.tbd */,
-				5C1F144CC84093832BF4E312 /* Pods_MyRDPApp.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -78,7 +79,6 @@
 				EB03371C27FCBA27790F27ED /* MyRDPApp */,
 				23F414DF54F6F01B38BB6494 /* Frameworks */,
 				8BFB6254F2D1880BDDB37B80 /* Products */,
-				ECE3C8F52F5D56CD41B0B9F8 /* Pods */,
 			);
 			indentWidth = 4;
 			sourceTree = "<group>";
@@ -118,18 +118,10 @@
 				317151E3ECBD3B79F97F9A0C /* project.yml */,
 				7BE0B87563C152ED25D770EB /* test.swift */,
 				E50AAB4645FE08D05D2EAA7E /* ViewController.swift */,
+				0B3AC3CB8FA02D9397952C3B /* FreeRDPModule */,
 				723A006DEEB9886F0F242A19 /* RDP */,
 			);
 			path = MyRDPApp;
-			sourceTree = "<group>";
-		};
-		ECE3C8F52F5D56CD41B0B9F8 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				9740FD03E5ADC5BB175547FC /* Pods-MyRDPApp.debug.xcconfig */,
-				80714C3D4B4FA82457A21A3C /* Pods-MyRDPApp.release.xcconfig */,
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -139,18 +131,18 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B61A024BE40C0EB4DF8ACC23 /* Build configuration list for PBXNativeTarget "MyRDPApp" */;
 			buildPhases = (
-				AAFCD8C1571E5CD2278479F0 /* [CP] Check Pods Manifest.lock */,
 				72BB445A25C772D0A915F4F8 /* Copy FreeRDP Libraries */,
 				47810D3D8F139736FE2C6ACE /* Sources */,
 				108EFA84AAE2415305A1AE27 /* Resources */,
 				A88671861C334ABF82752E7A /* Frameworks */,
-				E7EF05B3F652745E4D066055 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = MyRDPApp;
+			packageProductDependencies = (
+			);
 			productName = MyRDPApp;
 			productReference = 44D092BC93F7609A7B65036B /* MyRDPApp.app */;
 			productType = "com.apple.product-type.application";
@@ -163,6 +155,8 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1630;
+				TargetAttributes = {
+				};
 			};
 			buildConfigurationList = C7E28247F0D626A0BC32458A /* Build configuration list for PBXProject "MyRDPApp" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -174,7 +168,7 @@
 			);
 			mainGroup = 2C165820477F96D24526811E;
 			minimizedProjectReferenceProxies = 1;
-			productRefGroup = 8BFB6254F2D1880BDDB37B80 /* Products */;
+			preferredProjectObjectVersion = 54;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -219,49 +213,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# シミュレータと実機でライブラリを切り替え\nmkdir -p \"$BUILT_PRODUCTS_DIR/Libraries\"\nif [[ \"$PLATFORM_NAME\" == \"iphonesimulator\" ]]; then\n  cp -f \"$PROJECT_DIR/Libraries/freerdp-simulator/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\n  cp -f \"$PROJECT_DIR/Libraries/openssl-simulator/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\nelse\n  cp -f \"$PROJECT_DIR/Libraries/freerdp/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\n  cp -f \"$PROJECT_DIR/Libraries/openssl/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\nfi\n";
-		};
-		AAFCD8C1571E5CD2278479F0 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-MyRDPApp-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E7EF05B3F652745E4D066055 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -349,7 +300,6 @@
 		};
 		8502E25BCA2AE7C7E92E32FE /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9740FD03E5ADC5BB175547FC /* Pods-MyRDPApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -427,7 +377,6 @@
 		};
 		E3C62F12E59604DC69A2241E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 80714C3D4B4FA82457A21A3C /* Pods-MyRDPApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

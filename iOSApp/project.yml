@@ -64,16 +64,12 @@ targets:
     buildSettings:
       LIBRARY_SEARCH_PATHS:
         - $(inherited)
-        - $(PROJECT_DIR)/Libraries/freerdp/lib
-        - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib
-        - $(PROJECT_DIR)/Libraries/openssl/lib
-        - $(PROJECT_DIR)/Libraries/openssl-simulator/lib
+        - $(PROJECT_DIR)/Libraries/Device/lib
+        - $(PROJECT_DIR)/Libraries/Simulator/lib
       HEADER_SEARCH_PATHS:
         - $(inherited)
-        - $(PROJECT_DIR)/Libraries/freerdp/include
-        - $(PROJECT_DIR)/Libraries/freerdp-simulator/include
-        - $(PROJECT_DIR)/Libraries/openssl/include
-        - $(PROJECT_DIR)/Libraries/openssl-simulator/include
+        - $(PROJECT_DIR)/Libraries/Device/include
+        - $(PROJECT_DIR)/Libraries/Simulator/include
       OTHER_LDFLAGS:
         - -lfreerdp3
         - -lwinpr3
