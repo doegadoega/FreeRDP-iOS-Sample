@@ -215,7 +215,7 @@ cmake "../FreeRDP" \
     -DWITH_CLIENT=ON \
     -DWITH_SERVER=OFF \
     -DWITH_SAMPLE=OFF \
-    -DWITH_JPEG=OFF \
+    -DWITH_JPEG=ON \
     -DWITH_MANPAGES=OFF \
     -DWITH_PULSE=OFF \
     -DWITH_CUPS=OFF \
@@ -228,7 +228,10 @@ cmake "../FreeRDP" \
     -DWITH_FAAD2=OFF \
     -DWITH_FAAC=OFF \
     -DWITH_SOXR=OFF \
-    -DWITH_CLIENT_IOS=OFF
+    -DWITH_CLIENT_IOS=OFF \
+    -DWITH_GDI=ON \
+    -DCHANNEL_DISPLAY=ON \
+    -DCHANNEL_GRAPHICS=ON \
 
 # Build
 cmake --build . --config Release || handle_error "FreeRDPのビルドに失敗しました"
