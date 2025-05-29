@@ -35,6 +35,7 @@
 		8A1D99FE2953A625C9EC358D /* RDPConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPConnectionManager.swift; sourceTree = "<group>"; };
 		9EBD7F0A7362CEA69BBB43C9 /* MyRDPApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MyRDPApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		A0410A4566C7E704DE1888CE /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		AD7DCAA0E5A710F5AD6EB261 /* MyRDPApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MyRDPApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		B4AB80129000F8DD501B04E3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		B5188A167594C45AED9ABB5A /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		BC3A1EB563722694A39327A1 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
@@ -90,6 +91,7 @@
 			children = (
 				46A35F41ADBB342A0B136C2A /* FreeRDPBridge.h */,
 				DE85A7A3F433FE9B9E588284 /* FreeRDPBridge.m */,
+				AD7DCAA0E5A710F5AD6EB261 /* MyRDPApp-Bridging-Header.h */,
 				8A1D99FE2953A625C9EC358D /* RDPConnectionManager.swift */,
 				D8F9C0AFDCEBC8776EFCD228 /* RDPScreenView.swift */,
 			);
@@ -282,19 +284,19 @@
 				ENABLE_TESTABILITY = YES;
 				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Libraries/Device/include",
-					"$(PROJECT_DIR)/Libraries/Device/include/freerdp3",
-					"$(PROJECT_DIR)/Libraries/Device/include/freerdp3/freerdp",
-					"$(PROJECT_DIR)/Libraries/Device/include/freerdp",
-					"$(PROJECT_DIR)/Libraries/Device/include/winpr3",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/include",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3/freerdp",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/include/winpr3",
 					"$(PROJECT_DIR)/Libraries/openssl/include",
 				);
 				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Libraries/Simulator/include",
-					"$(PROJECT_DIR)/Libraries/Simulator/include/freerdp3",
-					"$(PROJECT_DIR)/Libraries/Simulator/include/freerdp3/freerdp",
-					"$(PROJECT_DIR)/Libraries/Simulator/include/winpr3",
+					"$(PROJECT_DIR)/Libraries/freerdp-simulator/include",
+					"$(PROJECT_DIR)/Libraries/freerdp-simulator/include/freerdp3",
+					"$(PROJECT_DIR)/Libraries/freerdp-simulator/include/freerdp3/freerdp",
+					"$(PROJECT_DIR)/Libraries/freerdp-simulator/include/winpr3",
 					"$(PROJECT_DIR)/Libraries/openssl-simulator/include",
 				);
 				INFOPLIST_FILE = MyRDPApp/Info.plist;
@@ -304,12 +306,12 @@
 				);
 				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Libraries/Device/lib",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib",
 					"$(PROJECT_DIR)/Libraries/openssl/lib",
 				);
 				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Libraries/Simulator/lib",
+					"$(PROJECT_DIR)/Libraries/freerdp-simulator/lib",
 					"$(PROJECT_DIR)/Libraries/openssl-simulator/lib",
 				);
 				OTHER_LDFLAGS = (
@@ -392,17 +394,17 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Libraries/Device/include",
-					"$(PROJECT_DIR)/Libraries/Device/include/freerdp3",
-					"$(PROJECT_DIR)/Libraries/Device/include/freerdp3/freerdp",
-					"$(PROJECT_DIR)/Libraries/Device/include/winpr3",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/include",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3/freerdp",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/include/winpr3",
 				);
 				"HEADER_SEARCH_PATHS[sdk=iphonesimulator*]" = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Libraries/Simulator/include",
-					"$(PROJECT_DIR)/Libraries/Simulator/include/freerdp3",
-					"$(PROJECT_DIR)/Libraries/Simulator/include/freerdp3/freerdp",
-					"$(PROJECT_DIR)/Libraries/Simulator/include/winpr3",
+					"$(PROJECT_DIR)/Libraries/freerdp-simulator/include",
+					"$(PROJECT_DIR)/Libraries/freerdp-simulator/include/freerdp3",
+					"$(PROJECT_DIR)/Libraries/freerdp-simulator/include/freerdp3/freerdp",
+					"$(PROJECT_DIR)/Libraries/freerdp-simulator/include/winpr3",
 				);
 				INFOPLIST_FILE = MyRDPApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -411,12 +413,12 @@
 				);
 				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Libraries/Device/lib",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib",
 					"$(PROJECT_DIR)/Libraries/openssl/lib",
 				);
 				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Libraries/Simulator/lib",
+					"$(PROJECT_DIR)/Libraries/freerdp-simulator/lib",
 					"$(PROJECT_DIR)/Libraries/openssl-simulator/lib",
 				);
 				OTHER_LDFLAGS = (

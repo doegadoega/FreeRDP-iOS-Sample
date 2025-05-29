@@ -310,9 +310,40 @@ cd "${PROJECT_ROOT}"
 # FreeRDPのソースコードは保持しておく（再ビルド時に使用）
 log_info "FreeRDPのソースコードは ${FREERDP_BUILD_DIR}/FreeRDP に保持されています"
 
+# ライブラリファイルを適切なディレクトリにコピー
+log_info "ビルドしたライブラリファイルをXcodeインポート用ディレクトリにコピーしています..."
+
+# # デバイス用ライブラリをコピー
+# log_info "デバイス用ライブラリを ${FREERDP_INSTALL_DIR} にコピーしています..."
+# mkdir -p "${FREERDP_INSTALL_DIR}/include"
+# mkdir -p "${FREERDP_INSTALL_DIR}/lib"
+
+# # freerdp3とwinpr3のライブラリとヘッダーをコピー
+# cp -R "${FREERDP_INSTALL_DIR}/include/freerdp3" "${FREERDP_INSTALL_DIR}/include/"
+# cp -R "${FREERDP_INSTALL_DIR}/include/winpr3" "${FREERDP_INSTALL_DIR}/include/"
+# cp -R "${FREERDP_INSTALL_DIR}/lib/libfreerdp3.a" "${FREERDP_INSTALL_DIR}/lib/" 2>/dev/null || :
+# cp -R "${FREERDP_INSTALL_DIR}/lib/libwinpr3.a" "${FREERDP_INSTALL_DIR}/lib/" 2>/dev/null || :
+# # 必要に応じて他のライブラリもコピー
+# find "${FREERDP_INSTALL_DIR}/lib" -name "*.a" -exec cp {} "${EXTERNAL_DIR}/freerdp/lib/" \; 2>/dev/null || :
+
+# # シミュレータ用ライブラリをコピー
+# log_info "シミュレータ用ライブラリを ${EXTERNAL_DIR}/freerdp-simulator にコピーしています..."
+# mkdir -p "${EXTERNAL_DIR}/freerdp-simulator/include"
+# mkdir -p "${EXTERNAL_DIR}/freerdp-simulator/lib"
+
+# # freerdp3とwinpr3のライブラリとヘッダーをコピー
+# cp -R "${FREERDP_SIM_INSTALL_DIR}/include/freerdp3" "${EXTERNAL_DIR}/freerdp-simulator/include/"
+# cp -R "${FREERDP_SIM_INSTALL_DIR}/include/winpr3" "${EXTERNAL_DIR}/freerdp-simulator/include/"
+# cp -R "${FREERDP_SIM_INSTALL_DIR}/lib/libfreerdp3.a" "${EXTERNAL_DIR}/freerdp-simulator/lib/" 2>/dev/null || :
+# cp -R "${FREERDP_SIM_INSTALL_DIR}/lib/libwinpr3.a" "${EXTERNAL_DIR}/freerdp-simulator/lib/" 2>/dev/null || :
+# # 必要に応じて他のライブラリもコピー
+# find "${FREERDP_SIM_INSTALL_DIR}/lib" -name "*.a" -exec cp {} "${EXTERNAL_DIR}/freerdp-simulator/lib/" \; 2>/dev/null || :
+
 log_success "FreeRDP build completed!"
 log_info "iOS device installation directory: ${FREERDP_INSTALL_DIR}"
 log_info "iOS simulator installation directory: ${FREERDP_SIM_INSTALL_DIR}"
+log_info "Xcode import device directory: ${EXTERNAL_DIR}/freerdp"
+log_info "Xcode import simulator directory: ${EXTERNAL_DIR}/freerdp-simulator"
 log_info "FreeRDPのソースコードは ${FREERDP_BUILD_DIR}/FreeRDP に保持されています"
 
 # Record script end
