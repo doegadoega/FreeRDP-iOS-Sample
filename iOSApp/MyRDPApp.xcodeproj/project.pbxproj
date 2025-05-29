@@ -131,7 +131,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B61A024BE40C0EB4DF8ACC23 /* Build configuration list for PBXNativeTarget "MyRDPApp" */;
 			buildPhases = (
-				72BB445A25C772D0A915F4F8 /* Copy FreeRDP Libraries */,
 				47810D3D8F139736FE2C6ACE /* Sources */,
 				108EFA84AAE2415305A1AE27 /* Resources */,
 				A88671861C334ABF82752E7A /* Frameworks */,
@@ -190,31 +189,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		72BB445A25C772D0A915F4F8 /* Copy FreeRDP Libraries */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Copy FreeRDP Libraries";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/Libraries/libfreerdp3.a",
-				"$(BUILT_PRODUCTS_DIR)/Libraries/libwinpr3.a",
-				"$(BUILT_PRODUCTS_DIR)/Libraries/libssl.a",
-				"$(BUILT_PRODUCTS_DIR)/Libraries/libcrypto.a",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# ライブラリコピー先ディレクトリの作成\nmkdir -p \"$BUILT_PRODUCTS_DIR/Libraries\"\n\n# シミュレータと実機でライブラリを切り替え\nif [[ \"$PLATFORM_NAME\" == \"iphonesimulator\" ]]; then\n  echo \"Copying simulator libraries...\"\n  cp -f \"$PROJECT_DIR/Libraries/freerdp-simulator/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\n  cp -f \"$PROJECT_DIR/Libraries/openssl-simulator/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\nelse\n  echo \"Copying device libraries...\"\n  cp -f \"$PROJECT_DIR/Libraries/freerdp/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\n  cp -f \"$PROJECT_DIR/Libraries/openssl/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\nfi\n\n# コピーされたファイルの確認\nls -la \"$BUILT_PRODUCTS_DIR/Libraries/\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		47810D3D8F139736FE2C6ACE /* Sources */ = {
@@ -321,9 +295,15 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
-					"$(BUILT_PRODUCTS_DIR)/Libraries",
+					"$(PROJECT_DIR)/Libraries/freerdp/lib",
+					"$(PROJECT_DIR)/Libraries/openssl/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Libraries/freerdp-simulator/lib",
+					"$(PROJECT_DIR)/Libraries/openssl-simulator/lib",
 				);
 				OTHER_LDFLAGS = (
 					"-lfreerdp3",
@@ -418,9 +398,15 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
+				"LIBRARY_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
-					"$(BUILT_PRODUCTS_DIR)/Libraries",
+					"$(PROJECT_DIR)/Libraries/freerdp/lib",
+					"$(PROJECT_DIR)/Libraries/openssl/lib",
+				);
+				"LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]" = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Libraries/freerdp-simulator/lib",
+					"$(PROJECT_DIR)/Libraries/openssl-simulator/lib",
 				);
 				OTHER_LDFLAGS = (
 					"-lfreerdp3",
