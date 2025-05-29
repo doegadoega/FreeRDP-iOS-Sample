@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -27,7 +27,7 @@
 /* Begin PBXFileReference section */
 		21572F28047C83358508F9F7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		317151E3ECBD3B79F97F9A0C /* project.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = project.yml; sourceTree = "<group>"; };
-		44D092BC93F7609A7B65036B /* MyRDPApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MyRDPApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		44D092BC93F7609A7B65036B /* MyRDPApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyRDPApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		46A35F41ADBB342A0B136C2A /* FreeRDPBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FreeRDPBridge.h; sourceTree = "<group>"; };
 		55787D7F07071FE1597B4A9D /* AWSIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWSIntegration.swift; sourceTree = "<group>"; };
 		5C1F144CC84093832BF4E312 /* Pods_MyRDPApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyRDPApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -39,7 +39,6 @@
 		9740FD03E5ADC5BB175547FC /* Pods-MyRDPApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyRDPApp.debug.xcconfig"; path = "Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp.debug.xcconfig"; sourceTree = "<group>"; };
 		9EBD7F0A7362CEA69BBB43C9 /* MyRDPApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MyRDPApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		A0410A4566C7E704DE1888CE /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		AD7DCAA0E5A710F5AD6EB261 /* MyRDPApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MyRDPApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		B4AB80129000F8DD501B04E3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		B5188A167594C45AED9ABB5A /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		BC3A1EB563722694A39327A1 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
@@ -91,7 +90,6 @@
 			children = (
 				46A35F41ADBB342A0B136C2A /* FreeRDPBridge.h */,
 				DE85A7A3F433FE9B9E588284 /* FreeRDPBridge.m */,
-				AD7DCAA0E5A710F5AD6EB261 /* MyRDPApp-Bridging-Header.h */,
 				8A1D99FE2953A625C9EC358D /* RDPConnectionManager.swift */,
 				D8F9C0AFDCEBC8776EFCD228 /* RDPScreenView.swift */,
 			);
@@ -131,7 +129,6 @@
 				9740FD03E5ADC5BB175547FC /* Pods-MyRDPApp.debug.xcconfig */,
 				80714C3D4B4FA82457A21A3C /* Pods-MyRDPApp.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -166,8 +163,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1630;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = C7E28247F0D626A0BC32458A /* Build configuration list for PBXProject "MyRDPApp" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -179,7 +174,6 @@
 			);
 			mainGroup = 2C165820477F96D24526811E;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 54;
 			productRefGroup = 8BFB6254F2D1880BDDB37B80 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -256,9 +250,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
