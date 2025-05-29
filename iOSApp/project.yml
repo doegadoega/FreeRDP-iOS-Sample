@@ -24,10 +24,6 @@ targets:
         SWIFT_VERSION: "5.0"
         CLANG_ENABLE_MODULES: "YES"
         CLANG_ENABLE_OBJC_ARC: "YES"
-        # ライブラリ検索パス（統一）
-        LIBRARY_SEARCH_PATHS:
-          - $(inherited)
-          - $(BUILT_PRODUCTS_DIR)/Libraries
         # リンクフラグ
         OTHER_LDFLAGS:
           - -lfreerdp3
@@ -38,7 +34,15 @@ targets:
       configs:
         Debug:
           ENABLE_TESTABILITY: "YES"
-          # デバッグ用ヘッダーパス
+          # デバッグ用ライブラリ・ヘッダーパス
+          LIBRARY_SEARCH_PATHS[sdk=iphoneos*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp/lib
+            - $(PROJECT_DIR)/Libraries/openssl/lib
+          LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib
+            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib
           HEADER_SEARCH_PATHS[sdk=iphoneos*]:
             - $(inherited)
             - $(PROJECT_DIR)/Libraries/freerdp/include
@@ -49,7 +53,15 @@ targets:
             - $(PROJECT_DIR)/Libraries/openssl-simulator/include
         Release:
           SWIFT_OPTIMIZATION_LEVEL: "-Owholemodule"
-          # リリース用ヘッダーパス
+          # リリース用ライブラリ・ヘッダーパス
+          LIBRARY_SEARCH_PATHS[sdk=iphoneos*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp/lib
+            - $(PROJECT_DIR)/Libraries/openssl/lib
+          LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib
+            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib
           HEADER_SEARCH_PATHS[sdk=iphoneos*]:
             - $(inherited)
             - $(PROJECT_DIR)/Libraries/freerdp/include
@@ -71,31 +83,6 @@ targets:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
-    
-    preBuildScripts:
-      - name: "Copy FreeRDP Libraries"
-        script: |
-          # ライブラリコピー先ディレクトリの作成
-          mkdir -p "$BUILT_PRODUCTS_DIR/Libraries"
-          
-          # シミュレータと実機でライブラリを切り替え
-          if [[ "$PLATFORM_NAME" == "iphonesimulator" ]]; then
-            echo "Copying simulator libraries..."
-            cp -f "$PROJECT_DIR/Libraries/freerdp-simulator/lib/"*.a "$BUILT_PRODUCTS_DIR/Libraries/"
-            cp -f "$PROJECT_DIR/Libraries/openssl-simulator/lib/"*.a "$BUILT_PRODUCTS_DIR/Libraries/"
-          else
-            echo "Copying device libraries..."
-            cp -f "$PROJECT_DIR/Libraries/freerdp/lib/"*.a "$BUILT_PRODUCTS_DIR/Libraries/"
-            cp -f "$PROJECT_DIR/Libraries/openssl/lib/"*.a "$BUILT_PRODUCTS_DIR/Libraries/"
-          fi
-          
-          # コピーされたファイルの確認
-          ls -la "$BUILT_PRODUCTS_DIR/Libraries/"
-        outputFiles:
-          - "$(BUILT_PRODUCTS_DIR)/Libraries/libfreerdp3.a"
-          - "$(BUILT_PRODUCTS_DIR)/Libraries/libwinpr3.a"
-          - "$(BUILT_PRODUCTS_DIR)/Libraries/libssl.a"
-          - "$(BUILT_PRODUCTS_DIR)/Libraries/libcrypto.a"
 
 schemes:
   MyRDPApp:
