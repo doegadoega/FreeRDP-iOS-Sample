@@ -62,6 +62,7 @@ class ViewController: UIViewController {
         rdpScreenView = RDPScreenView(frame: view.bounds)
         if let rdpScreenView = rdpScreenView {
             rdpScreenView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            rdpScreenView.delegate = self
             view.addSubview(rdpScreenView)
         }
         
@@ -236,5 +237,79 @@ extension ViewController: UITextFieldDelegate {
             return allowedCharacters.isSuperset(of: characterSet)
         }
         return true
+    }
+}
+
+// MARK: - RDPScreenViewDelegate
+
+extension ViewController: RDPScreenViewDelegate {
+    
+    func didTapScreen(at point: CGPoint) {
+        // シングルタップでは左クリック
+        let buttonNumber = 1 // 左クリック
+        
+        // 左クリックの押下と解放をシミュレート
+        rdpConnectionManager?.sendMouseEvent(at: point, isDown: true, button: buttonNumber)
+        
+        // 少し遅延してマウスアップ
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.rdpConnectionManager?.sendMouseEvent(at: point, isDown: false, button: buttonNumber)
+        }
+    }
+    
+    func didLongPressScreen(at point: CGPoint) {
+        // 長押しは右クリック
+        let buttonNumber = 2 // 右クリック
+        
+        rdpConnectionManager?.sendMouseEvent(at: point, isDown: true, button: buttonNumber)
+        
+        // 少し遅延してマウスアップ
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.rdpConnectionManager?.sendMouseEvent(at: point, isDown: false, button: buttonNumber)
+        }
+    }
+    
+    func didPanScreen(from startPoint: CGPoint, to endPoint: CGPoint) {
+        // パンジェスチャーをドラッグ操作として扱う
+        let buttonNumber = 1 // 左クリック
+        
+        // マウスダウン
+        rdpConnectionManager?.sendMouseEvent(at: startPoint, isDown: true, button: buttonNumber)
+        
+        // マウス移動
+        rdpConnectionManager?.sendMouseEvent(at: endPoint, isDown: true, button: buttonNumber)
+        
+        // マウスアップ
+        rdpConnectionManager?.sendMouseEvent(at: endPoint, isDown: false, button: buttonNumber)
+    }
+    
+    func didPinchScreen(scale: CGFloat, at point: CGPoint) {
+        // ピンチジェスチャーを拡大/縮小操作として扱う
+        let delta = (scale - 1.0) * 10.0
+        
+        // スクロールイベントとして扱う
+        rdpConnectionManager?.sendScrollEvent(at: point, delta: delta)
+    }
+    
+    func didSwipeScreen(direction: UISwipeGestureRecognizer.Direction, at point: CGPoint) {
+        // スワイプジェスチャーをスクロール操作として扱う
+        
+        // 方向に応じてデルタ値を設定
+        var delta: CGFloat = 0
+        
+        switch direction {
+        case .up:
+            delta = 5.0
+        case .down:
+            delta = -5.0
+        case .left, .right:
+            // 左右スワイプは横スクロールになるが、ここでは単純化のため縦スクロールとして扱う
+            delta = direction == .left ? -5.0 : 5.0
+        default:
+            break
+        }
+        
+        // スクロールイベントとして扱う
+        rdpConnectionManager?.sendScrollEvent(at: point, delta: delta)
     }
 }
