@@ -2,54 +2,171 @@ name: MyRDPApp
 options:
   bundleIdPrefix: com.example
   deploymentTarget:
-    iOS: 15.0
-  xcodeVersion: "14.0"
-  createIntermediateGroups: true
-
-packages:
-  FreeRDP:
-    path: ../Libraries
-  OpenSSL:
-    path: ../Libraries
+    iOS: "15.0"
+  xcodeVersion: "16.3"
+  generateEmptyDirectories: true
+  usesTabs: false
+  indentWidth: 4
+  tabWidth: 4
+  projectPath: ../MyRDPApp.xcodeproj
 
 targets:
   MyRDPApp:
     type: application
     platform: iOS
-    sources:
-      - path: Sources
+    sources: 
+      - path: MyRDPApp/
+        excludes:
+          - "build/**"
     settings:
       base:
-        INFOPLIST_FILE: Sources/Info.plist
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.myrdpapp
-        DEVELOPMENT_TEAM: ""  # ここに開発チームIDを設定
-        CODE_SIGN_STYLE: Automatic
-        TARGETED_DEVICE_FAMILY: 1,2  # iPhone and iPad
-        SWIFT_VERSION: 5.0
-        ENABLE_BITCODE: NO
-        VALID_ARCHS: arm64
-        LIBRARY_SEARCH_PATHS: $(PROJECT_DIR)/../Libraries/lib
-        HEADER_SEARCH_PATHS: $(PROJECT_DIR)/../Libraries/include
-        OTHER_LDFLAGS: -lssl -lcrypto -lfreerdp-client -lfreerdp
-        SWIFT_OBJC_BRIDGING_HEADER: Sources/MyRDPApp-Bridging-Header.h
+        SWIFT_OBJC_BRIDGING_HEADER: MyRDPApp/MyRDPApp-Bridging-Header.h
+        SWIFT_VERSION: "5.0"
+        CLANG_ENABLE_MODULES: "YES"
+        CLANG_ENABLE_OBJC_ARC: "YES"
+        # 基本リンクフラグ - ライブラリの完全パスを指定
+        OTHER_LDFLAGS:
+          - -framework Foundation
+          - -framework CoreGraphics
+          - -framework UIKit
+          - -framework SystemConfiguration
+          - -framework Security
+          - -lz
+          - -lc++
+          - -ObjC
+          - -all_load
+        # シミュレーター除外設定
+        EXCLUDED_ARCHS[sdk=iphonesimulator*]: "x86_64"
+        ONLY_ACTIVE_ARCH: "NO"
+        # 条件付きコンパイル設定
+        GCC_PREPROCESSOR_DEFINITIONS:
+          - "$(inherited)"
+          - "FREERDP_API_VERSION=3"
+          - "WITH_FREERDP3=1"
+      configs:
+        Debug:
+          ENABLE_TESTABILITY: "YES"
+          GCC_OPTIMIZATION_LEVEL: "0"
+          # アーキテクチャ設定（シミュレーター用x86_64除外）
+          EXCLUDED_ARCHS[sdk=iphonesimulator*]: "x86_64"
+          VALID_ARCHS[sdk=iphonesimulator*]: "arm64"
+          # デバッグ用ライブラリパス（デバイス）
+          LIBRARY_SEARCH_PATHS[sdk=iphoneos*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib
+            - $(PROJECT_DIR)/Libraries/openssl/lib
+          # デバッグ用ライブラリパス（シミュレーター）
+          LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib
+            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib
+          # デバッグ用ヘッダーパス（デバイス）
+          HEADER_SEARCH_PATHS[sdk=iphoneos*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include/winpr3
+            - $(PROJECT_DIR)/Libraries/openssl/include
+          # デバッグ用ヘッダーパス（シミュレーター）
+          HEADER_SEARCH_PATHS[sdk=iphonesimulator*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/freerdp3
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/winpr3
+            - $(PROJECT_DIR)/Libraries/openssl-simulator/include
+          # デバイス用リンクフラグ
+          OTHER_LDFLAGS[sdk=iphoneos*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp-client3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libwinpr3.a
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libssl.a
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libcrypto.a
+          # シミュレーター用リンクフラグ
+          OTHER_LDFLAGS[sdk=iphonesimulator*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib/libfreerdp3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib/libfreerdp-client3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib/libwinpr3.a
+            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib/libssl.a
+            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib/libcrypto.a=iphonesimulator*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/freerdp
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/winpr
+            - $(PROJECT_DIR)/Libraries/openssl-simulator/include
+        Release:
+          SWIFT_OPTIMIZATION_LEVEL: "-Owholemodule"
+          GCC_OPTIMIZATION_LEVEL: "s"
+          # アーキテクチャ設定（シミュレーター用x86_64除外）
+          EXCLUDED_ARCHS[sdk=iphonesimulator*]: "x86_64"
+          VALID_ARCHS[sdk=iphonesimulator*]: "arm64"
+          # リリース用ライブラリパス（デバイス）
+          LIBRARY_SEARCH_PATHS[sdk=iphoneos*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib
+            - $(PROJECT_DIR)/Libraries/openssl/lib
+          # リリース用ライブラリパス（シミュレーター）
+          LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib
+            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib
+          # リリース用ヘッダーパス（デバイス）
+          HEADER_SEARCH_PATHS[sdk=iphoneos*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include/winpr3
+            - $(PROJECT_DIR)/Libraries/openssl/include
+          # リリース用ヘッダーパス（シミュレーター）
+          HEADER_SEARCH_PATHS[sdk=iphonesimulator*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/freerdp3
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/winpr3
+            - $(PROJECT_DIR)/Libraries/openssl-simulator/include
+          # デバイス用リンクフラグ
+          OTHER_LDFLAGS[sdk=iphoneos*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp-client3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libwinpr3.a
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libssl.a
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libcrypto.a
+          # シミュレーター用リンクフラグ
+          OTHER_LDFLAGS[sdk=iphonesimulator*]:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib/libfreerdp3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib/libfreerdp-client3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib/libwinpr3.a
+            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib/libssl.a
+            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib/libcrypto.a
     dependencies:
-      - package: FreeRDP
-      - package: OpenSSL
+      - sdk: libc++.tbd
+      - sdk: libz.tbd
+      - sdk: SystemConfiguration.framework
+      - sdk: Security.framework
     info:
-      path: Sources/Info.plist
+      path: MyRDPApp/Info.plist
       properties:
-        CFBundleDisplayName: MyRDP
+        CFBundleDisplayName: MyRDPApp
         UILaunchStoryboardName: LaunchScreen
-        UIApplicationSceneManifest:
-          UIApplicationSupportsMultipleScenes: false
-          UISceneConfigurations:
-            UIWindowSceneSessionRoleApplication:
-              - UISceneConfigurationName: Default Configuration
-                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).SceneDelegate
-        NSAppTransportSecurity:
-          NSAllowsArbitraryLoads: true
-        NSCameraUsageDescription: "カメラへのアクセスが必要です"
-        NSMicrophoneUsageDescription: "マイクへのアクセスが必要です"
-        NSPhotoLibraryUsageDescription: "写真ライブラリへのアクセスが必要です"
-        NSLocalNetworkUsageDescription: "ローカルネットワークへのアクセスが必要です"
-        NSBonjourServices: ["_rdp._tcp"] 
+        UIMainStoryboardFile: Main
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+
+schemes:
+  MyRDPApp:
+    build:
+      targets:
+        MyRDPApp: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
