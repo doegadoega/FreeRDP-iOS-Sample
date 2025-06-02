@@ -5,7 +5,7 @@
 
 # Load common functions and settings
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/common.sh"
+source "${SCRIPT_DIR}/config.sh"
 
 # Record script start
 log_script_start
