@@ -34,7 +34,6 @@ targets:
           - -lssl
           - -lcrypto
           - -lfreerdp-client3
-          - -lprimitives
           - -v
       configs:
         Debug:
