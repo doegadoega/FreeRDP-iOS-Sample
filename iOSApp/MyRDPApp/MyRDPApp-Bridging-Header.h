@@ -20,12 +20,12 @@
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
 
-//// FreeRDP Bridge
-//#import <freerdp3/freerdp/freerdp.h>
-//#import <freerdp3/freerdp/client.h>              // client/client.h → client.h に修正
-//#import <freerdp3/freerdp/channels/channels.h>   // 必要に応じて
-//#import <freerdp3/freerdp/gdi/gdi.h>            // 必要に応じて
-//// WinPR
-//#import <winpr/stream.h>
+// FreeRDP Bridge
+#import <freerdp3/freerdp/freerdp.h>
+#import <freerdp3/freerdp/client.h>
+#import <freerdp3/freerdp/channels/channels.h>
+#import <freerdp3/freerdp/gdi/gdi.h>
+// WinPR
+#import <winpr/stream.h>
 
 #endif /* MyRDPApp_Bridging_Header_h */
