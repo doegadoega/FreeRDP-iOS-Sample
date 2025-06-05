@@ -315,7 +315,6 @@
 					"-lssl",
 					"-lcrypto",
 					"-lfreerdp-client3",
-					"-lprimitives",
 					"-v",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.MyRDPApp;
@@ -427,7 +426,6 @@
 					"-lssl",
 					"-lcrypto",
 					"-lfreerdp-client3",
-					"-lprimitives",
 					"-v",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.MyRDPApp;
