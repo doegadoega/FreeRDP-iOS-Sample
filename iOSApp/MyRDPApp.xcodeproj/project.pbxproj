@@ -36,6 +36,7 @@
 		8A1D99FE2953A625C9EC358D /* RDPConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPConnectionManager.swift; sourceTree = "<group>"; };
 		9EBD7F0A7362CEA69BBB43C9 /* MyRDPApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MyRDPApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		A0410A4566C7E704DE1888CE /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		AD7DCAA0E5A710F5AD6EB261 /* MyRDPApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MyRDPApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		AF892D308B1421D79D12FDC8 /* RDPScreenView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RDPScreenView.xib; sourceTree = "<group>"; };
 		B4AB80129000F8DD501B04E3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		B5188A167594C45AED9ABB5A /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
@@ -85,6 +86,7 @@
 			children = (
 				46A35F41ADBB342A0B136C2A /* FreeRDPBridge.h */,
 				DE85A7A3F433FE9B9E588284 /* FreeRDPBridge.m */,
+				AD7DCAA0E5A710F5AD6EB261 /* MyRDPApp-Bridging-Header.h */,
 				8A1D99FE2953A625C9EC358D /* RDPConnectionManager.swift */,
 				D8F9C0AFDCEBC8776EFCD228 /* RDPScreenView.swift */,
 				AF892D308B1421D79D12FDC8 /* RDPScreenView.xib */,
@@ -246,6 +248,10 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -272,14 +278,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
-				ONLY_ACTIVE_ARCH = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					"FREERDP_API_VERSION=3",
-					"WITH_FREERDP3=1",
-					"DEBUG=1",
-				);
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Libraries/freerdp-device/include",
@@ -312,43 +311,21 @@
 					"$(PROJECT_DIR)/Libraries/freerdp-simulator/lib",
 					"$(PROJECT_DIR)/Libraries/openssl-simulator/lib",
 				);
+				OTHER_LDFLAGS = (
+					"-lfreerdp3",
+					"-lwinpr3",
+					"-lssl",
+					"-lcrypto",
+					"-lfreerdp-client3",
+					"-lprimitives",
+					"-v",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.MyRDPApp;
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "MyRDPApp/MyRDPApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				"OTHER_LDFLAGS[sdk=iphoneos*]" = (
-					"$(inherited)",
-					"-framework Foundation",
-					"-framework CoreGraphics", 
-					"-framework UIKit",
-					"-framework SystemConfiguration",
-					"-framework Security",
-					"$(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp3.a",
-					"$(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp-client3.a",
-					"$(PROJECT_DIR)/Libraries/freerdp-device/lib/libwinpr3.a",
-					"$(PROJECT_DIR)/Libraries/openssl/lib/libssl.a",
-					"$(PROJECT_DIR)/Libraries/openssl/lib/libcrypto.a",
-					"-lz",
-					"-lc++",
-					"-ObjC",
-				);
-				"OTHER_LDFLAGS[sdk=iphonesimulator*]" = (
-					"$(inherited)",
-					"-framework Foundation",
-					"-framework CoreGraphics",
-					"-framework UIKit", 
-					"-framework SystemConfiguration",
-					"-framework Security",
-					"$(PROJECT_DIR)/Libraries/freerdp-simulator/lib/libfreerdp3.a",
-					"$(PROJECT_DIR)/Libraries/freerdp-simulator/lib/libfreerdp-client3.a",
-					"$(PROJECT_DIR)/Libraries/freerdp-simulator/lib/libwinpr3.a",
-					"$(PROJECT_DIR)/Libraries/openssl-simulator/lib/libssl.a",
-					"$(PROJECT_DIR)/Libraries/openssl-simulator/lib/libcrypto.a",
-					"-lz",
-					"-lc++",
-					"-ObjC",
-				);
+				"VALID_ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
 			};
 			name = Debug;
 		};
@@ -415,6 +392,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Libraries/freerdp-device/include",
@@ -444,12 +422,22 @@
 					"$(PROJECT_DIR)/Libraries/freerdp-simulator/lib",
 					"$(PROJECT_DIR)/Libraries/openssl-simulator/lib",
 				);
+				OTHER_LDFLAGS = (
+					"-lfreerdp3",
+					"-lwinpr3",
+					"-lssl",
+					"-lcrypto",
+					"-lfreerdp-client3",
+					"-lprimitives",
+					"-v",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.example.MyRDPApp;
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "MyRDPApp/MyRDPApp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				"VALID_ARCHS[sdk=iphonesimulator*]" = "x86_64 arm64";
 			};
 			name = Release;
 		};

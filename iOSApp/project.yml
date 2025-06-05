@@ -24,12 +24,17 @@ targets:
         SWIFT_VERSION: "5.0"
         CLANG_ENABLE_MODULES: "YES"
         CLANG_ENABLE_OBJC_ARC: "YES"
+        # アーキテクチャ設定
+        VALID_ARCHS[sdk=iphonesimulator*]: "x86_64 arm64"
+        EXCLUDED_ARCHS[sdk=iphonesimulator*]: "arm64"
         # リンクフラグ
         OTHER_LDFLAGS:
           - -lfreerdp3
           - -lwinpr3
           - -lssl
           - -lcrypto
+          - -lfreerdp-client3
+          - -lprimitives
           - -v
       configs:
         Debug:

@@ -85,35 +85,17 @@ Xcodeで以下の手順を実行：
 2. ビルドボタン（⌘+B）を押してビルド
 3. 実行ボタン（⌘+R）を押してアプリを起動
 
-## 📚 詳細ドキュメント
-
-### 🎯 セットアップガイド
-- **[QUICK_START.md](docs/guides/setup/QUICK_START.md)** - すぐに始めたい方向け
-- **[STEP_BY_STEP.md](docs/guides/setup/STEP_BY_STEP.md)** - 詳細なセットアップ手順
-- **[BUILDING.md](docs/development-logs/BUILDING.md)** - ビルドプロセスの詳細
-
-### 📋 プロジェクト情報
-- **[PROJECT_SUMMARY.md](docs/PROJECT_SUMMARY.md)** - プロジェクト全体の概要
-- **[TODO.md](docs/TODO.md)** - 現在のタスクと優先度
-
-### 🤖 開発ガイドライン
-- **[AI_SAFETY_GUIDELINES.md](docs/AI_SAFETY_GUIDELINES.md)** - 変更制限ルール
-- **[LOG_SYSTEM_RULES.md](docs/LOG_SYSTEM_RULES.md)** - 開発ログシステムのルール
-- **[開発ログ履歴](docs/development-logs/INDEX.md)** - 過去の開発セッション一覧
-
 ## 🛠️ ビルドスクリプト
 
 ### メインビルドスクリプト
 ```bash
-./scripts/build.sh build    # 完全なビルドプロセスを実行
-./scripts/build.sh deps     # 依存関係のみをビルド
-./scripts/build.sh clean    # ビルド成果物をクリーン
-```
-
-### 個別のビルドスクリプト
-```bash
-./scripts/build_freerdp.sh  # FreeRDPライブラリのみをビルド
-./scripts/build_openssl.sh  # OpenSSLライブラリのみをビルド
+./build.sh build                    # 完全なビルドプロセスを実行
+./build.sh build --target device    # 実機向けのみビルド
+./build.sh build --target simulator # シミュレータ向けのみビルド
+./build.sh deps                     # 依存関係のみをビルド
+./build.sh clean                    # ビルド成果物をクリーン
+./build.sh config                   # 設定情報の表示
+./build.sh help                     # ヘルプの表示
 ```
 
 ### ビルドプロセスの詳細
@@ -159,31 +141,39 @@ Xcodeで以下の手順を実行：
 - ビルドエラーが発生した場合：
   ```bash
   # ビルドディレクトリをクリーンアップ
-  rm -rf build iOSApp/Libraries
+  ./build.sh clean
   
   # 再ビルド
-  ./scripts/build.sh build
+  ./build.sh build
   ```
 
-- 特定のライブラリだけを再ビルドする場合：
+- 特定のターゲットのみをビルドする場合：
   ```bash
-  # OpenSSLのみ再ビルド
-  ./scripts/build_openssl.sh
+  # 実機向けのみビルド
+  ./build.sh build --target device
   
-  # FreeRDPのみ再ビルド
-  ./scripts/build_freerdp.sh
+  # シミュレータ向けのみビルド
+  ./build.sh build --target simulator
   ```
 
 ## 📁 プロジェクト構成
 
 ```
 FreeRDPiOSApp/
-├── scripts/              # ビルドスクリプト
-├── docs/                 # プロジェクトドキュメント
-├── iOSApp/              # アプリケーションのソースコード
-│   ├── MyRDPApp/        # メインアプリケーション
-│   └── Libraries/       # 依存ライブラリ
-└── project.yml          # XcodeGen設定ファイル
+├── build.sh             # メインビルドスクリプト
+├── scripts/             # ビルドスクリプト
+│   ├── config.sh       # 共通設定
+│   ├── build_openssl.sh # OpenSSLビルドスクリプト
+│   └── build_freerdp.sh # FreeRDPビルドスクリプト
+├── docs/               # プロジェクトドキュメント
+├── iOSApp/            # アプリケーションのソースコード
+│   ├── MyRDPApp/      # メインアプリケーション
+│   └── Libraries/     # 依存ライブラリ
+│       ├── openssl/   # 実機用OpenSSL
+│       ├── openssl-simulator/ # シミュレータ用OpenSSL
+│       ├── freerdp/   # 実機用FreeRDP
+│       └── freerdp-simulator/ # シミュレータ用FreeRDP
+└── project.yml        # XcodeGen設定ファイル
 ```
 
 ## 🧪 テスト
