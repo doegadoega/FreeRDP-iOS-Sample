@@ -238,18 +238,53 @@ build_freerdp_device() {
     
     # ビルド実行
     log_info "iOS実機向けFreeRDPをビルドしています..."
-    cmake --build . --config Release
+    cmake --build . --config Release --verbose
     
     if [ $? -ne 0 ]; then
         handle_error "iOS実機向けFreeRDPビルドに失敗しました"
     fi
     
+    # ビルド成果物の確認
+    log_info "ビルド成果物を確認しています..."
+    find . -name "*.a" | head -10
+    
     # インストール
     log_info "iOS実機向けFreeRDPをインストールしています..."
-    cmake --install .
+    cmake --install . --verbose
     
-    if [ $? -ne 0 ]; then
-        handle_error "iOS実機向けFreeRDPインストールに失敗しました"
+    # インストール結果の確認
+    if [ ! -f "${FREERDP_INSTALL_DIR}/lib/libfreerdp3.a" ]; then
+        log_warning "CMakeインストールが不完全でした。手動でライブラリをコピーします..."
+        
+        # 手動でライブラリをコピー
+        mkdir -p "${FREERDP_INSTALL_DIR}/lib"
+        mkdir -p "${FREERDP_INSTALL_DIR}/include"
+        
+        # 必要なライブラリを検索してコピー
+        find . -name "libfreerdp3.a" -exec cp {} "${FREERDP_INSTALL_DIR}/lib/" \; 2>/dev/null || true
+        find . -name "libwinpr3.a" -exec cp {} "${FREERDP_INSTALL_DIR}/lib/" \; 2>/dev/null || true
+        find . -name "libfreerdp-client3.a" -exec cp {} "${FREERDP_INSTALL_DIR}/lib/" \; 2>/dev/null || true
+        
+        # ヘッダーファイルをコピー
+        if [ -d "../FreeRDP/include" ]; then
+            cp -R ../FreeRDP/include/* "${FREERDP_INSTALL_DIR}/include/" 2>/dev/null || true
+        fi
+        
+        # 生成されたヘッダーファイルもコピー
+        find . -name "*.h" -path "*/include/*" | while read -r header; do
+            # ヘッダーファイルのディレクトリ構造を維持してコピー
+            rel_path=$(echo "$header" | sed 's|^\./||')
+            target_dir="${FREERDP_INSTALL_DIR}/$(dirname "$rel_path")"
+            mkdir -p "$target_dir"
+            cp "$header" "$target_dir/" 2>/dev/null || true
+        done
+        
+        log_info "手動コピーが完了しました"
+    fi
+    
+    # 最終確認
+    if [ ! -f "${FREERDP_INSTALL_DIR}/lib/libfreerdp3.a" ]; then
+        handle_error "iOS実機向けFreeRDPライブラリの生成に失敗しました"
     fi
     
     log_success "=== iOS実機向けFreeRDPビルド完了 ==="
