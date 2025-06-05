@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -27,7 +27,7 @@
 /* Begin PBXFileReference section */
 		21572F28047C83358508F9F7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		317151E3ECBD3B79F97F9A0C /* project.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = project.yml; sourceTree = "<group>"; };
-		44D092BC93F7609A7B65036B /* MyRDPApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MyRDPApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		44D092BC93F7609A7B65036B /* MyRDPApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyRDPApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		46A35F41ADBB342A0B136C2A /* FreeRDPBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FreeRDPBridge.h; sourceTree = "<group>"; };
 		55787D7F07071FE1597B4A9D /* AWSIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWSIntegration.swift; sourceTree = "<group>"; };
 		61A75BDCE29AE7FD27701890 /* CredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialStore.swift; sourceTree = "<group>"; };
@@ -151,8 +151,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1630;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = C7E28247F0D626A0BC32458A /* Build configuration list for PBXProject "MyRDPApp" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -164,7 +162,6 @@
 			);
 			mainGroup = 2C165820477F96D24526811E;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 54;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -277,6 +274,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = FUX9M9L88Y;
 				ENABLE_TESTABILITY = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
@@ -392,6 +390,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = FUX9M9L88Y;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				"HEADER_SEARCH_PATHS[sdk=iphoneos*]" = (
 					"$(inherited)",

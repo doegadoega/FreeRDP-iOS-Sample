@@ -8,7 +8,7 @@ if [ -z "$PROJECT_ROOT" ]; then
     # スクリプトの場所に基づいてプロジェクトルートを決定
     if [[ "${BASH_SOURCE[0]}" == */scripts/* ]]; then
         # scriptsディレクトリ内から呼び出された場合
-        PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+        PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
     else
         # ルートディレクトリから呼び出された場合
         PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -36,7 +36,7 @@ OPENSSL_REPO="https://github.com/openssl/openssl.git"
 CMAKE_BUILD_DIR="${BUILD_DIR}/cmake"
 CMAKE_INSTALL_DIR="${BUILD_DIR}/cmake-install"
 
-# FreeRDP関連ディレクトリ
+# FreeRDP関連ディレクトリ（build配下でビルド）
 FREERDP_BUILD_DIR="${BUILD_DIR}/freerdp"
 FREERDP_INSTALL_DIR="${EXTERNAL_DIR}/freerdp-device"
 FREERDP_SIM_INSTALL_DIR="${EXTERNAL_DIR}/freerdp-simulator"
