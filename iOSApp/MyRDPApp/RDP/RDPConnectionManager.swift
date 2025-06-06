@@ -22,6 +22,48 @@ protocol RDPConnectionManagerDelegate: AnyObject {
 
 class RDPConnectionManager {
   
+  static let shared = RDPConnectionManager()
+  private let connectionsKey = "savedRDPConnections"
+    
+  var connections: [RDPConnection] {
+    get {
+      guard let data = UserDefaults.standard.data(forKey: connectionsKey),
+            let connections = try? JSONDecoder().decode([RDPConnection].self, from: data) else {
+        return []
+      }
+      return connections
+    }
+    set {
+      if let data = try? JSONEncoder().encode(newValue) {
+        UserDefaults.standard.set(data, forKey: connectionsKey)
+      }
+    }
+  }
+  
+  func addConnection(_ connection: RDPConnection) {
+    var currentConnections = connections
+    currentConnections.append(connection)
+    connections = currentConnections
+  }
+  
+  func updateConnection(_ connection: RDPConnection) {
+    var currentConnections = connections
+    if let index = currentConnections.firstIndex(where: { $0.id == connection.id }) {
+      currentConnections[index] = connection
+      connections = currentConnections
+    }
+  }
+  
+  func deleteConnection(withId id: String) {
+    var currentConnections = connections
+    currentConnections.removeAll { $0.id == id }
+    connections = currentConnections
+  }
+  
+  func getConnection(withId id: String) -> RDPConnection? {
+    return connections.first { $0.id == id }
+  }
+  
   // MARK: - Properties
   
   weak var delegate: RDPConnectionManagerDelegate?
