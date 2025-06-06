@@ -2,13 +2,9 @@ name: MyRDPApp
 options:
   bundleIdPrefix: com.example
   deploymentTarget:
-    iOS: "15.0"
+    iOS: "16.0"
   xcodeVersion: "16.3"
   generateEmptyDirectories: true
-  usesTabs: false
-  indentWidth: 4
-  tabWidth: 4
-  projectPath: ../MyRDPApp.xcodeproj
 
 targets:
   MyRDPApp:
@@ -16,78 +12,114 @@ targets:
     platform: iOS
     sources: 
       - path: MyRDPApp/
-        excludes:
-          - "build/**"
     settings:
       base:
         SWIFT_OBJC_BRIDGING_HEADER: MyRDPApp/MyRDPApp-Bridging-Header.h
         SWIFT_VERSION: "5.0"
         CLANG_ENABLE_MODULES: "YES"
         CLANG_ENABLE_OBJC_ARC: "YES"
-        # アーキテクチャ設定
-        VALID_ARCHS[sdk=iphonesimulator*]: "x86_64 arm64"
-        EXCLUDED_ARCHS[sdk=iphonesimulator*]: "arm64"
-        # リンクフラグ
+        # アーキテクチャ設定（Apple Siliconシミュレータ対応）
+        VALID_ARCHS[sdk=iphonesimulator*]: "arm64 x86_64"
+        EXCLUDED_ARCHS[sdk=iphonesimulator*]: ""
+        ONLY_ACTIVE_ARCH: NO
+        # 基本的なリンクフラグ
         OTHER_LDFLAGS:
-          - -lfreerdp3
-          - -lwinpr3
-          - -lssl
-          - -lcrypto
-          - -lfreerdp-client3
-          - -v
+          - -ObjC
+          - -lc++
+          - -lz
       configs:
         Debug:
           ENABLE_TESTABILITY: "YES"
-          # デバッグ用ライブラリ・ヘッダーパス
-          LIBRARY_SEARCH_PATHS[sdk=iphoneos*]:
+          GCC_PREPROCESSOR_DEFINITIONS:
+            - "$(inherited)"
+            - "DEBUG=1"
+            - "FREERDP_API_VERSION=3"
+            - "WITH_FREERDP3=1"
+          # デバイス向けライブラリパス
+          LIBRARY_SEARCH_PATHS:
             - $(inherited)
             - $(PROJECT_DIR)/Libraries/freerdp-device/lib
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3
             - $(PROJECT_DIR)/Libraries/openssl/lib
-          LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]:
-            - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib
-            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib
-          HEADER_SEARCH_PATHS[sdk=iphoneos*]:
+            - $(PROJECT_DIR)/Libraries/cjson/lib
+          HEADER_SEARCH_PATHS:
             - $(inherited)
             - $(PROJECT_DIR)/Libraries/freerdp-device/include
             - $(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3
-            - $(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3/freerdp
-            - $(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp
             - $(PROJECT_DIR)/Libraries/freerdp-device/include/winpr3
             - $(PROJECT_DIR)/Libraries/openssl/include
-          HEADER_SEARCH_PATHS[sdk=iphonesimulator*]:
+            - $(PROJECT_DIR)/Libraries/cjson/include
+          # すべてのFreeRDPライブラリとプラグインを含める
+          OTHER_LDFLAGS:
             - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/freerdp3
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/freerdp3/freerdp
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/winpr3
-            - $(PROJECT_DIR)/Libraries/openssl-simulator/include
+            # FreeRDPコアライブラリ
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp-client3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libwinpr3.a
+            # FreeRDPプラグインライブラリ
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3/librdpsnd-common.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3/libremdesk-common.a
+            # OpenSSLライブラリ
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libssl.a
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libcrypto.a
+            # cJSONライブラリ
+            - $(PROJECT_DIR)/Libraries/cjson/lib/libcjson.a
+            # システムライブラリのリンクフラグ
+            - -framework Foundation
+            - -framework CoreFoundation
+            - -framework SystemConfiguration
+            - -framework Security
+            - -framework CoreGraphics
+            # 数学ライブラリ
+            - -lm
         Release:
           SWIFT_OPTIMIZATION_LEVEL: "-Owholemodule"
-          # リリース用ライブラリ・ヘッダーパス
-          LIBRARY_SEARCH_PATHS[sdk=iphoneos*]:
+          GCC_PREPROCESSOR_DEFINITIONS:
+            - "$(inherited)"
+            - "FREERDP_API_VERSION=3"
+            - "WITH_FREERDP3=1"
+          # デバイス向けライブラリパス
+          LIBRARY_SEARCH_PATHS:
             - $(inherited)
             - $(PROJECT_DIR)/Libraries/freerdp-device/lib
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3
             - $(PROJECT_DIR)/Libraries/openssl/lib
-          LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]:
-            - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib
-            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib
-          HEADER_SEARCH_PATHS[sdk=iphoneos*]:
+          HEADER_SEARCH_PATHS:
             - $(inherited)
             - $(PROJECT_DIR)/Libraries/freerdp-device/include
             - $(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3
-            - $(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3/freerdp
             - $(PROJECT_DIR)/Libraries/freerdp-device/include/winpr3
-          HEADER_SEARCH_PATHS[sdk=iphonesimulator*]:
+            - $(PROJECT_DIR)/Libraries/openssl/include
+          # すべてのFreeRDPライブラリとプラグインを含める
+          OTHER_LDFLAGS:
             - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/freerdp3
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/freerdp3/freerdp
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/winpr3
+            # FreeRDPコアライブラリ
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp-client3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libwinpr3.a
+            # FreeRDPプラグインライブラリ
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3/librdpsnd-common.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3/libremdesk-common.a
+            # OpenSSLライブラリ
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libssl.a
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libcrypto.a
+            # システムライブラリのリンクフラグ
+            - -framework Foundation
+            - -framework CoreFoundation
+            - -framework SystemConfiguration
+            - -framework Security
+            - -framework CoreGraphics
+            # 数学ライブラリ
+            - -lm
     dependencies:
       - sdk: libc++.tbd
       - sdk: libz.tbd
+      - sdk: Foundation.framework
+      - sdk: CoreGraphics.framework
+      - sdk: UIKit.framework
+      - sdk: SystemConfiguration.framework
+      - sdk: Security.framework
+      - sdk: CoreFoundation.framework
     info:
       path: MyRDPApp/Info.plist
       properties:
