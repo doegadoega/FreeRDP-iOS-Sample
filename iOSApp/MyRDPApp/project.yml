@@ -2,54 +2,112 @@ name: MyRDPApp
 options:
   bundleIdPrefix: com.example
   deploymentTarget:
-    iOS: 15.0
-  xcodeVersion: "14.0"
-  createIntermediateGroups: true
-
-packages:
-  FreeRDP:
-    path: ../Libraries
-  OpenSSL:
-    path: ../Libraries
+    iOS: "16.0"
+  xcodeVersion: "16.3"
+  generateEmptyDirectories: true
 
 targets:
   MyRDPApp:
     type: application
     platform: iOS
     sources:
-      - path: Sources
+      - path: MyRDPApp/
     settings:
       base:
-        INFOPLIST_FILE: Sources/Info.plist
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.myrdpapp
-        DEVELOPMENT_TEAM: ""  # ここに開発チームIDを設定
-        CODE_SIGN_STYLE: Automatic
-        TARGETED_DEVICE_FAMILY: 1,2  # iPhone and iPad
-        SWIFT_VERSION: 5.0
-        ENABLE_BITCODE: NO
-        VALID_ARCHS: arm64
-        LIBRARY_SEARCH_PATHS: $(PROJECT_DIR)/../Libraries/lib
-        HEADER_SEARCH_PATHS: $(PROJECT_DIR)/../Libraries/include
-        OTHER_LDFLAGS: -lssl -lcrypto -lfreerdp-client -lfreerdp
-        SWIFT_OBJC_BRIDGING_HEADER: Sources/MyRDPApp-Bridging-Header.h
+        SWIFT_OBJC_BRIDGING_HEADER: MyRDPApp/MyRDPApp-Bridging-Header.h
+        SWIFT_VERSION: "5.0"
+        CLANG_ENABLE_MODULES: "YES"
+        CLANG_ENABLE_OBJC_ARC: "YES"
+        # アーキテクチャ設定（Apple Siliconシミュレータ対応）
+        VALID_ARCHS[sdk=iphonesimulator*]: "arm64 x86_64"
+        EXCLUDED_ARCHS[sdk=iphonesimulator*]: ""
+        ONLY_ACTIVE_ARCH: NO
+        # 基本的なリンクフラグ
+        OTHER_LDFLAGS:
+          - -ObjC
+          - -lc++
+          - -lz
+      configs:
+        Debug:
+          ENABLE_TESTABILITY: "YES"
+          GCC_PREPROCESSOR_DEFINITIONS:
+            - "$(inherited)"
+            - "DEBUG=1"
+            - "FREERDP_API_VERSION=3"
+            - "WITH_FREERDP3=1"
+          # 実機向けのみ
+          LIBRARY_SEARCH_PATHS:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib
+            - $(PROJECT_DIR)/Libraries/openssl/lib
+          HEADER_SEARCH_PATHS:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include/winpr3
+            - $(PROJECT_DIR)/Libraries/openssl/include
+          # 実機向けリンクフラグ
+          OTHER_LDFLAGS:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp-client3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libwinpr3.a
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libssl.a
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libcrypto.a
+            - $(PROJECT_DIR)/Libraries/cjson/lib/libcjson.a
+        Release:
+          SWIFT_OPTIMIZATION_LEVEL: "-Owholemodule"
+          GCC_PREPROCESSOR_DEFINITIONS:
+            - "$(inherited)"
+            - "FREERDP_API_VERSION=3"
+            - "WITH_FREERDP3=1"
+          # 実機向けのみ
+          LIBRARY_SEARCH_PATHS:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib
+            - $(PROJECT_DIR)/Libraries/openssl/lib
+          HEADER_SEARCH_PATHS:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include/winpr3
+            - $(PROJECT_DIR)/Libraries/openssl/include
+          OTHER_LDFLAGS:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp-client3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libwinpr3.a
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libssl.a
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libcrypto.a
     dependencies:
-      - package: FreeRDP
-      - package: OpenSSL
+      - sdk: libc++.tbd
+      - sdk: libz.tbd
+      - sdk: Foundation.framework
+      - sdk: CoreGraphics.framework
+      - sdk: UIKit.framework
+      - sdk: SystemConfiguration.framework
+      - sdk: Security.framework
     info:
-      path: Sources/Info.plist
+      path: MyRDPApp/Info.plist
       properties:
-        CFBundleDisplayName: MyRDP
+        CFBundleDisplayName: MyRDPApp
         UILaunchStoryboardName: LaunchScreen
-        UIApplicationSceneManifest:
-          UIApplicationSupportsMultipleScenes: false
-          UISceneConfigurations:
-            UIWindowSceneSessionRoleApplication:
-              - UISceneConfigurationName: Default Configuration
-                UISceneDelegateClassName: $(PRODUCT_MODULE_NAME).SceneDelegate
-        NSAppTransportSecurity:
-          NSAllowsArbitraryLoads: true
-        NSCameraUsageDescription: "カメラへのアクセスが必要です"
-        NSMicrophoneUsageDescription: "マイクへのアクセスが必要です"
-        NSPhotoLibraryUsageDescription: "写真ライブラリへのアクセスが必要です"
-        NSLocalNetworkUsageDescription: "ローカルネットワークへのアクセスが必要です"
-        NSBonjourServices: ["_rdp._tcp"] 
+        UIMainStoryboardFile: Main
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+
+schemes:
+  MyRDPApp:
+    build:
+      targets:
+        MyRDPApp: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

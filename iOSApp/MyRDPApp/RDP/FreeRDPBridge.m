@@ -7,18 +7,54 @@
 //
 
 #import "FreeRDPBridge.h"
-// UIKitはブリッジングヘッダー経由で使用するため、直接インポートしない
 #import <CoreGraphics/CoreGraphics.h>
 #import <netdb.h>
 #import <sys/socket.h>
 #import <netinet/in.h>
 
-// FreeRDPライブラリのヘッダーをインポート
-// 注: FreeRDPライブラリはiOSApp/Librariesディレクトリにあります
-// #import <freerdp3/freerdp/freerdp.h>
-// #import <freerdp3/freerdp/client/client.h>
-// #import <freerdp3/freerdp/channels/channels.h>
-// #import <freerdp3/freerdp/gdi/gdi.h>
+// FreeRDPヘッダーのインポート
+#include <freerdp/freerdp.h>
+#include <freerdp/client.h>
+#include <freerdp/gdi/gdi.h>
+#include <freerdp/client/cmdline.h>
+#include <freerdp/input.h>
+#include <winpr/stream.h>
+#include <winpr/wlog.h>
+#include <winpr/synch.h>
+
+// FreeRDP用のコンテキスト構造体
+typedef struct {
+    rdpContext context;  // 最初のメンバーとしてrdpContextを配置
+    
+    // 画面更新のための状態
+    BOOL hasUpdates;
+    CGContextRef drawContext;
+    CRITICAL_SECTION updateLock;
+    
+    // ブリッジへの参照（コールバックで使用）
+    __unsafe_unretained FreeRDPBridge* bridge;
+} MyRdpContext;
+
+// FreeRDPコールバック関数のプロトタイプ宣言
+static BOOL rdp_pre_connect(freerdp* instance);
+static BOOL rdp_post_connect(freerdp* instance);
+static void rdp_post_disconnect(freerdp* instance);
+static BOOL rdp_authenticate(freerdp* instance, char** username, char** password, char** domain);
+static DWORD rdp_verify_certificate_ex(freerdp* instance, const char* host, UINT16 port,
+                                       const char* common_name, const char* subject,
+                                       const char* issuer, const char* fingerprint,
+                                       DWORD flags);
+static DWORD rdp_verify_changed_certificate_ex(freerdp* instance, const char* host, UINT16 port,
+                                               const char* common_name, const char* subject,
+                                               const char* issuer, const char* fingerprint,
+                                               const char* old_subject, const char* old_issuer,
+                                               const char* old_fingerprint, DWORD flags);
+
+// 画面更新コールバック
+static BOOL context_new(freerdp* instance, rdpContext* context);
+static void context_free(freerdp* instance, rdpContext* context);
+static BOOL gdi_begin_paint(rdpContext* context);
+static BOOL gdi_end_paint(rdpContext* context);
 
 @interface FreeRDPBridge ()
 
@@ -37,22 +73,24 @@
 @property (nonatomic, assign) BOOL compressionEnabled;
 @property (nonatomic, assign) int32_t securityLevel;
     
-// FreeRDPコンテキスト（実際の実装時にコメントを解除）
-// @property (nonatomic, assign) freerdp *instance;
-// @property (nonatomic, assign) rdpContext *context;
-
 // スレッド関連
 @property (nonatomic, strong) NSThread *rdpThread;
 @property (nonatomic, strong) NSCondition *connectionCondition;
+@property (nonatomic, strong) NSTimer *updateTimer;
 
 // 画面バッファ
 @property (nonatomic, assign) CGContextRef cgContext;
 @property (nonatomic, assign) CGImageRef lastImage;
+@property (atomic, assign) BOOL hasUpdates;
 
 // コールバックブロック
 @property (nonatomic, copy) void (^onConnectionStateChangedBlock)(BOOL);
 @property (nonatomic, copy) void (^onErrorBlock)(NSString *);
 @property (nonatomic, copy) void (^onScreenUpdateBlock)(CGImageRef);
+
+// FreeRDPコンテキスト
+@property (nonatomic, assign) freerdp* rdpInstance;
+@property (nonatomic, assign) MyRdpContext* rdpContext;
 
 @end
 
@@ -81,13 +119,45 @@
         _securityLevel = 1;
         _isConnected = NO;
         _isConnecting = NO;
+        _hasUpdates = NO;
         
         // 接続条件変数の初期化
         _connectionCondition = [[NSCondition alloc] init];
         
+        // WinPRの初期化
+        WLog_SetLogLevel(WLog_GetRoot(), WLOG_INFO);
+        
         NSLog(@"FreeRDPBridge initialized");
     }
     return self;
+}
+
+- (void)dealloc {
+    [self disconnect];
+    [self cleanup];
+}
+
+- (void)cleanup {
+    [self stopUpdateTimer];
+    
+    if (_cgContext) {
+        CGContextRelease(_cgContext);
+        _cgContext = NULL;
+    }
+    
+    if (_lastImage) {
+        CGImageRelease(_lastImage);
+        _lastImage = NULL;
+    }
+    
+    // FreeRDPのリソース解放
+    if (_rdpInstance) {
+        freerdp_disconnect(_rdpInstance);
+        freerdp_free(_rdpInstance);
+        _rdpInstance = NULL;
+    }
+    
+    _rdpContext = NULL;
 }
 
 #pragma mark - Callback Setters
@@ -113,24 +183,13 @@
     
     NSLog(@"Disconnecting from RDP session");
     
-    // FreeRDPインスタンスの切断（実際の実装時にコメントを解除）
-    /*
-    if (_instance) {
-        freerdp_disconnect(_instance);
-        freerdp_free(_instance);
-        _instance = NULL;
-    }
-    */
+    // タイマーを停止
+    [self stopUpdateTimer];
     
-    // 画面バッファの解放
-    if (_cgContext) {
-        CGContextRelease(_cgContext);
-        _cgContext = NULL;
-}
-
-    if (_lastImage) {
-        CGImageRelease(_lastImage);
-        _lastImage = NULL;
+    // 実際のRDP接続がある場合は切断
+    if (_rdpInstance) {
+        freerdp_abort_connect(_rdpInstance);
+        freerdp_disconnect(_rdpInstance);
     }
     
     _isConnected = NO;
@@ -173,231 +232,368 @@
     return YES;
 }
 
-#pragma mark - Input Handling
-
-- (void)sendMouseEvent:(CGPoint)point isDown:(BOOL)isDown button:(int32_t)button {
-    if (!_isConnected) {
-        return;
-    }
-    
-    NSLog(@"Mouse event: point=(%f,%f), isDown=%d, button=%d", point.x, point.y, isDown, button);
-    
-    // FreeRDPマウスイベントの送信（実際の実装時にコメントを解除）
-    /*
-    if (_instance && _instance->input) {
-        UINT16 flags = 0;
-    
-        switch (button) {
-            case 1: // 左ボタン
-                flags = isDown ? PTR_FLAGS_DOWN | PTR_FLAGS_BUTTON1 : PTR_FLAGS_BUTTON1;
-                break;
-            case 2: // 右ボタン
-                flags = isDown ? PTR_FLAGS_DOWN | PTR_FLAGS_BUTTON2 : PTR_FLAGS_BUTTON2;
-                break;
-            case 3: // 中ボタン
-                flags = isDown ? PTR_FLAGS_DOWN | PTR_FLAGS_BUTTON3 : PTR_FLAGS_BUTTON3;
-                break;
-        }
-        
-        // スケーリングの適用
-        UINT16 x = (UINT16)point.x;
-        UINT16 y = (UINT16)point.y;
-        
-        freerdp_input_send_mouse_event(_instance->input, flags, x, y);
-    }
-    */
-}
-
-- (void)sendKeyEvent:(int32_t)keyCode isDown:(BOOL)isDown {
-    if (!_isConnected) {
-        return;
-    }
-    
-    NSLog(@"Key event: keyCode=%d, isDown=%d", keyCode, isDown);
-    
-    // FreeRDPキーイベントの送信（実際の実装時にコメントを解除）
-    /*
-    if (_instance && _instance->input) {
-    UINT16 flags = isDown ? KBD_FLAGS_DOWN : KBD_FLAGS_RELEASE;
-        freerdp_input_send_keyboard_event(_instance->input, flags, keyCode);
-    }
-    */
-}
-
-- (void)sendScrollEvent:(CGPoint)point delta:(CGFloat)delta {
-    if (!_isConnected) {
-        return;
-    }
-    
-    NSLog(@"Scroll event: point=(%f,%f), delta=%f", point.x, point.y, delta);
-    
-    // FreeRDPマウスホイールイベントの送信（実際の実装時にコメントを解除）
-    /*
-    if (_instance && _instance->input) {
-        UINT16 flags = delta > 0 ? PTR_FLAGS_WHEEL | 0x0078 : PTR_FLAGS_WHEEL | 0x0088;
-        
-        // スケーリングの適用
-        UINT16 x = (UINT16)point.x;
-        UINT16 y = (UINT16)point.y;
-        
-        freerdp_input_send_mouse_event(_instance->input, flags, x, y);
-    }
-    */
-}
-
-#pragma mark - Configuration
-
-- (void)setScreenSize:(CGSize)size {
-    _screenSize = size;
-    NSLog(@"Screen size set to: %fx%f", size.width, size.height);
-    
-    // 画面バッファの再作成
-    [self recreateScreenBuffer];
-}
-
-- (void)setColorDepth:(int32_t)colorDepth {
-    _colorDepth = colorDepth;
-    NSLog(@"Color depth set to: %d", colorDepth);
-}
-
-- (void)setCompressionEnabled:(BOOL)enabled {
-    _compressionEnabled = enabled;
-    NSLog(@"Compression %@", enabled ? @"enabled" : @"disabled");
-}
-
-- (void)setSecurityLevel:(int32_t)level {
-    _securityLevel = level;
-    NSLog(@"Security level set to: %d", level);
-}
-
-- (void)enableDebugLogging:(BOOL)enabled {
-    NSLog(@"Debug logging %@", enabled ? @"enabled" : @"disabled");
-}
-
-#pragma mark - Private Methods
-
 - (void)rdpThreadMain {
     @autoreleasepool {
         NSLog(@"RDP thread started");
         
-        // FreeRDPインスタンスの作成と設定（実際の実装時にコメントを解除）
-        /*
-        _instance = freerdp_new();
-        if (!_instance) {
-            [self reportError:@"Failed to create FreeRDP instance"];
-            return;
-}
-
-        _instance->settings = (rdpSettings*)calloc(1, sizeof(rdpSettings));
-        if (!_instance->settings) {
-            [self reportError:@"Failed to allocate settings"];
-            freerdp_free(_instance);
-            _instance = NULL;
-            return;
-        }
+        // ネットワーク接続テスト
+        BOOL networkReachable = [self testNetworkConnection];
         
-        // 設定の適用
-        _instance->settings->ServerHostname = strdup([_host UTF8String]);
-        _instance->settings->ServerPort = _port;
-        _instance->settings->Username = strdup([_username UTF8String]);
-        _instance->settings->Password = strdup([_password UTF8String]);
-        if (_domain && _domain.length > 0) {
-            _instance->settings->Domain = strdup([_domain UTF8String]);
-    }
-    
-        _instance->settings->DesktopWidth = _screenSize.width;
-        _instance->settings->DesktopHeight = _screenSize.height;
-        _instance->settings->ColorDepth = _colorDepth;
-        _instance->settings->CompressionEnabled = _compressionEnabled;
-        _instance->settings->EncryptionLevel = _securityLevel;
-        
-        // コールバックの設定
-        _instance->context_size = sizeof(rdpContext);
-        _instance->ContextNew = (pContextNew)contextNew;
-        _instance->ContextFree = (pContextFree)contextFree;
-        
-        if (!freerdp_context_new(_instance)) {
-            [self reportError:@"Failed to create FreeRDP context"];
-            freerdp_free(_instance);
-            _instance = NULL;
-            return;
-        }
-        
-        // 接続の実行
-        BOOL success = freerdp_connect(_instance);
-        if (!success) {
-            [self reportError:@"Failed to connect to RDP server"];
-            freerdp_disconnect(_instance);
-            freerdp_free(_instance);
-            _instance = NULL;
-            return;
-        }
-        
-        _isConnected = YES;
-        _isConnecting = NO;
-        
-        // 接続成功通知
-        if (_onConnectionStateChangedBlock) {
+        if (!networkReachable) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                self->_onConnectionStateChangedBlock(YES);
+                [self notifyError:[NSString stringWithFormat:@"ホスト %@ に接続できません", self->_host]];
+                self->_isConnecting = NO;
+            });
+            return;
+        }
+        
+        // FreeRDPインスタンスの初期化と設定
+        BOOL initResult = [self initializeRDPInstance];
+        if (!initResult) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self notifyError:@"FreeRDPの初期化に失敗しました"];
+                self->_isConnecting = NO;
+            });
+            return;
+        }
+        
+        // RDP接続の開始
+        BOOL connected = [self connectWithRDP];
+        
+        if (connected) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self->_isConnected = YES;
+                self->_isConnecting = NO;
+                
+                NSLog(@"RDP connection established successfully");
+                
+                if (self->_onConnectionStateChangedBlock) {
+                    self->_onConnectionStateChangedBlock(YES);
+                }
+                
+                // 画面更新タイマーを開始
+                [self startUpdateTimer];
+            });
+            
+            // メインループ - FreeRDPのイベント処理
+            [self runRDPMainLoop];
+            
+            // 接続終了処理
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self->_isConnected = NO;
+                if (self->_onConnectionStateChangedBlock) {
+                    self->_onConnectionStateChangedBlock(NO);
+                }
+            });
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self->_isConnecting = NO;
+                [self notifyError:@"RDP接続に失敗しました"];
             });
         }
-        
-        // メインループ
-        while (_isConnected) {
-            if (!freerdp_check_fds(_instance)) {
-                break;
-    }
-    
-            // スリープして CPU 使用率を抑える
-            [NSThread sleepForTimeInterval:0.01];
-        }
-        
-        // 切断処理
-        freerdp_disconnect(_instance);
-        freerdp_free(_instance);
-        _instance = NULL;
-        */
-        
-        // シンプルなRDP接続テスト実装
-        NSLog(@"Starting RDP connection test to %@:%d", _host, _port);
-        
-        // ネットワーク接続テスト
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            BOOL networkReachable = [self testNetworkConnection];
-            
-            if (networkReachable) {
-                // 接続成功のシミュレーション
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    self->_isConnected = YES;
-                    self->_isConnecting = NO;
-                    
-                    NSLog(@"RDP connection established successfully");
-        
-        // 接続成功通知
-                    if (self->_onConnectionStateChangedBlock) {
-                self->_onConnectionStateChangedBlock(YES);
-        }
-        
-                    // 画面更新開始
-                    [self startScreenUpdates];
-                });
-            } else {
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                    [self reportError:[NSString stringWithFormat:@"Network connection to %@:%d failed", self->_host, self->_port]];
-                });
-            }
-        });
-        
-        NSLog(@"RDP thread finished");
     }
 }
 
-- (void)reportError:(NSString *)errorMessage {
+// FreeRDPインスタンスの初期化
+- (BOOL)initializeRDPInstance {
+    // FreeRDPインスタンスの作成
+    _rdpInstance = freerdp_new();
+    if (!_rdpInstance) {
+        NSLog(@"Failed to create FreeRDP instance");
+        return NO;
+    }
+    
+    // コンテキストサイズとコールバックの設定
+    _rdpInstance->ContextSize = sizeof(MyRdpContext);
+    _rdpInstance->ContextNew = context_new;
+    _rdpInstance->ContextFree = context_free;
+    
+    // 接続コールバックの設定
+    _rdpInstance->PreConnect = rdp_pre_connect;
+    _rdpInstance->PostConnect = rdp_post_connect;
+    _rdpInstance->PostDisconnect = rdp_post_disconnect;
+    _rdpInstance->Authenticate = rdp_authenticate;
+    _rdpInstance->VerifyCertificateEx = rdp_verify_certificate_ex;
+    _rdpInstance->VerifyChangedCertificateEx = rdp_verify_changed_certificate_ex;
+    
+    // コンテキストの初期化
+    if (!freerdp_context_new(_rdpInstance)) {
+        NSLog(@"Failed to initialize FreeRDP context");
+        freerdp_free(_rdpInstance);
+        _rdpInstance = NULL;
+        return NO;
+    }
+    
+    _rdpContext = (MyRdpContext*)_rdpInstance->context;
+    _rdpContext->bridge = self;
+    
+    // 設定の初期化
+    rdpSettings* settings = _rdpInstance->context->settings;
+    
+    // 接続パラメータの設定
+    if (!freerdp_settings_set_string(settings, FreeRDP_ServerHostname, [_host UTF8String])) {
+        NSLog(@"Failed to set hostname");
+        return NO;
+    }
+    
+    freerdp_settings_set_uint32(settings, FreeRDP_ServerPort, _port);
+    
+    if (_username) {
+        freerdp_settings_set_string(settings, FreeRDP_Username, [_username UTF8String]);
+    }
+    if (_password) {
+        freerdp_settings_set_string(settings, FreeRDP_Password, [_password UTF8String]);
+    }
+    if (_domain && _domain.length > 0) {
+        freerdp_settings_set_string(settings, FreeRDP_Domain, [_domain UTF8String]);
+    }
+    
+    // 画面設定
+    freerdp_settings_set_uint32(settings, FreeRDP_DesktopWidth, (UINT32)_screenSize.width);
+    freerdp_settings_set_uint32(settings, FreeRDP_DesktopHeight, (UINT32)_screenSize.height);
+    freerdp_settings_set_uint32(settings, FreeRDP_ColorDepth, _colorDepth);
+    
+    // セキュリティ設定
+    freerdp_settings_set_bool(settings, FreeRDP_NlaSecurity, TRUE);
+    freerdp_settings_set_bool(settings, FreeRDP_TlsSecurity, TRUE);
+    freerdp_settings_set_bool(settings, FreeRDP_RdpSecurity, TRUE);
+    freerdp_settings_set_bool(settings, FreeRDP_IgnoreCertificate, TRUE);
+    
+    // 圧縮設定
+    freerdp_settings_set_bool(settings, FreeRDP_CompressionEnabled, _compressionEnabled);
+    
+    // その他の設定
+    freerdp_settings_set_bool(settings, FreeRDP_BitmapCacheEnabled, TRUE);
+    freerdp_settings_set_bool(settings, FreeRDP_OffscreenSupportLevel, TRUE);
+    freerdp_settings_set_bool(settings, FreeRDP_FastPathInput, TRUE);
+    freerdp_settings_set_bool(settings, FreeRDP_FastPathOutput, TRUE);
+    
+    // 入力設定 - 適切な設定名を使用
+    freerdp_settings_set_bool(settings, FreeRDP_HasHorizontalWheel, TRUE);
+    freerdp_settings_set_bool(settings, FreeRDP_HasExtendedMouseEvent, TRUE);
+    
+    return YES;
+}
+
+- (BOOL)connectWithRDP {
+    if (!_rdpInstance) {
+        return NO;
+    }
+    
+    // 接続処理
+    if (!freerdp_connect(_rdpInstance)) {
+        UINT32 error = freerdp_get_last_error(_rdpInstance->context);
+        NSLog(@"Failed to connect to RDP server: error code %u", error);
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (void)runRDPMainLoop {
+    if (!_rdpInstance || !_rdpInstance->context) {
+        return;
+    }
+    
+    HANDLE handles[MAXIMUM_WAIT_OBJECTS];
+    DWORD count;
+    DWORD status;
+    
+    while (!freerdp_shall_disconnect_context(_rdpInstance->context)) {
+        count = freerdp_get_event_handles(_rdpInstance->context, handles, MAXIMUM_WAIT_OBJECTS);
+        
+        if (count == 0) {
+            NSLog(@"Failed to get event handles");
+            break;
+        }
+        
+        status = WaitForMultipleObjects(count, handles, FALSE, 100);
+        
+        if (status == WAIT_FAILED) {
+            WLog_ERR("freerdp", "WaitForMultipleObjects failed with %lu", GetLastError());
+            break;
+        }
+        
+        if (!freerdp_check_event_handles(_rdpInstance->context)) {
+            if (freerdp_get_last_error(_rdpInstance->context) == FREERDP_ERROR_SUCCESS) {
+                WLog_ERR("freerdp", "Failed to check FreeRDP file descriptor");
+            }
+            break;
+        }
+    }
+}
+
+- (BOOL)testNetworkConnection {
+    struct hostent *host_info;
+    struct sockaddr_in server;
+    
+    host_info = gethostbyname([_host UTF8String]);
+    if (host_info == NULL) {
+        return NO;
+    }
+    
+    int sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock < 0) {
+        return NO;
+    }
+    
+    server.sin_family = AF_INET;
+    server.sin_port = htons(_port);
+    memcpy(&server.sin_addr, host_info->h_addr, host_info->h_length);
+    
+    // タイムアウト設定
+    struct timeval timeout;
+    timeout.tv_sec = 2;
+    timeout.tv_usec = 0;
+    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+    setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+    
+    // 接続試行
+    int result = connect(sock, (struct sockaddr *)&server, sizeof(server));
+    
+    close(sock);
+    return (result >= 0);
+}
+
+#pragma mark - Screen Update Handling
+
+- (void)startUpdateTimer {
+    [self stopUpdateTimer];
+    
+    // 画面更新チェックタイマー (30FPS)
+    self.updateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/30.0
+                                                        target:self
+                                                      selector:@selector(checkForScreenUpdates)
+                                                      userInfo:nil
+                                                       repeats:YES];
+    [[NSRunLoop currentRunLoop] addTimer:self.updateTimer forMode:NSRunLoopCommonModes];
+}
+
+- (void)stopUpdateTimer {
+    if (_updateTimer) {
+        [_updateTimer invalidate];
+        _updateTimer = nil;
+    }
+}
+
+- (void)checkForScreenUpdates {
+    if (!_isConnected || !_rdpContext) {
+        return;
+    }
+    
+    if (self.hasUpdates) {
+        self.hasUpdates = NO;
+        [self captureAndNotifyScreenUpdate];
+    }
+}
+
+- (void)captureAndNotifyScreenUpdate {
+    if (!_rdpContext || !_rdpContext->drawContext) {
+        return;
+    }
+    
+    EnterCriticalSection(&_rdpContext->updateLock);
+    
+    // GDIコンテキストから画像を作成
+    CGImageRef image = CGBitmapContextCreateImage(_rdpContext->drawContext);
+    
+    LeaveCriticalSection(&_rdpContext->updateLock);
+    
+    if (image) {
+        [self notifyScreenUpdate:image];
+        CGImageRelease(image);
+    }
+}
+
+#pragma mark - Input Handling
+
+- (void)sendMouseEvent:(CGPoint)point isDown:(BOOL)isDown button:(int32_t)button {
+    if (!_isConnected || !_rdpInstance || !_rdpInstance->context) {
+        return;
+    }
+    
+    // FreeRDP 3.x系では input は context->input でアクセス
+    rdpInput* input = _rdpInstance->context->input;
+    if (!input) {
+        return;
+    }
+    
+    UINT16 flags = 0;
+    
+    // ボタンの種類に応じてフラグを設定
+    switch (button) {
+        case 1: // 左ボタン
+            flags = isDown ? PTR_FLAGS_DOWN : 0;
+            flags |= PTR_FLAGS_BUTTON1;
+            break;
+        case 2: // 右ボタン
+            flags = isDown ? PTR_FLAGS_DOWN : 0;
+            flags |= PTR_FLAGS_BUTTON2;
+            break;
+        case 3: // 中央ボタン
+            flags = isDown ? PTR_FLAGS_DOWN : 0;
+            flags |= PTR_FLAGS_BUTTON3;
+            break;
+        default:
+            return;
+    }
+    
+    // マウスイベントを送信
+    freerdp_input_send_mouse_event(input, flags, (UINT16)point.x, (UINT16)point.y);
+}
+
+- (void)sendKeyEvent:(int32_t)keyCode isDown:(BOOL)isDown {
+    if (!_isConnected || !_rdpInstance || !_rdpInstance->context) {
+        return;
+    }
+    
+    rdpInput* input = _rdpInstance->context->input;
+    if (!input) {
+        return;
+    }
+    
+    UINT16 flags = isDown ? KBD_FLAGS_DOWN : KBD_FLAGS_RELEASE;
+    
+    // キーイベントを送信
+    freerdp_input_send_keyboard_event(input, flags, (UINT16)keyCode);
+}
+
+- (void)sendScrollEvent:(CGPoint)point delta:(CGFloat)delta {
+    if (!_isConnected || !_rdpInstance || !_rdpInstance->context) {
+        return;
+    }
+    
+    rdpInput* input = _rdpInstance->context->input;
+    if (!input) {
+        return;
+    }
+    
+    UINT16 flags = PTR_FLAGS_WHEEL;
+    
+    // スクロール方向の判定
+    if (delta > 0) {
+        flags |= PTR_FLAGS_WHEEL_NEGATIVE;
+    }
+    
+    // スクロール量を調整（通常は120の倍数）
+    int16_t scrollDelta = (int16_t)(delta * 120);
+    
+    // スクロールイベントを送信
+    freerdp_input_send_mouse_event(input, flags, (UINT16)point.x, (UINT16)point.y);
+}
+
+#pragma mark - Notifications
+
+- (void)notifyScreenUpdate:(CGImageRef)image {
+    if (_onScreenUpdateBlock) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self->_onScreenUpdateBlock(image);
+        });
+    }
+}
+
+- (void)notifyError:(NSString *)errorMessage {
     NSLog(@"RDP Error: %@", errorMessage);
-    
-    _isConnecting = NO;
-    
     if (_onErrorBlock) {
         dispatch_async(dispatch_get_main_queue(), ^{
             self->_onErrorBlock(errorMessage);
@@ -405,278 +601,203 @@
     }
 }
 
-- (void)recreateScreenBuffer {
-    // 既存のバッファを解放
-    if (_cgContext) {
-        CGContextRelease(_cgContext);
-        _cgContext = NULL;
-    }
+#pragma mark - Configuration
+
+- (void)setScreenSize:(CGSize)size {
+    _screenSize = size;
     
-    if (_lastImage) {
-        CGImageRelease(_lastImage);
-        _lastImage = NULL;
-    }
-    
-    // 新しいバッファを作成
-        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    if (!colorSpace) {
-        [self reportError:@"Failed to create color space"];
-        return;
-    }
-    
-    size_t bytesPerRow = (size_t)_screenSize.width * 4;
-    
-    _cgContext = CGBitmapContextCreate(NULL,
-                                      (size_t)_screenSize.width,
-                                      (size_t)_screenSize.height,
-                                                   8, 
-                                      bytesPerRow,
-                                                   colorSpace, 
-                                      kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little);
-    
-    CGColorSpaceRelease(colorSpace);
-    
-    if (!_cgContext) {
-        [self reportError:@"Failed to create screen buffer"];
+    // 接続中の場合はリサイズを実行
+    if (_rdpInstance && _rdpInstance->context && _rdpInstance->context->settings) {
+        freerdp_settings_set_uint32(_rdpInstance->context->settings, FreeRDP_DesktopWidth, (UINT32)size.width);
+        freerdp_settings_set_uint32(_rdpInstance->context->settings, FreeRDP_DesktopHeight, (UINT32)size.height);
     }
 }
 
-- (void)createTestImage {
-    if (!_cgContext) {
-        [self recreateScreenBuffer];
+- (void)setColorDepth:(int32_t)colorDepth {
+    _colorDepth = colorDepth;
+    
+    if (_rdpInstance && _rdpInstance->context && _rdpInstance->context->settings) {
+        freerdp_settings_set_uint32(_rdpInstance->context->settings, FreeRDP_ColorDepth, colorDepth);
     }
-    
-    // 背景を描画
-    CGContextSetRGBFillColor(_cgContext, 0.1, 0.1, 0.2, 1.0);
-    CGContextFillRect(_cgContext, CGRectMake(0, 0, _screenSize.width, _screenSize.height));
-            
-    // ヘッダー部分
-    CGContextSetRGBFillColor(_cgContext, 0.2, 0.4, 0.8, 1.0);
-    CGContextFillRect(_cgContext, CGRectMake(0, 0, _screenSize.width, 80));
-    
-    // テキスト描画設定 - Core Text APIを使用
-    CGColorRef whiteColor = CGColorCreateGenericRGB(1.0, 1.0, 1.0, 1.0);
-    
-    // タイトル
-    NSString *title = [NSString stringWithFormat:@"AWS EC2 RDP Connection - %@", _host];
-    [self drawText:title atPoint:CGPointMake(50, 50) withFontName:@"Helvetica-Bold" fontSize:24 color:whiteColor];
-    CFRelease(whiteColor);
-    
-    // 接続情報
-    CGColorRef lightGrayColor = CGColorCreateGenericRGB(0.9, 0.9, 0.9, 1.0);
-    
-    float yPos = 120;
-    float lineHeight = 30;
-    
-    // サーバー情報
-    NSString *serverInfo = [NSString stringWithFormat:@"AWS EC2 Server: %@:%d", _host, _port];
-    [self drawText:serverInfo atPoint:CGPointMake(50, yPos) withFontName:@"Helvetica" fontSize:18 color:lightGrayColor];
-    yPos += lineHeight;
-    
-    // ユーザー情報
-    NSString *userInfo = [NSString stringWithFormat:@"User: %@%@", _domain ? [NSString stringWithFormat:@"%@\\", _domain] : @"", _username];
-    [self drawText:userInfo atPoint:CGPointMake(50, yPos) withFontName:@"Helvetica" fontSize:18 color:lightGrayColor];
-    yPos += lineHeight;
-    
-    // AWS リージョン情報
-    NSString *regionInfo = @"Region: ap-northeast-1 (Tokyo)";
-    [self drawText:regionInfo atPoint:CGPointMake(50, yPos) withFontName:@"Helvetica" fontSize:18 color:lightGrayColor];
-    yPos += lineHeight;
-    
-    // 解像度情報
-    NSString *resolutionInfo = [NSString stringWithFormat:@"Resolution: %.0fx%.0f", _screenSize.width, _screenSize.height];
-    [self drawText:resolutionInfo atPoint:CGPointMake(50, yPos) withFontName:@"Helvetica" fontSize:18 color:lightGrayColor];
-    yPos += lineHeight;
-    
-    // 色深度
-    NSString *colorInfo = [NSString stringWithFormat:@"Color Depth: %d bit", _colorDepth];
-    [self drawText:colorInfo atPoint:CGPointMake(50, yPos) withFontName:@"Helvetica" fontSize:18 color:lightGrayColor];
-    yPos += lineHeight;
-    
-    // 接続時刻
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateStyle = NSDateFormatterMediumStyle;
-    formatter.timeStyle = NSDateFormatterMediumStyle;
-    NSString *dateString = [NSString stringWithFormat:@"Connected: %@", [formatter stringFromDate:[NSDate date]]];
-    [self drawText:dateString atPoint:CGPointMake(50, yPos) withFontName:@"Helvetica" fontSize:18 color:lightGrayColor];
-    yPos += lineHeight;
-    
-    // 統計情報
-    yPos += 20;
-    CGColorRef grayColor = CGColorCreateGenericRGB(0.8, 0.8, 0.8, 1.0);
-    
-    NSString *compressionStatus = _compressionEnabled ? @"Enabled" : @"Disabled";
-    NSString *compressionInfo = [NSString stringWithFormat:@"Compression: %@", compressionStatus];
-    [self drawText:compressionInfo atPoint:CGPointMake(50, yPos) withFontName:@"Helvetica" fontSize:14 color:grayColor];
-    yPos += lineHeight;
-    
-    NSString *securityInfo = [NSString stringWithFormat:@"Security Level: %d", _securityLevel];
-    [self drawText:securityInfo atPoint:CGPointMake(50, yPos) withFontName:@"Helvetica" fontSize:14 color:grayColor];
-    yPos += lineHeight;
-    
-    // EC2インスタンス用の表示
-    if ([_host containsString:@"ec2-"]) {
-        // EC2特有の情報
-        yPos += 20;
-        CGColorRef ec2Color = CGColorCreateGenericRGB(0.3, 0.8, 0.3, 1.0);
-        NSString *ec2Info = @"AWS EC2 Instance";
-        [self drawText:ec2Info atPoint:CGPointMake(50, yPos) withFontName:@"Helvetica-Bold" fontSize:18 color:ec2Color];
-        yPos += lineHeight;
-        
-        NSString *ec2Type = @"Instance Type: t2.micro (or similar)";
-        [self drawText:ec2Type atPoint:CGPointMake(50, yPos) withFontName:@"Helvetica" fontSize:16 color:ec2Color];
-        yPos += lineHeight;
-        
-        NSString *ec2OS = @"OS: Windows Server";
-        [self drawText:ec2OS atPoint:CGPointMake(50, yPos) withFontName:@"Helvetica" fontSize:16 color:ec2Color];
-        CFRelease(ec2Color);
-    }
-    
-    // インタラクティブエリアの描画
-    CGContextSetRGBStrokeColor(_cgContext, 0.0, 0.8, 0.0, 1.0);
-    CGContextSetLineWidth(_cgContext, 3.0);
-    CGRect interactiveArea = CGRectMake(50, yPos + 40, _screenSize.width - 100, _screenSize.height - yPos - 120);
-    CGContextStrokeRect(_cgContext, interactiveArea);
-    
-    // インタラクションのヒント
-    CGColorRef mediumGrayColor = CGColorCreateGenericRGB(0.6, 0.6, 0.6, 1.0);
-    NSString *hint = @"Interactive Area - Tap to test input handling";
-    [self drawText:hint atPoint:CGPointMake(60, yPos + 60) withFontName:@"Helvetica" fontSize:14 color:mediumGrayColor];
-    CFRelease(mediumGrayColor);
-    
-    // FreeRDP情報
-    CGColorRef darkGrayColor = CGColorCreateGenericRGB(0.5, 0.5, 0.5, 1.0);
-    NSString *rdpInfo = @"Powered by FreeRDP Library";
-    [self drawText:rdpInfo atPoint:CGPointMake(50, _screenSize.height - 30) withFontName:@"Helvetica" fontSize:12 color:darkGrayColor];
-    
-    CFRelease(darkGrayColor);
-    CFRelease(grayColor);
-    CFRelease(lightGrayColor);
-    
-    // 画像の作成
-    if (_lastImage) {
-        CGImageRelease(_lastImage);
-    }
-    
-    _lastImage = CGBitmapContextCreateImage(_cgContext);
-    
-    // 画面更新通知
-    if (_onScreenUpdateBlock && _lastImage) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-            self->_onScreenUpdateBlock(self->_lastImage);
-            });
-    }
-            
-    // 定期的な更新のシミュレーション（5秒間隔）
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        if (self->_isConnected) {
-            [self createTestImage];
-        }
-    });
 }
 
-// Core Textを使ったテキスト描画ヘルパーメソッド
-- (void)drawText:(NSString *)text atPoint:(CGPoint)point withFontName:(NSString *)fontName fontSize:(CGFloat)fontSize color:(CGColorRef)textColor {
-    // 描画前に現在のグラフィックスステートを保存
-    CGContextSaveGState(_cgContext);
+- (void)setCompressionEnabled:(BOOL)enabled {
+    _compressionEnabled = enabled;
     
-    // フォントを作成
-    CTFontRef font = CTFontCreateWithName((__bridge CFStringRef)fontName, fontSize, NULL);
-    
-    // テキストの属性辞書を作成
-    NSDictionary *attributes = @{
-        (NSString *)kCTFontAttributeName: (__bridge id)font,
-        (NSString *)kCTForegroundColorAttributeName: (__bridge id)textColor
-    };
-    
-    // 属性付きの文字列を作成
-    NSAttributedString *attributedString = [[NSAttributedString alloc] initWithString:text attributes:attributes];
-    
-    // 文字列を描画するためのラインを作成
-    CTLineRef line = CTLineCreateWithAttributedString((__bridge CFAttributedStringRef)attributedString);
-    
-    // テキストを描画するための適切な位置を計算
-    // Core Textは異なる座標系を使用するため、Y座標を調整
-    CGContextSetTextPosition(_cgContext, point.x, _screenSize.height - point.y);
-    
-    // テキストを描画
-    CTLineDraw(line, _cgContext);
-    
-    // リソースを解放
-    CFRelease(line);
-    CFRelease(font);
-    
-    // グラフィックスステートを復元
-    CGContextRestoreGState(_cgContext);
+    if (_rdpInstance && _rdpInstance->context && _rdpInstance->context->settings) {
+        freerdp_settings_set_bool(_rdpInstance->context->settings, FreeRDP_CompressionEnabled, enabled);
+    }
 }
 
-- (BOOL)testNetworkConnection {
-    // ホストとポートへの実際のネットワーク接続テスト
-    NSLog(@"Testing network connection to %@:%d", _host, _port);
-    
-    // EC2インスタンスの場合は特別な処理
-    BOOL isEC2 = [_host containsString:@"ec2-"];
-    
-    // シンプルなソケット接続テスト
-    CFSocketRef socket = CFSocketCreate(kCFAllocatorDefault, PF_INET, SOCK_STREAM, IPPROTO_TCP, 0, NULL, NULL);
-    if (!socket) {
-        NSLog(@"Failed to create socket");
-        return NO;
-    }
-    
-    struct sockaddr_in addr;
-    memset(&addr, 0, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(_port);
-    
-    // ホスト名をIPアドレスに変換
-    const char *hostname = [_host UTF8String];
-    struct hostent *host_entry = gethostbyname(hostname);
-    if (host_entry == NULL) {
-        NSLog(@"Failed to resolve hostname: %@", _host);
-        CFRelease(socket);
-        return NO;
-    }
-    
-    addr.sin_addr = *((struct in_addr *)host_entry->h_addr_list[0]);
-    
-    NSData *addrData = [NSData dataWithBytes:&addr length:sizeof(addr)];
-    
-    // EC2インスタンスへの接続には長めのタイムアウトを設定
-    CFTimeInterval timeout = isEC2 ? 10.0 : 5.0;
-    CFSocketError result = CFSocketConnectToAddress(socket, (CFDataRef)addrData, timeout);
-    
-    CFRelease(socket);
-    
-    BOOL success = (result == kCFSocketSuccess);
-    NSLog(@"Network connection test to %@:%d %@", _host, _port, success ? @"succeeded" : @"failed");
-    
-    // EC2インスタンスの場合、一時的な接続問題でも成功と扱う
-    if (isEC2 && !success) {
-        NSLog(@"EC2 instance detected, simulating successful connection");
-        return YES;
-    }
-    
-    return success;
+- (void)setSecurityLevel:(int32_t)level {
+    _securityLevel = level;
 }
 
-- (void)startScreenUpdates {
-    NSLog(@"Starting screen updates");
-    [self createTestImage];
-}
-
-// 実際のRDPサーバーへの接続テスト（高度なテスト）
-- (void)testAdvancedRDPConnection {
-    // このメソッドは実際のRDPサーバーへの接続テストを行います
-    NSLog(@"Testing advanced RDP connection to %@:%d", _host, _port);
+- (void)enableDebugLogging:(BOOL)enabled {
+    if (enabled) {
+        WLog_SetLogLevel(WLog_GetRoot(), WLOG_DEBUG);
+        WLog_SetLogLevel(WLog_Get("com.freerdp.core"), WLOG_DEBUG);
+        WLog_SetLogLevel(WLog_Get("com.freerdp.gdi"), WLOG_DEBUG);
+    } else {
+        WLog_SetLogLevel(WLog_GetRoot(), WLOG_ERROR);
+    }
     
-    // ここに追加のテストロジックを実装
-    // 1. セキュリティ設定のテスト
-    // 2. 認証フローのテスト
-    // 3. 基本的な画面更新のテスト
-    
-    // 成功したら、モック画面更新を開始
-    [self startScreenUpdates];
+    NSLog(@"FreeRDP debug logging %@", enabled ? @"enabled" : @"disabled");
 }
 
 @end
+
+#pragma mark - FreeRDP Callback Implementations
+
+// コンテキスト作成コールバック
+static BOOL context_new(freerdp* instance, rdpContext* context) {
+    MyRdpContext* myContext = (MyRdpContext*)context;
+    
+    if (!myContext) {
+        return FALSE;
+    }
+    
+    // クリティカルセクションの初期化
+    InitializeCriticalSection(&myContext->updateLock);
+    
+    return TRUE;
+}
+
+// コンテキスト解放コールバック
+static void context_free(freerdp* instance, rdpContext* context) {
+    MyRdpContext* myContext = (MyRdpContext*)context;
+    
+    if (!myContext) {
+        return;
+    }
+    
+    // リソースの解放
+    if (myContext->drawContext) {
+        CGContextRelease(myContext->drawContext);
+        myContext->drawContext = NULL;
+    }
+    
+    DeleteCriticalSection(&myContext->updateLock);
+}
+
+// 接続前の初期化コールバック
+static BOOL rdp_pre_connect(freerdp* instance) {
+    if (!instance || !instance->context) {
+        return FALSE;
+    }
+    
+    // GDIの初期化
+    if (!gdi_init(instance, PIXEL_FORMAT_BGRA32)) {
+        NSLog(@"Failed to initialize GDI");
+        return FALSE;
+    }
+    
+    // 更新コールバックの設定
+    instance->context->update->BeginPaint = gdi_begin_paint;
+    instance->context->update->EndPaint = gdi_end_paint;
+    
+    return TRUE;
+}
+
+// 接続後の初期化コールバック
+static BOOL rdp_post_connect(freerdp* instance) {
+    if (!instance || !instance->context) {
+        return FALSE;
+    }
+    
+    MyRdpContext* myContext = (MyRdpContext*)instance->context;
+    rdpGdi* gdi = instance->context->gdi;
+    
+    // 描画コンテキストの作成
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    if (!colorSpace) {
+        return FALSE;
+    }
+    
+    myContext->drawContext = CGBitmapContextCreate(
+        gdi->primary_buffer,
+        gdi->width,
+        gdi->height,
+        8,
+        gdi->stride,
+        colorSpace,
+        kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipFirst
+    );
+    
+    CGColorSpaceRelease(colorSpace);
+    
+    if (!myContext->drawContext) {
+        NSLog(@"Failed to create drawing context");
+        return FALSE;
+    }
+    
+    NSLog(@"RDP connection established successfully");
+    return TRUE;
+}
+
+// 切断後のクリーンアップコールバック
+static void rdp_post_disconnect(freerdp* instance) {
+    if (!instance || !instance->context) {
+        return;
+    }
+    
+    NSLog(@"RDP disconnected");
+}
+
+// 認証コールバック
+static BOOL rdp_authenticate(freerdp* instance, char** username, char** password, char** domain) {
+    // 認証情報は既に設定済み
+    return TRUE;
+}
+
+// 証明書検証コールバック（新API対応）
+static DWORD rdp_verify_certificate_ex(freerdp* instance, const char* host, UINT16 port,
+                                       const char* common_name, const char* subject,
+                                       const char* issuer, const char* fingerprint,
+                                       DWORD flags) {
+    // 開発時は証明書を受け入れる（本番環境では適切な検証を実装）
+    NSLog(@"Certificate verification: %s", common_name ? common_name : "unknown");
+    return 1; // Accept certificate
+}
+
+// 変更された証明書検証コールバック
+static DWORD rdp_verify_changed_certificate_ex(freerdp* instance, const char* host, UINT16 port,
+                                               const char* common_name, const char* subject,
+                                               const char* issuer, const char* fingerprint,
+                                               const char* old_subject, const char* old_issuer,
+                                               const char* old_fingerprint, DWORD flags) {
+    // 開発時は証明書変更を受け入れる（本番環境では適切な検証を実装）
+    NSLog(@"Changed certificate verification: %s (was: %s)",
+          common_name ? common_name : "unknown",
+          old_subject ? old_subject : "unknown");
+    return 1; // Accept changed certificate
+}
+
+// 描画開始コールバック
+static BOOL gdi_begin_paint(rdpContext* context) {
+    MyRdpContext* myContext = (MyRdpContext*)context;
+    
+    if (myContext) {
+        EnterCriticalSection(&myContext->updateLock);
+    }
+    
+    return TRUE;
+}
+
+// 描画終了コールバック
+static BOOL gdi_end_paint(rdpContext* context) {
+    MyRdpContext* myContext = (MyRdpContext*)context;
+    
+    if (myContext) {
+        myContext->hasUpdates = TRUE;
+        
+        // ブリッジオブジェクトに更新を通知
+        if (myContext->bridge) {
+            [myContext->bridge setHasUpdates:YES];
+        }
+        
+        LeaveCriticalSection(&myContext->updateLock);
+    }
+    
+    return TRUE;
+}

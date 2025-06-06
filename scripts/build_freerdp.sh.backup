@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # FreeRDP for iOS build script
-# iOS向けFreeRDPのビルドスクリプト（cJSONサポート付き）
+# iOS向けFreeRDPのビルドスクリプト
 
 set -e
 
@@ -111,33 +111,6 @@ ensure_cmake() {
     cd "${PROJECT_ROOT}" || handle_error "プロジェクトルートディレクトリへの移動に失敗"
 }
 
-# cJSONの存在確認とビルド
-ensure_cjson() {
-    local target_type="$1"  # device または simulator
-    
-    if [ "$target_type" = "device" ]; then
-        local cjson_dir="${EXTERNAL_DIR}/cjson"
-        local cjson_lib="${cjson_dir}/lib/libcjson.a"
-    else
-        local cjson_dir="${EXTERNAL_DIR}/cjson-simulator"
-        local cjson_lib="${cjson_dir}/lib/libcjson.a"
-    fi
-    
-    if [ ! -f "$cjson_lib" ]; then
-        log_info "cJSONライブラリが見つかりません。ビルドします..."
-        if [ -f "${SCRIPT_DIR}/build_cjson.sh" ]; then
-            "${SCRIPT_DIR}/build_cjson.sh" "$target_type"
-        else
-            log_warning "build_cjson.sh が見つかりません。cJSONなしでビルドを続行します..."
-            return 1
-        fi
-    else
-        log_info "cJSONライブラリが見つかりました: $cjson_lib"
-    fi
-    
-    return 0
-}
-
 # FreeRDPソースの準備
 prepare_freerdp_source() {
     log_info "FreeRDPリポジトリを準備しています..."
@@ -190,7 +163,7 @@ prepare_freerdp_source() {
     log_success "FreeRDPリポジトリの準備が完了しました"
 }
 
-# FreeRDP共通CMake設定（Android版を参考にcJSON対応）
+# FreeRDP共通CMake設定
 get_common_cmake_options() {
     echo "\
         -DCMAKE_TOOLCHAIN_FILE=../FreeRDP/cmake/ios.toolchain.cmake \
@@ -224,7 +197,9 @@ get_common_cmake_options() {
         -DCHANNEL_GRAPHICS=ON \
         -DWITH_SSE2=OFF \
         -DWITH_NEON=OFF \
-        -DWITH_PRIMITIVE_OPTIMIZATIONS=OFF"
+        -DWITH_PRIMITIVE_OPTIMIZATIONS=OFF \
+        -DWITH_JSON=OFF \
+        -DWITH_CJSON=OFF"
 }
 
 # iOS実機向けFreeRDPビルド
@@ -234,18 +209,6 @@ build_freerdp_device() {
     # OpenSSLの存在確認
     if [ ! -f "${OPENSSL_DIR}/lib/libssl.a" ] || [ ! -f "${OPENSSL_DIR}/lib/libcrypto.a" ]; then
         handle_error "iOS実機向けOpenSSLライブラリが見つかりません。先にOpenSSLをビルドしてください。"
-    fi
-    
-    # cJSONの確認とビルド
-    local with_cjson=OFF
-    local cjson_cmake_args=""
-    if ensure_cjson "device"; then
-        with_cjson=ON
-        cjson_cmake_args="-DCMAKE_PREFIX_PATH=\"${OPENSSL_DIR};${EXTERNAL_DIR}/cjson\" -DcJSON_DIR=\"${EXTERNAL_DIR}/cjson/lib/cmake/cjson\""
-        log_info "cJSONサポートを有効にしてビルドします"
-    else
-        log_warning "cJSONなしでビルドします"
-        cjson_cmake_args="-DCMAKE_PREFIX_PATH=\"${OPENSSL_DIR}\""
     fi
     
     # ビルドディレクトリの準備
@@ -261,26 +224,18 @@ build_freerdp_device() {
     # iOS deployment targetを環境変数でも設定
     export IPHONEOS_DEPLOYMENT_TARGET="${IOS_MIN_VERSION}"
     
-    # CMakeコマンドを構築
-    local cmake_cmd="cmake ../FreeRDP \
+    cmake ../FreeRDP \
         $common_options \
-        -DWITH_JSON=$with_cjson \
-        -DWITH_CJSON=$with_cjson \
-        -DCMAKE_INSTALL_PREFIX=\"${FREERDP_INSTALL_DIR}\" \
-        $cjson_cmake_args \
-        -DOPENSSL_ROOT_DIR=\"${OPENSSL_DIR}\" \
-        -DOPENSSL_INCLUDE_DIR=\"${OPENSSL_DIR}/include\" \
-        -DOPENSSL_CRYPTO_LIBRARY=\"${OPENSSL_DIR}/lib/libcrypto.a\" \
-        -DOPENSSL_SSL_LIBRARY=\"${OPENSSL_DIR}/lib/libssl.a\" \
+        -DCMAKE_INSTALL_PREFIX="${FREERDP_INSTALL_DIR}" \
+        -DCMAKE_PREFIX_PATH="${OPENSSL_DIR}" \
+        -DOPENSSL_ROOT_DIR="${OPENSSL_DIR}" \
+        -DOPENSSL_INCLUDE_DIR="${OPENSSL_DIR}/include" \
+        -DOPENSSL_CRYPTO_LIBRARY="${OPENSSL_DIR}/lib/libcrypto.a" \
+        -DOPENSSL_SSL_LIBRARY="${OPENSSL_DIR}/lib/libssl.a" \
         -DPLATFORM=OS \
         -DAPPLE=ON \
-        -DCMAKE_C_FLAGS=\"-miphoneos-version-min=${IOS_MIN_VERSION}\" \
-        -DCMAKE_CXX_FLAGS=\"-miphoneos-version-min=${IOS_MIN_VERSION}\""
-    
-    log_info "実行するCMakeコマンド:"
-    echo "$cmake_cmd"
-    
-    eval $cmake_cmd
+        -DCMAKE_C_FLAGS="-miphoneos-version-min=${IOS_MIN_VERSION}" \
+        -DCMAKE_CXX_FLAGS="-miphoneos-version-min=${IOS_MIN_VERSION}"
     
     if [ $? -ne 0 ]; then
         handle_error "iOS実機向けFreeRDP設定に失敗しました"
@@ -302,23 +257,18 @@ build_freerdp_device() {
     log_info "iOS実機向けFreeRDPをインストールしています..."
     cmake --install . --verbose
     
-    # インストール結果の確認と手動コピー
+    # インストール結果の確認
     if [ ! -f "${FREERDP_INSTALL_DIR}/lib/libfreerdp3.a" ]; then
         log_warning "CMakeインストールが不完全でした。手動でライブラリをコピーします..."
         
         # 手動でライブラリをコピー
         mkdir -p "${FREERDP_INSTALL_DIR}/lib"
-        mkdir -p "${FREERDP_INSTALL_DIR}/lib/freerdp3"
         mkdir -p "${FREERDP_INSTALL_DIR}/include"
         
         # 必要なライブラリを検索してコピー
         find . -name "libfreerdp3.a" -exec cp {} "${FREERDP_INSTALL_DIR}/lib/" \; 2>/dev/null || true
         find . -name "libwinpr3.a" -exec cp {} "${FREERDP_INSTALL_DIR}/lib/" \; 2>/dev/null || true
         find . -name "libfreerdp-client3.a" -exec cp {} "${FREERDP_INSTALL_DIR}/lib/" \; 2>/dev/null || true
-        
-        # プラグインライブラリもコピー
-        find . -name "librdpsnd-common.a" -exec cp {} "${FREERDP_INSTALL_DIR}/lib/freerdp3/" \; 2>/dev/null || true
-        find . -name "libremdesk-common.a" -exec cp {} "${FREERDP_INSTALL_DIR}/lib/freerdp3/" \; 2>/dev/null || true
         
         # ヘッダーファイルをコピー
         if [ -d "../FreeRDP/include" ]; then
@@ -354,18 +304,6 @@ build_freerdp_simulator() {
         handle_error "iOSシミュレータ向けOpenSSLライブラリが見つかりません。先にOpenSSLをビルドしてください。"
     fi
     
-    # cJSONの確認とビルド
-    local with_cjson=OFF
-    local cjson_cmake_args=""
-    if ensure_cjson "simulator"; then
-        with_cjson=ON
-        cjson_cmake_args="-DCMAKE_PREFIX_PATH=\"${OPENSSL_SIM_DIR};${EXTERNAL_DIR}/cjson-simulator\" -DcJSON_DIR=\"${EXTERNAL_DIR}/cjson-simulator/lib/cmake/cjson\""
-        log_info "cJSONサポートを有効にしてビルドします"
-    else
-        log_warning "cJSONなしでビルドします"
-        cjson_cmake_args="-DCMAKE_PREFIX_PATH=\"${OPENSSL_SIM_DIR}\""
-    fi
-    
     # ビルドディレクトリの準備
     local build_dir="${FREERDP_BUILD_DIR}/ios-sim"
     rm -rf "$build_dir"
@@ -382,31 +320,23 @@ build_freerdp_simulator() {
     # iOS deployment targetを環境変数でも設定
     export IPHONEOS_DEPLOYMENT_TARGET="${IOS_MIN_VERSION}"
     
-    # CMakeコマンドを構築
-    local cmake_cmd="cmake ../FreeRDP \
+    cmake ../FreeRDP \
         $common_options \
-        -DWITH_JSON=$with_cjson \
-        -DWITH_CJSON=$with_cjson \
-        -DCMAKE_INSTALL_PREFIX=\"${FREERDP_SIM_INSTALL_DIR}\" \
-        $cjson_cmake_args \
-        -DOPENSSL_ROOT_DIR=\"${OPENSSL_SIM_DIR}\" \
-        -DOPENSSL_INCLUDE_DIR=\"${OPENSSL_SIM_DIR}/include\" \
-        -DOPENSSL_CRYPTO_LIBRARY=\"${OPENSSL_SIM_DIR}/lib/libcrypto.a\" \
-        -DOPENSSL_SSL_LIBRARY=\"${OPENSSL_SIM_DIR}/lib/libssl.a\" \
+        -DCMAKE_INSTALL_PREFIX="${FREERDP_SIM_INSTALL_DIR}" \
+        -DCMAKE_PREFIX_PATH="${OPENSSL_SIM_DIR}" \
+        -DOPENSSL_ROOT_DIR="${OPENSSL_SIM_DIR}" \
+        -DOPENSSL_INCLUDE_DIR="${OPENSSL_SIM_DIR}/include" \
+        -DOPENSSL_CRYPTO_LIBRARY="${OPENSSL_SIM_DIR}/lib/libcrypto.a" \
+        -DOPENSSL_SSL_LIBRARY="${OPENSSL_SIM_DIR}/lib/libssl.a" \
         -DPLATFORM=SIMULATOR \
         -DAPPLE=ON \
         -DCMAKE_OSX_ARCHITECTURES=arm64 \
-        -DCMAKE_C_FLAGS=\"-mios-simulator-version-min=${IOS_MIN_VERSION} -arch arm64 -DWITH_SSE2=0 -DWITH_NEON=0\" \
-        -DCMAKE_CXX_FLAGS=\"-mios-simulator-version-min=${IOS_MIN_VERSION} -arch arm64 -DWITH_SSE2=0 -DWITH_NEON=0\" \
+        -DCMAKE_C_FLAGS="-mios-simulator-version-min=${IOS_MIN_VERSION} -arch arm64 -DWITH_SSE2=0 -DWITH_NEON=0" \
+        -DCMAKE_CXX_FLAGS="-mios-simulator-version-min=${IOS_MIN_VERSION} -arch arm64 -DWITH_SSE2=0 -DWITH_NEON=0" \
         -DWITH_SSE2=OFF \
         -DWITH_NEON=OFF \
         -DWITH_PRIMITIVE_OPTIMIZATIONS=OFF \
-        -DWITH_IPP=OFF"
-    
-    log_info "実行するCMakeコマンド:"
-    echo "$cmake_cmd"
-    
-    eval $cmake_cmd
+        -DWITH_IPP=OFF
     
     if [ $? -ne 0 ]; then
         handle_error "iOSシミュレータ向けFreeRDP設定に失敗しました"
@@ -423,40 +353,6 @@ build_freerdp_simulator() {
     # インストール
     log_info "iOSシミュレータ向けFreeRDPをインストールしています..."
     cmake --install .
-    
-    # インストール結果の確認と手動コピー
-    if [ ! -f "${FREERDP_SIM_INSTALL_DIR}/lib/libfreerdp3.a" ]; then
-        log_warning "CMakeインストールが不完全でした。手動でライブラリをコピーします..."
-        
-        # 手動でライブラリをコピー
-        mkdir -p "${FREERDP_SIM_INSTALL_DIR}/lib"
-        mkdir -p "${FREERDP_SIM_INSTALL_DIR}/lib/freerdp3"
-        mkdir -p "${FREERDP_SIM_INSTALL_DIR}/include"
-        
-        # 必要なライブラリを検索してコピー
-        find . -name "libfreerdp3.a" -exec cp {} "${FREERDP_SIM_INSTALL_DIR}/lib/" \; 2>/dev/null || true
-        find . -name "libwinpr3.a" -exec cp {} "${FREERDP_SIM_INSTALL_DIR}/lib/" \; 2>/dev/null || true
-        find . -name "libfreerdp-client3.a" -exec cp {} "${FREERDP_SIM_INSTALL_DIR}/lib/" \; 2>/dev/null || true
-        
-        # プラグインライブラリもコピー
-        find . -name "librdpsnd-common.a" -exec cp {} "${FREERDP_SIM_INSTALL_DIR}/lib/freerdp3/" \; 2>/dev/null || true
-        find . -name "libremdesk-common.a" -exec cp {} "${FREERDP_SIM_INSTALL_DIR}/lib/freerdp3/" \; 2>/dev/null || true
-        
-        # ヘッダーファイルをコピー
-        if [ -d "../FreeRDP/include" ]; then
-            cp -R ../FreeRDP/include/* "${FREERDP_SIM_INSTALL_DIR}/include/" 2>/dev/null || true
-        fi
-        
-        # 生成されたヘッダーファイルもコピー
-        find . -name "*.h" -path "*/include/*" | while read -r header; do
-            rel_path=$(echo "$header" | sed 's|^\./||')
-            target_dir="${FREERDP_SIM_INSTALL_DIR}/$(dirname "$rel_path")"
-            mkdir -p "$target_dir"
-            cp "$header" "$target_dir/" 2>/dev/null || true
-        done
-        
-        log_info "手動コピーが完了しました"
-    fi
     
     if [ $? -ne 0 ]; then
         handle_error "iOSシミュレータ向けFreeRDPインストールに失敗しました"
@@ -481,17 +377,6 @@ verify_build() {
             else
                 log_error "iOS実機向け: $lib が見つかりません"
                 ((issues++))
-            fi
-        done
-        
-        # プラグインライブラリの確認
-        local plugin_libs=("librdpsnd-common.a" "libremdesk-common.a")
-        for lib in "${plugin_libs[@]}"; do
-            if [ -f "${FREERDP_INSTALL_DIR}/lib/freerdp3/$lib" ]; then
-                local size=$(ls -lh "${FREERDP_INSTALL_DIR}/lib/freerdp3/$lib" | awk '{print $5}')
-                log_success "iOS実機向けプラグイン: $lib ($size)"
-            else
-                log_warning "iOS実機向けプラグイン: $lib が見つかりません（オプション）"
             fi
         done
         

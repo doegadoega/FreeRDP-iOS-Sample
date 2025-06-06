@@ -3,43 +3,58 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0B71EB9C8245196AEC0DB223 /* Pods_MyRDPApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C1F144CC84093832BF4E312 /* Pods_MyRDPApp.framework */; };
+		02E686A42DF27E3B00684938 /* AddConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E686A22DF27E3B00684938 /* AddConnectionViewController.swift */; };
+		02E686A52DF27E3B00684938 /* ConnectionListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E686A32DF27E3B00684938 /* ConnectionListViewController.swift */; };
+		02E686A72DF27E4800684938 /* RDPConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02E686A62DF27E4800684938 /* RDPConnection.swift */; };
+		1263E32CB5D1E47A080C4837 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 31AE01115F773F48ABF26DBF /* CoreFoundation.framework */; };
 		1FB954DDEE683F685D104E34 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0410A4566C7E704DE1888CE /* LaunchScreen.storyboard */; };
 		20B530EAFC3BDAB2A0F9666C /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B5188A167594C45AED9ABB5A /* libc++.tbd */; };
 		2495BC47D0FA14A6184B501B /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B4AB80129000F8DD501B04E3 /* libz.tbd */; };
+		2659B0341A03CC8212F8C032 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2C3F0D76167DC89E67553B9 /* UIKit.framework */; };
 		35215918A221A9B5C897001E /* RDPScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F9C0AFDCEBC8776EFCD228 /* RDPScreenView.swift */; };
+		443E742EFD3AA60BC4586250 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86FC6071562C2C71A5587EC /* CoreGraphics.framework */; };
 		4F90C6E03636F6CA8D8FB464 /* AWSIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55787D7F07071FE1597B4A9D /* AWSIntegration.swift */; };
 		6A4C7E3BB696A049BC33A3E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21572F28047C83358508F9F7 /* AppDelegate.swift */; };
 		6AD93496CE4501DC29873F00 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50AAB4645FE08D05D2EAA7E /* ViewController.swift */; };
+		84D9362D6FA0AE590B005DA6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87FAFB7FD60CFD98061ED5B3 /* Foundation.framework */; };
 		978FA5686DC35ACF1D67BAE1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC3A1EB563722694A39327A1 /* Main.storyboard */; };
 		A197785F4A0AF23F3148B9BE /* CredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A75BDCE29AE7FD27701890 /* CredentialStore.swift */; };
+		AA0235839FF93633C23130FF /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23D417756CCB7EE6D05E8594 /* Security.framework */; };
 		B15DF8D2F9F3E7AF83530D71 /* project.yml in Resources */ = {isa = PBXBuildFile; fileRef = 317151E3ECBD3B79F97F9A0C /* project.yml */; };
 		B4A1ED77E3182273B23FE66D /* RDPConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1D99FE2953A625C9EC358D /* RDPConnectionManager.swift */; };
+		C228B8F68AE89DC846DDF208 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7027340A3322FC172E440BE0 /* SystemConfiguration.framework */; };
 		CB7B6BF18AA75944B35069CA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C847D06531DAFDBCF83F76E2 /* Assets.xcassets */; };
 		DE835CD9D1B92BAFF4410C04 /* test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE0B87563C152ED25D770EB /* test.swift */; };
 		EBAA4DD87EE70B6D4D9FA119 /* FreeRDPBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = DE85A7A3F433FE9B9E588284 /* FreeRDPBridge.m */; };
+		F0BED240A176D7A142525016 /* RDPScreenView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF892D308B1421D79D12FDC8 /* RDPScreenView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		02E686A22DF27E3B00684938 /* AddConnectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddConnectionViewController.swift; sourceTree = "<group>"; };
+		02E686A32DF27E3B00684938 /* ConnectionListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionListViewController.swift; sourceTree = "<group>"; };
+		02E686A62DF27E4800684938 /* RDPConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPConnection.swift; sourceTree = "<group>"; };
 		21572F28047C83358508F9F7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		23D417756CCB7EE6D05E8594 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		317151E3ECBD3B79F97F9A0C /* project.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = project.yml; sourceTree = "<group>"; };
-		44D092BC93F7609A7B65036B /* MyRDPApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MyRDPApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		31AE01115F773F48ABF26DBF /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		44D092BC93F7609A7B65036B /* MyRDPApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyRDPApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		46A35F41ADBB342A0B136C2A /* FreeRDPBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FreeRDPBridge.h; sourceTree = "<group>"; };
 		55787D7F07071FE1597B4A9D /* AWSIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWSIntegration.swift; sourceTree = "<group>"; };
-		5C1F144CC84093832BF4E312 /* Pods_MyRDPApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_MyRDPApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		61A75BDCE29AE7FD27701890 /* CredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialStore.swift; sourceTree = "<group>"; };
 		6CA3B4D65073CF1F0EDBE715 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7027340A3322FC172E440BE0 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		7BE0B87563C152ED25D770EB /* test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = test.swift; sourceTree = "<group>"; };
-		80714C3D4B4FA82457A21A3C /* Pods-MyRDPApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyRDPApp.release.xcconfig"; path = "Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp.release.xcconfig"; sourceTree = "<group>"; };
+		87FAFB7FD60CFD98061ED5B3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8A1D99FE2953A625C9EC358D /* RDPConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPConnectionManager.swift; sourceTree = "<group>"; };
-		9740FD03E5ADC5BB175547FC /* Pods-MyRDPApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyRDPApp.debug.xcconfig"; path = "Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp.debug.xcconfig"; sourceTree = "<group>"; };
 		9EBD7F0A7362CEA69BBB43C9 /* MyRDPApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MyRDPApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		A0410A4566C7E704DE1888CE /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AD7DCAA0E5A710F5AD6EB261 /* MyRDPApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MyRDPApp-Bridging-Header.h"; sourceTree = "<group>"; };
+		AF892D308B1421D79D12FDC8 /* RDPScreenView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RDPScreenView.xib; sourceTree = "<group>"; };
+		B2C3F0D76167DC89E67553B9 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		B4AB80129000F8DD501B04E3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		B5188A167594C45AED9ABB5A /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		BC3A1EB563722694A39327A1 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
@@ -47,6 +62,7 @@
 		D8F9C0AFDCEBC8776EFCD228 /* RDPScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPScreenView.swift; sourceTree = "<group>"; };
 		DE85A7A3F433FE9B9E588284 /* FreeRDPBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FreeRDPBridge.m; sourceTree = "<group>"; };
 		E50AAB4645FE08D05D2EAA7E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		F86FC6071562C2C71A5587EC /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,7 +72,12 @@
 			files = (
 				20B530EAFC3BDAB2A0F9666C /* libc++.tbd in Frameworks */,
 				2495BC47D0FA14A6184B501B /* libz.tbd in Frameworks */,
-				0B71EB9C8245196AEC0DB223 /* Pods_MyRDPApp.framework in Frameworks */,
+				84D9362D6FA0AE590B005DA6 /* Foundation.framework in Frameworks */,
+				443E742EFD3AA60BC4586250 /* CoreGraphics.framework in Frameworks */,
+				2659B0341A03CC8212F8C032 /* UIKit.framework in Frameworks */,
+				C228B8F68AE89DC846DDF208 /* SystemConfiguration.framework in Frameworks */,
+				AA0235839FF93633C23130FF /* Security.framework in Frameworks */,
+				1263E32CB5D1E47A080C4837 /* CoreFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,9 +87,14 @@
 		23F414DF54F6F01B38BB6494 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				31AE01115F773F48ABF26DBF /* CoreFoundation.framework */,
+				F86FC6071562C2C71A5587EC /* CoreGraphics.framework */,
+				87FAFB7FD60CFD98061ED5B3 /* Foundation.framework */,
 				B5188A167594C45AED9ABB5A /* libc++.tbd */,
 				B4AB80129000F8DD501B04E3 /* libz.tbd */,
-				5C1F144CC84093832BF4E312 /* Pods_MyRDPApp.framework */,
+				23D417756CCB7EE6D05E8594 /* Security.framework */,
+				7027340A3322FC172E440BE0 /* SystemConfiguration.framework */,
+				B2C3F0D76167DC89E67553B9 /* UIKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -79,12 +105,8 @@
 				EB03371C27FCBA27790F27ED /* MyRDPApp */,
 				23F414DF54F6F01B38BB6494 /* Frameworks */,
 				8BFB6254F2D1880BDDB37B80 /* Products */,
-				ECE3C8F52F5D56CD41B0B9F8 /* Pods */,
 			);
-			indentWidth = 4;
 			sourceTree = "<group>";
-			tabWidth = 4;
-			usesTabs = 0;
 		};
 		723A006DEEB9886F0F242A19 /* RDP */ = {
 			isa = PBXGroup;
@@ -92,8 +114,10 @@
 				46A35F41ADBB342A0B136C2A /* FreeRDPBridge.h */,
 				DE85A7A3F433FE9B9E588284 /* FreeRDPBridge.m */,
 				AD7DCAA0E5A710F5AD6EB261 /* MyRDPApp-Bridging-Header.h */,
+				02E686A62DF27E4800684938 /* RDPConnection.swift */,
 				8A1D99FE2953A625C9EC358D /* RDPConnectionManager.swift */,
 				D8F9C0AFDCEBC8776EFCD228 /* RDPScreenView.swift */,
+				AF892D308B1421D79D12FDC8 /* RDPScreenView.xib */,
 			);
 			path = RDP;
 			sourceTree = "<group>";
@@ -120,19 +144,11 @@
 				317151E3ECBD3B79F97F9A0C /* project.yml */,
 				7BE0B87563C152ED25D770EB /* test.swift */,
 				E50AAB4645FE08D05D2EAA7E /* ViewController.swift */,
+				02E686A22DF27E3B00684938 /* AddConnectionViewController.swift */,
+				02E686A32DF27E3B00684938 /* ConnectionListViewController.swift */,
 				723A006DEEB9886F0F242A19 /* RDP */,
 			);
 			path = MyRDPApp;
-			sourceTree = "<group>";
-		};
-		ECE3C8F52F5D56CD41B0B9F8 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				9740FD03E5ADC5BB175547FC /* Pods-MyRDPApp.debug.xcconfig */,
-				80714C3D4B4FA82457A21A3C /* Pods-MyRDPApp.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -142,18 +158,17 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B61A024BE40C0EB4DF8ACC23 /* Build configuration list for PBXNativeTarget "MyRDPApp" */;
 			buildPhases = (
-				AAFCD8C1571E5CD2278479F0 /* [CP] Check Pods Manifest.lock */,
-				72BB445A25C772D0A915F4F8 /* Copy FreeRDP Libraries */,
 				47810D3D8F139736FE2C6ACE /* Sources */,
 				108EFA84AAE2415305A1AE27 /* Resources */,
 				A88671861C334ABF82752E7A /* Frameworks */,
-				E7EF05B3F652745E4D066055 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = MyRDPApp;
+			packageProductDependencies = (
+			);
 			productName = MyRDPApp;
 			productReference = 44D092BC93F7609A7B65036B /* MyRDPApp.app */;
 			productType = "com.apple.product-type.application";
@@ -166,8 +181,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1630;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = C7E28247F0D626A0BC32458A /* Build configuration list for PBXProject "MyRDPApp" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -179,8 +192,6 @@
 			);
 			mainGroup = 2C165820477F96D24526811E;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 54;
-			productRefGroup = 8BFB6254F2D1880BDDB37B80 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -197,75 +208,12 @@
 				CB7B6BF18AA75944B35069CA /* Assets.xcassets in Resources */,
 				1FB954DDEE683F685D104E34 /* LaunchScreen.storyboard in Resources */,
 				978FA5686DC35ACF1D67BAE1 /* Main.storyboard in Resources */,
+				F0BED240A176D7A142525016 /* RDPScreenView.xib in Resources */,
 				B15DF8D2F9F3E7AF83530D71 /* project.yml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		72BB445A25C772D0A915F4F8 /* Copy FreeRDP Libraries */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Copy FreeRDP Libraries";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/Libraries/libfreerdp3.a",
-				"$(BUILT_PRODUCTS_DIR)/Libraries/libwinpr3.a",
-				"$(BUILT_PRODUCTS_DIR)/Libraries/libssl.a",
-				"$(BUILT_PRODUCTS_DIR)/Libraries/libcrypto.a",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# シミュレータと実機でライブラリを切り替え\nmkdir -p \"$BUILT_PRODUCTS_DIR/Libraries\"\nif [[ \"$PLATFORM_NAME\" == \"iphonesimulator\" ]]; then\n  cp -f \"$PROJECT_DIR/Libraries/freerdp-simulator/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\n  cp -f \"$PROJECT_DIR/Libraries/openssl-simulator/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\nelse\n  cp -f \"$PROJECT_DIR/Libraries/freerdp/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\n  cp -f \"$PROJECT_DIR/Libraries/openssl/lib/\"*.a \"$BUILT_PRODUCTS_DIR/Libraries/\"\nfi\n";
-		};
-		AAFCD8C1571E5CD2278479F0 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-MyRDPApp-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E7EF05B3F652745E4D066055 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MyRDPApp/Pods-MyRDPApp-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		47810D3D8F139736FE2C6ACE /* Sources */ = {
@@ -278,7 +226,10 @@
 				EBAA4DD87EE70B6D4D9FA119 /* FreeRDPBridge.m in Sources */,
 				B4A1ED77E3182273B23FE66D /* RDPConnectionManager.swift in Sources */,
 				35215918A221A9B5C897001E /* RDPScreenView.swift in Sources */,
+				02E686A42DF27E3B00684938 /* AddConnectionViewController.swift in Sources */,
+				02E686A52DF27E3B00684938 /* ConnectionListViewController.swift in Sources */,
 				6AD93496CE4501DC29873F00 /* ViewController.swift in Sources */,
+				02E686A72DF27E4800684938 /* RDPConnection.swift in Sources */,
 				DE835CD9D1B92BAFF4410C04 /* test.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -337,7 +288,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -351,23 +302,69 @@
 		};
 		8502E25BCA2AE7C7E92E32FE /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9740FD03E5ADC5BB175547FC /* Pods-MyRDPApp.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = FUX9M9L88Y;
 				ENABLE_TESTABILITY = YES;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+					"FREERDP_API_VERSION=3",
+					"WITH_FREERDP3=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/include",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/include/winpr3",
+					"$(PROJECT_DIR)/Libraries/openssl/include",
+					"$(PROJECT_DIR)/Libraries/cjson/include",
+				);
 				INFOPLIST_FILE = MyRDPApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.MyRDPApp;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3",
+					"$(PROJECT_DIR)/Libraries/openssl/lib",
+					"$(PROJECT_DIR)/Libraries/cjson/lib",
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp3.a",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp-client3.a",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib/libwinpr3.a",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3/librdpsnd-common.a",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3/libremdesk-common.a",
+					"$(PROJECT_DIR)/Libraries/openssl/lib/libssl.a",
+					"$(PROJECT_DIR)/Libraries/openssl/lib/libcrypto.a",
+					"$(PROJECT_DIR)/Libraries/cjson/lib/libcjson.a",
+					"-framework",
+					Foundation,
+					"-framework",
+					CoreFoundation,
+					"-framework",
+					SystemConfiguration,
+					"-framework",
+					Security,
+					"-framework",
+					CoreGraphics,
+					"-lm",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hakase.RemoteDesctop;
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "MyRDPApp/MyRDPApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				"VALID_ARCHS[sdk=iphonesimulator*]" = "arm64 x86_64";
 			};
 			name = Debug;
 		};
@@ -416,7 +413,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -429,23 +426,65 @@
 		};
 		E3C62F12E59604DC69A2241E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 80714C3D4B4FA82457A21A3C /* Pods-MyRDPApp.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = FUX9M9L88Y;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"FREERDP_API_VERSION=3",
+					"WITH_FREERDP3=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/include",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/include/winpr3",
+					"$(PROJECT_DIR)/Libraries/openssl/include",
+				);
 				INFOPLIST_FILE = MyRDPApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.MyRDPApp;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3",
+					"$(PROJECT_DIR)/Libraries/openssl/lib",
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp3.a",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp-client3.a",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib/libwinpr3.a",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3/librdpsnd-common.a",
+					"$(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3/libremdesk-common.a",
+					"$(PROJECT_DIR)/Libraries/openssl/lib/libssl.a",
+					"$(PROJECT_DIR)/Libraries/openssl/lib/libcrypto.a",
+					"-framework",
+					Foundation,
+					"-framework",
+					CoreFoundation,
+					"-framework",
+					SystemConfiguration,
+					"-framework",
+					Security,
+					"-framework",
+					CoreGraphics,
+					"-lm",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.hakase.RemoteDesctop;
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "MyRDPApp/MyRDPApp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				"VALID_ARCHS[sdk=iphonesimulator*]" = "arm64 x86_64";
 			};
 			name = Release;
 		};
