@@ -190,7 +190,7 @@ prepare_freerdp_source() {
     log_success "FreeRDPリポジトリの準備が完了しました"
 }
 
-# FreeRDP共通CMake設定（Android版を参考にcJSON対応）
+# FreeRDP共通CMake設定（cJSONを無効にしてビルド）
 get_common_cmake_options() {
     echo "\
         -DCMAKE_TOOLCHAIN_FILE=../FreeRDP/cmake/ios.toolchain.cmake \
@@ -224,7 +224,49 @@ get_common_cmake_options() {
         -DCHANNEL_GRAPHICS=ON \
         -DWITH_SSE2=OFF \
         -DWITH_NEON=OFF \
-        -DWITH_PRIMITIVE_OPTIMIZATIONS=OFF"
+        -DWITH_PRIMITIVE_OPTIMIZATIONS=OFF \
+        -DWITH_JSON=OFF \
+        -DWITH_CJSON=OFF"
+}
+
+# シミュレータ用の共通オプション関数を追加
+get_simulator_cmake_options() {
+    echo "\
+        -DCMAKE_TOOLCHAIN_FILE=../FreeRDP/cmake/ios.toolchain.cmake \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_OSX_DEPLOYMENT_TARGET=${IOS_MIN_VERSION} \
+        -DWITH_CLIENT_CHANNELS=ON \
+        -DWITH_SERVER_CHANNELS=ON \
+        -DCHANNEL_URBDRC=OFF \
+        -DWITH_OPENSSL=ON \
+        -DWITH_CLIENT=ON \
+        -DWITH_SERVER=OFF \
+        -DWITH_SAMPLE=OFF \
+        -DWITH_JPEG=ON \
+        -DWITH_MANPAGES=OFF \
+        -DWITH_PULSE=OFF \
+        -DWITH_CUPS=OFF \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DWITH_FFMPEG=OFF \
+        -DWITH_DSP_FFMPEG=OFF \
+        -DWITH_SWSCALE=OFF \
+        -DWITH_OPUS=OFF \
+        -DWITH_LAME=OFF \
+        -DWITH_FAAD2=OFF \
+        -DWITH_FAAC=OFF \
+        -DWITH_SOXR=OFF \
+        -DWITH_CLIENT_IOS=OFF \
+        -DWITH_CLIENT_SDL=OFF \
+        -DWITH_SDL=OFF \
+        -DWITH_GDI=ON \
+        -DCHANNEL_DISPLAY=ON \
+        -DCHANNEL_GRAPHICS=ON \
+        -DWITH_SSE2=OFF \
+        -DWITH_SSE3=OFF \
+        -DWITH_NEON=OFF \
+        -DWITH_PRIMITIVE_OPTIMIZATIONS=OFF \
+        -DWITH_JSON=ON \
+        -DWITH_CJSON=ON"
 }
 
 # iOS実機向けFreeRDPビルド
@@ -236,17 +278,10 @@ build_freerdp_device() {
         handle_error "iOS実機向けOpenSSLライブラリが見つかりません。先にOpenSSLをビルドしてください。"
     fi
     
-    # cJSONの確認とビルド
+    # cJSONサポートは無効にしてビルド（シンプル化）
     local with_cjson=OFF
-    local cjson_cmake_args=""
-    if ensure_cjson "device"; then
-        with_cjson=ON
-        cjson_cmake_args="-DCMAKE_PREFIX_PATH=\"${OPENSSL_DIR};${EXTERNAL_DIR}/cjson\" -DcJSON_DIR=\"${EXTERNAL_DIR}/cjson/lib/cmake/cjson\""
-        log_info "cJSONサポートを有効にしてビルドします"
-    else
-        log_warning "cJSONなしでビルドします"
-        cjson_cmake_args="-DCMAKE_PREFIX_PATH=\"${OPENSSL_DIR}\""
-    fi
+    local cjson_cmake_args="-DCMAKE_PREFIX_PATH=\"${OPENSSL_DIR}\""
+    log_info "cJSONサポートを無効にしてビルドします"
     
     # ビルドディレクトリの準備
     local build_dir="${FREERDP_BUILD_DIR}/ios"
@@ -345,25 +380,12 @@ build_freerdp_device() {
     log_success "=== iOS実機向けFreeRDPビルド完了 ==="
 }
 
-# iOSシミュレータ向けFreeRDPビルド
 build_freerdp_simulator() {
-    log_info "=== iOSシミュレータ向けFreeRDPビルド開始 ==="
+    log_info "=== iOSシミュレータ向けFreeRDPビルド開始（完全修正版） ==="
     
     # OpenSSLの存在確認
     if [ ! -f "${OPENSSL_SIM_DIR}/lib/libssl.a" ] || [ ! -f "${OPENSSL_SIM_DIR}/lib/libcrypto.a" ]; then
         handle_error "iOSシミュレータ向けOpenSSLライブラリが見つかりません。先にOpenSSLをビルドしてください。"
-    fi
-    
-    # cJSONの確認とビルド
-    local with_cjson=OFF
-    local cjson_cmake_args=""
-    if ensure_cjson "simulator"; then
-        with_cjson=ON
-        cjson_cmake_args="-DCMAKE_PREFIX_PATH=\"${OPENSSL_SIM_DIR};${EXTERNAL_DIR}/cjson-simulator\" -DcJSON_DIR=\"${EXTERNAL_DIR}/cjson-simulator/lib/cmake/cjson\""
-        log_info "cJSONサポートを有効にしてビルドします"
-    else
-        log_warning "cJSONなしでビルドします"
-        cjson_cmake_args="-DCMAKE_PREFIX_PATH=\"${OPENSSL_SIM_DIR}\""
     fi
     
     # ビルドディレクトリの準備
@@ -375,79 +397,239 @@ build_freerdp_simulator() {
     # インストールディレクトリの作成
     mkdir -p "${FREERDP_SIM_INSTALL_DIR}"
     
-    # CMake設定
-    log_info "iOSシミュレータ向けビルド設定を行っています..."
-    local common_options=$(get_common_cmake_options)
-    
     # iOS deployment targetを環境変数でも設定
     export IPHONEOS_DEPLOYMENT_TARGET="${IOS_MIN_VERSION}"
     
-    # CMakeコマンドを構築
-    local cmake_cmd="cmake ../FreeRDP \
-        $common_options \
-        -DWITH_JSON=$with_cjson \
-        -DWITH_CJSON=$with_cjson \
-        -DCMAKE_INSTALL_PREFIX=\"${FREERDP_SIM_INSTALL_DIR}\" \
-        $cjson_cmake_args \
-        -DOPENSSL_ROOT_DIR=\"${OPENSSL_SIM_DIR}\" \
-        -DOPENSSL_INCLUDE_DIR=\"${OPENSSL_SIM_DIR}/include\" \
-        -DOPENSSL_CRYPTO_LIBRARY=\"${OPENSSL_SIM_DIR}/lib/libcrypto.a\" \
-        -DOPENSSL_SSL_LIBRARY=\"${OPENSSL_SIM_DIR}/lib/libssl.a\" \
-        -DPLATFORM=SIMULATOR \
+    log_info "シミュレータ用のためSSE/NEON関連ファイルを完全削除します..."
+    
+    # 問題のあるディレクトリを一時的に削除（バックアップ付き）
+    local backup_base="/tmp/freerdp_backup_$$"
+    mkdir -p "$backup_base"
+    
+    # SSE/NEONディレクトリを完全に削除
+    local sse_neon_dirs=(
+        "../FreeRDP/libfreerdp/primitives/sse"
+        "../FreeRDP/libfreerdp/codec/sse"
+        "../FreeRDP/libfreerdp/primitives/neon"
+        "../FreeRDP/libfreerdp/codec/neon"
+    )
+    
+    local backed_up_dirs=()
+    for dir in "${sse_neon_dirs[@]}"; do
+        if [ -d "$dir" ]; then
+            local dir_name=$(basename "$dir")
+            local parent_name=$(basename "$(dirname "$dir")")
+            local backup_path="$backup_base/${parent_name}_${dir_name}"
+            
+            mv "$dir" "$backup_path"
+            backed_up_dirs+=("$backup_path:$dir")
+            log_info "Backed up and removed: $dir"
+        fi
+    done
+    
+    # 問題のあるソースファイルを修正（すべてのSSE/NEONインクルードを無効化）
+    log_info "ソースファイルのSSE/NEONインクルードを修正します..."
+    
+    local source_files=(
+        "../FreeRDP/libfreerdp/codec/rfx.c"
+        "../FreeRDP/libfreerdp/codec/nsc.c"
+        "../FreeRDP/libfreerdp/codec/nsc_encode.c"
+        "../FreeRDP/libfreerdp/codec/progressive.c"
+        "../FreeRDP/libfreerdp/codec/planar.c"
+        "../FreeRDP/libfreerdp/codec/yuv.c"
+    )
+    
+    local backed_up_sources=()
+    for source_file in "${source_files[@]}"; do
+        if [ -f "$source_file" ]; then
+            local basename_file=$(basename "$source_file")
+            cp "$source_file" "$backup_base/$basename_file"
+            backed_up_sources+=("$backup_base/$basename_file:$source_file")
+            
+            sed \
+                -e 's|^[[:space:]]*#include[[:space:]]*"sse/[^"]*"|// & // Disabled for iOS Simulator|g' \
+                -e 's|^[[:space:]]*#include[[:space:]]*"neon/[^"]*"|// & // Disabled for iOS Simulator|g' \
+                -e 's|^[[:space:]]*#include[[:space:]]*<sse/[^>]*>|// & // Disabled for iOS Simulator|g' \
+                -e 's|^[[:space:]]*#include[[:space:]]*<neon/[^>]*>|// & // Disabled for iOS Simulator|g' \
+                -e 's|^[[:space:]]*rfx_init_sse2|// & // Disabled for iOS Simulator|g' \
+                -e 's|^[[:space:]]*rfx_init_neon|// & // Disabled for iOS Simulator|g' \
+                -e 's|^[[:space:]]*nsc_init_sse2|// & // Disabled for iOS Simulator|g' \
+                -e 's|^[[:space:]]*nsc_init_neon|// & // Disabled for iOS Simulator|g' \
+                "$backup_base/$basename_file" > "$source_file"
+            log_info "Modified: $basename_file"
+        fi
+    done
+    
+    # CMakeLists.txtファイルも修正
+    log_info "CMakeLists.txtファイルを修正します..."
+    
+    local cmake_files=(
+        "../FreeRDP/libfreerdp/codec/CMakeLists.txt"
+        "../FreeRDP/libfreerdp/primitives/CMakeLists.txt"
+    )
+    
+    local backed_up_cmake=()
+    for cmake_file in "${cmake_files[@]}"; do
+        if [ -f "$cmake_file" ]; then
+            local basename_file=$(basename "$cmake_file")
+            local dirname_file=$(basename "$(dirname "$cmake_file")")
+            local backup_name="${dirname_file}_${basename_file}"
+            
+            cp "$cmake_file" "$backup_base/$backup_name"
+            backed_up_cmake+=("$backup_base/$backup_name:$cmake_file")
+            
+            # SSE/NEON関連の行を削除
+            sed \
+                -e '/add_subdirectory.*sse/d' \
+                -e '/add_subdirectory.*neon/d' \
+                -e '/sse\/.*\.[ch]/d' \
+                -e '/neon\/.*\.[ch]/d' \
+                -e '/"sse\/[^"]*"/d' \
+                -e '/"neon\/[^"]*"/d' \
+                "$backup_base/$backup_name" > "$cmake_file"
+            
+            log_info "Modified: $dirname_file/$basename_file"
+        fi
+    done
+    
+    # 復元関数の定義
+    restore_everything() {
+        log_info "すべてのファイルを復元しています..."
+        
+        # ディレクトリの復元
+        for entry in "${backed_up_dirs[@]}"; do
+            local backup_path="${entry%:*}"
+            local original_path="${entry#*:}"
+            if [ -d "$backup_path" ]; then
+                mv "$backup_path" "$original_path"
+                log_info "Restored directory: $(basename $original_path)"
+            fi
+        done
+        
+        # ソースファイルの復元
+        for entry in "${backed_up_sources[@]}"; do
+            local backup_path="${entry%:*}"
+            local original_path="${entry#*:}"
+            if [ -f "$backup_path" ]; then
+                mv "$backup_path" "$original_path"
+                log_info "Restored source: $(basename $original_path)"
+            fi
+        done
+        
+        # CMakeLists.txtの復元
+        for entry in "${backed_up_cmake[@]}"; do
+            local backup_path="${entry%:*}"
+            local original_path="${entry#*:}"
+            if [ -f "$backup_path" ]; then
+                mv "$backup_path" "$original_path"
+                log_info "Restored cmake: $(basename $original_path)"
+            fi
+        done
+        
+        # バックアップディレクトリのクリーンアップ
+        rm -rf "$backup_base"
+    }
+    
+    # エラーハンドリング用のトラップ設定
+    trap 'restore_everything; exit 1' ERR
+    
+    # CMake設定
+    log_info "iOSシミュレータ向けビルド設定を行っています..."
+    
+    cmake ../FreeRDP \
+        -DCMAKE_TOOLCHAIN_FILE=../FreeRDP/cmake/ios.toolchain.cmake \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_OSX_DEPLOYMENT_TARGET=${IOS_MIN_VERSION} \
+        -DCMAKE_INSTALL_PREFIX="${FREERDP_SIM_INSTALL_DIR}" \
+        -DPLATFORM=SIMULATOR64 \
         -DAPPLE=ON \
         -DCMAKE_OSX_ARCHITECTURES=arm64 \
-        -DCMAKE_C_FLAGS=\"-mios-simulator-version-min=${IOS_MIN_VERSION} -arch arm64 -DWITH_SSE2=0 -DWITH_NEON=0\" \
-        -DCMAKE_CXX_FLAGS=\"-mios-simulator-version-min=${IOS_MIN_VERSION} -arch arm64 -DWITH_SSE2=0 -DWITH_NEON=0\" \
+        -DOPENSSL_ROOT_DIR="${OPENSSL_SIM_DIR}" \
+        -DOPENSSL_INCLUDE_DIR="${OPENSSL_SIM_DIR}/include" \
+        -DOPENSSL_CRYPTO_LIBRARY="${OPENSSL_SIM_DIR}/lib/libcrypto.a" \
+        -DOPENSSL_SSL_LIBRARY="${OPENSSL_SIM_DIR}/lib/libssl.a" \
+        -DWITH_OPENSSL=ON \
+        -DWITH_CLIENT=ON \
+        -DWITH_SERVER=OFF \
+        -DWITH_SAMPLE=OFF \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DWITH_MANPAGES=OFF \
+        -DWITH_PULSE=OFF \
+        -DWITH_CUPS=OFF \
+        -DWITH_FFMPEG=OFF \
+        -DWITH_DSP_FFMPEG=OFF \
+        -DWITH_SWSCALE=OFF \
+        -DWITH_OPUS=OFF \
+        -DWITH_LAME=OFF \
+        -DWITH_FAAD2=OFF \
+        -DWITH_FAAC=OFF \
+        -DWITH_SOXR=OFF \
+        -DWITH_CLIENT_IOS=OFF \
+        -DWITH_CLIENT_SDL=OFF \
+        -DWITH_SDL=OFF \
+        -DWITH_JPEG=ON \
+        -DWITH_GDI=ON \
+        -DCHANNEL_DISPLAY=ON \
+        -DCHANNEL_GRAPHICS=ON \
+        -DCHANNEL_URBDRC=OFF \
+        -DWITH_CLIENT_CHANNELS=ON \
+        -DWITH_SERVER_CHANNELS=ON \
         -DWITH_SSE2=OFF \
+        -DWITH_SSE3=OFF \
+        -DWITH_SSE4_1=OFF \
+        -DWITH_SSE4_2=OFF \
+        -DWITH_AVX=OFF \
+        -DWITH_AVX2=OFF \
         -DWITH_NEON=OFF \
         -DWITH_PRIMITIVE_OPTIMIZATIONS=OFF \
-        -DWITH_IPP=OFF"
-    
-    log_info "実行するCMakeコマンド:"
-    echo "$cmake_cmd"
-    
-    eval $cmake_cmd
+        -DWITH_IPP=OFF \
+        -DWITH_JSON=OFF \
+        -DWITH_CJSON=OFF \
+        -DCMAKE_C_FLAGS="-mios-simulator-version-min=${IOS_MIN_VERSION} -arch arm64 -target arm64-apple-ios-simulator" \
+        -DCMAKE_CXX_FLAGS="-mios-simulator-version-min=${IOS_MIN_VERSION} -arch arm64 -target arm64-apple-ios-simulator"
     
     if [ $? -ne 0 ]; then
-        handle_error "iOSシミュレータ向けFreeRDP設定に失敗しました"
+        log_error "iOSシミュレータ向けFreeRDP設定に失敗しました"
+        restore_everything
+        exit 1
     fi
     
     # ビルド実行
     log_info "iOSシミュレータ向けFreeRDPをビルドしています..."
-    cmake --build . --config Release
+    make VERBOSE=1
     
-    if [ $? -ne 0 ]; then
+    local build_result=$?
+    
+    # すべてを復元
+    restore_everything
+    
+    # トラップを解除
+    trap - ERR
+    
+    # ビルド結果をチェック
+    if [ $build_result -ne 0 ]; then
         handle_error "iOSシミュレータ向けFreeRDPビルドに失敗しました"
     fi
     
     # インストール
     log_info "iOSシミュレータ向けFreeRDPをインストールしています..."
-    cmake --install .
+    make install
     
-    # インストール結果の確認と手動コピー
+    # 手動コピー処理
     if [ ! -f "${FREERDP_SIM_INSTALL_DIR}/lib/libfreerdp3.a" ]; then
         log_warning "CMakeインストールが不完全でした。手動でライブラリをコピーします..."
         
-        # 手動でライブラリをコピー
         mkdir -p "${FREERDP_SIM_INSTALL_DIR}/lib"
-        mkdir -p "${FREERDP_SIM_INSTALL_DIR}/lib/freerdp3"
         mkdir -p "${FREERDP_SIM_INSTALL_DIR}/include"
         
-        # 必要なライブラリを検索してコピー
         find . -name "libfreerdp3.a" -exec cp {} "${FREERDP_SIM_INSTALL_DIR}/lib/" \; 2>/dev/null || true
         find . -name "libwinpr3.a" -exec cp {} "${FREERDP_SIM_INSTALL_DIR}/lib/" \; 2>/dev/null || true
         find . -name "libfreerdp-client3.a" -exec cp {} "${FREERDP_SIM_INSTALL_DIR}/lib/" \; 2>/dev/null || true
         
-        # プラグインライブラリもコピー
-        find . -name "librdpsnd-common.a" -exec cp {} "${FREERDP_SIM_INSTALL_DIR}/lib/freerdp3/" \; 2>/dev/null || true
-        find . -name "libremdesk-common.a" -exec cp {} "${FREERDP_SIM_INSTALL_DIR}/lib/freerdp3/" \; 2>/dev/null || true
-        
-        # ヘッダーファイルをコピー
         if [ -d "../FreeRDP/include" ]; then
             cp -R ../FreeRDP/include/* "${FREERDP_SIM_INSTALL_DIR}/include/" 2>/dev/null || true
         fi
         
-        # 生成されたヘッダーファイルもコピー
         find . -name "*.h" -path "*/include/*" | while read -r header; do
             rel_path=$(echo "$header" | sed 's|^\./||')
             target_dir="${FREERDP_SIM_INSTALL_DIR}/$(dirname "$rel_path")"
@@ -458,79 +640,7 @@ build_freerdp_simulator() {
         log_info "手動コピーが完了しました"
     fi
     
-    if [ $? -ne 0 ]; then
-        handle_error "iOSシミュレータ向けFreeRDPインストールに失敗しました"
-    fi
-    
     log_success "=== iOSシミュレータ向けFreeRDPビルド完了 ==="
-}
-
-# ビルド結果の確認
-verify_build() {
-    log_info "=== ビルド結果を確認しています ==="
-    
-    local issues=0
-    
-    # 実機向けライブラリの確認
-    if [[ "$TARGET" == "all" || "$TARGET" == "device" ]]; then
-        local device_libs=("libfreerdp3.a" "libfreerdp-client3.a" "libwinpr3.a")
-        for lib in "${device_libs[@]}"; do
-            if [ -f "${FREERDP_INSTALL_DIR}/lib/$lib" ]; then
-                local size=$(ls -lh "${FREERDP_INSTALL_DIR}/lib/$lib" | awk '{print $5}')
-                log_success "iOS実機向け: $lib ($size)"
-            else
-                log_error "iOS実機向け: $lib が見つかりません"
-                ((issues++))
-            fi
-        done
-        
-        # プラグインライブラリの確認
-        local plugin_libs=("librdpsnd-common.a" "libremdesk-common.a")
-        for lib in "${plugin_libs[@]}"; do
-            if [ -f "${FREERDP_INSTALL_DIR}/lib/freerdp3/$lib" ]; then
-                local size=$(ls -lh "${FREERDP_INSTALL_DIR}/lib/freerdp3/$lib" | awk '{print $5}')
-                log_success "iOS実機向けプラグイン: $lib ($size)"
-            else
-                log_warning "iOS実機向けプラグイン: $lib が見つかりません（オプション）"
-            fi
-        done
-        
-        # ヘッダーファイルの確認
-        if [ -d "${FREERDP_INSTALL_DIR}/include/freerdp3" ]; then
-            log_success "iOS実機向けヘッダーファイル: freerdp3"
-        else
-            log_error "iOS実機向けヘッダーファイルが見つかりません"
-            ((issues++))
-        fi
-    fi
-    
-    # シミュレータ向けライブラリの確認
-    if [[ "$TARGET" == "all" || "$TARGET" == "simulator" ]]; then
-        local sim_libs=("libfreerdp3.a" "libfreerdp-client3.a" "libwinpr3.a")
-        for lib in "${sim_libs[@]}"; do
-            if [ -f "${FREERDP_SIM_INSTALL_DIR}/lib/$lib" ]; then
-                local size=$(ls -lh "${FREERDP_SIM_INSTALL_DIR}/lib/$lib" | awk '{print $5}')
-                log_success "iOSシミュレータ向け: $lib ($size)"
-            else
-                log_error "iOSシミュレータ向け: $lib が見つかりません"
-                ((issues++))
-            fi
-        done
-        
-        # ヘッダーファイルの確認
-        if [ -d "${FREERDP_SIM_INSTALL_DIR}/include/freerdp3" ]; then
-            log_success "iOSシミュレータ向けヘッダーファイル: freerdp3"
-        else
-            log_error "iOSシミュレータ向けヘッダーファイルが見つかりません"
-            ((issues++))
-        fi
-    fi
-    
-    if [ $issues -gt 0 ]; then
-        handle_error "ビルド検証で問題が発見されました"
-    fi
-    
-    log_success "=== ビルド結果確認完了 ==="
 }
 
 # メイン処理
@@ -599,6 +709,74 @@ main() {
     log_info "FreeRDPのソースコードは ${FREERDP_BUILD_DIR}/FreeRDP に保持されています"
     
     log_script_end
+}
+
+# ビルド結果の確認
+verify_build() {
+    log_info "=== ビルド結果を確認しています ==="
+    
+    local issues=0
+    
+    # 実機向けライブラリの確認
+    if [[ "$TARGET" == "all" || "$TARGET" == "device" ]]; then
+        local device_libs=("libfreerdp3.a" "libfreerdp-client3.a" "libwinpr3.a")
+        for lib in "${device_libs[@]}"; do
+            if [ -f "${FREERDP_INSTALL_DIR}/lib/$lib" ]; then
+                local size=$(ls -lh "${FREERDP_INSTALL_DIR}/lib/$lib" | awk '{print $5}')
+                log_success "iOS実機向け: $lib ($size)"
+            else
+                log_error "iOS実機向け: $lib が見つかりません"
+                ((issues++))
+            fi
+        done
+        
+        # プラグインライブラリの確認
+        local plugin_libs=("librdpsnd-common.a" "libremdesk-common.a")
+        for lib in "${plugin_libs[@]}"; do
+            if [ -f "${FREERDP_INSTALL_DIR}/lib/freerdp3/$lib" ]; then
+                local size=$(ls -lh "${FREERDP_INSTALL_DIR}/lib/freerdp3/$lib" | awk '{print $5}')
+                log_success "iOS実機向けプラグイン: $lib ($size)"
+            else
+                log_warning "iOS実機向けプラグイン: $lib が見つかりません（オプション）"
+            fi
+        done
+        
+        # ヘッダーファイルの確認
+        if [ -d "${FREERDP_INSTALL_DIR}/include/freerdp3" ]; then
+            log_success "iOS実機向けヘッダーファイル: freerdp3"
+        else
+            log_error "iOS実機向けヘッダーファイルが見つかりません"
+            ((issues++))
+        fi
+    fi
+    
+    # シミュレータ向けライブラリの確認
+    if [[ "$TARGET" == "all" || "$TARGET" == "simulator" ]]; then
+        local sim_libs=("libfreerdp3.a" "libfreerdp-client3.a" "libwinpr3.a")
+        for lib in "${sim_libs[@]}"; do
+            if [ -f "${FREERDP_SIM_INSTALL_DIR}/lib/$lib" ]; then
+                local size=$(ls -lh "${FREERDP_SIM_INSTALL_DIR}/lib/$lib" | awk '{print $5}')
+                log_success "iOSシミュレータ向け: $lib ($size)"
+            else
+                log_error "iOSシミュレータ向け: $lib が見つかりません"
+                ((issues++))
+            fi
+        done
+        
+        # ヘッダーファイルの確認
+        if [ -d "${FREERDP_SIM_INSTALL_DIR}/include/freerdp3" ]; then
+            log_success "iOSシミュレータ向けヘッダーファイル: freerdp3"
+        else
+            log_error "iOSシミュレータ向けヘッダーファイルが見つかりません"
+            ((issues++))
+        fi
+    fi
+    
+    if [ $issues -gt 0 ]; then
+        handle_error "ビルド検証で問題が発見されました"
+    fi
+    
+    log_success "=== ビルド結果確認完了 ==="
 }
 
 # スクリプト実行
