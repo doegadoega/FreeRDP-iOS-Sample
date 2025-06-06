@@ -2,148 +2,89 @@ name: MyRDPApp
 options:
   bundleIdPrefix: com.example
   deploymentTarget:
-    iOS: "15.0"
+    iOS: "16.0"
   xcodeVersion: "16.3"
   generateEmptyDirectories: true
-  usesTabs: false
-  indentWidth: 4
-  tabWidth: 4
-  projectPath: ../MyRDPApp.xcodeproj
 
 targets:
   MyRDPApp:
     type: application
     platform: iOS
-    sources: 
+    sources:
       - path: MyRDPApp/
-        excludes:
-          - "build/**"
     settings:
       base:
         SWIFT_OBJC_BRIDGING_HEADER: MyRDPApp/MyRDPApp-Bridging-Header.h
         SWIFT_VERSION: "5.0"
         CLANG_ENABLE_MODULES: "YES"
         CLANG_ENABLE_OBJC_ARC: "YES"
-        # 基本リンクフラグ - ライブラリの完全パスを指定
+        # アーキテクチャ設定（Apple Siliconシミュレータ対応）
+        VALID_ARCHS[sdk=iphonesimulator*]: "arm64 x86_64"
+        EXCLUDED_ARCHS[sdk=iphonesimulator*]: ""
+        ONLY_ACTIVE_ARCH: NO
+        # 基本的なリンクフラグ
         OTHER_LDFLAGS:
-          - -framework Foundation
-          - -framework CoreGraphics
-          - -framework UIKit
-          - -framework SystemConfiguration
-          - -framework Security
-          - -lz
-          - -lc++
           - -ObjC
-          - -all_load
-        # シミュレーター除外設定
-        EXCLUDED_ARCHS[sdk=iphonesimulator*]: "x86_64"
-        ONLY_ACTIVE_ARCH: "NO"
-        # 条件付きコンパイル設定
-        GCC_PREPROCESSOR_DEFINITIONS:
-          - "$(inherited)"
-          - "FREERDP_API_VERSION=3"
-          - "WITH_FREERDP3=1"
+          - -lc++
+          - -lz
       configs:
         Debug:
           ENABLE_TESTABILITY: "YES"
-          GCC_OPTIMIZATION_LEVEL: "0"
-          # アーキテクチャ設定（シミュレーター用x86_64除外）
-          EXCLUDED_ARCHS[sdk=iphonesimulator*]: "x86_64"
-          VALID_ARCHS[sdk=iphonesimulator*]: "arm64"
-          # デバッグ用ライブラリパス（デバイス）
-          LIBRARY_SEARCH_PATHS[sdk=iphoneos*]:
+          GCC_PREPROCESSOR_DEFINITIONS:
+            - "$(inherited)"
+            - "DEBUG=1"
+            - "FREERDP_API_VERSION=3"
+            - "WITH_FREERDP3=1"
+          # 実機向けのみ
+          LIBRARY_SEARCH_PATHS:
             - $(inherited)
             - $(PROJECT_DIR)/Libraries/freerdp-device/lib
             - $(PROJECT_DIR)/Libraries/openssl/lib
-          # デバッグ用ライブラリパス（シミュレーター）
-          LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]:
-            - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib
-            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib
-          # デバッグ用ヘッダーパス（デバイス）
-          HEADER_SEARCH_PATHS[sdk=iphoneos*]:
+          HEADER_SEARCH_PATHS:
             - $(inherited)
             - $(PROJECT_DIR)/Libraries/freerdp-device/include
             - $(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3
             - $(PROJECT_DIR)/Libraries/freerdp-device/include/winpr3
             - $(PROJECT_DIR)/Libraries/openssl/include
-          # デバッグ用ヘッダーパス（シミュレーター）
-          HEADER_SEARCH_PATHS[sdk=iphonesimulator*]:
-            - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/freerdp3
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/winpr3
-            - $(PROJECT_DIR)/Libraries/openssl-simulator/include
-          # デバイス用リンクフラグ
-          OTHER_LDFLAGS[sdk=iphoneos*]:
+          # 実機向けリンクフラグ
+          OTHER_LDFLAGS:
             - $(inherited)
             - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp3.a
             - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp-client3.a
             - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libwinpr3.a
             - $(PROJECT_DIR)/Libraries/openssl/lib/libssl.a
             - $(PROJECT_DIR)/Libraries/openssl/lib/libcrypto.a
-          # シミュレーター用リンクフラグ
-          OTHER_LDFLAGS[sdk=iphonesimulator*]:
-            - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib/libfreerdp3.a
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib/libfreerdp-client3.a
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib/libwinpr3.a
-            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib/libssl.a
-            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib/libcrypto.a=iphonesimulator*]:
-            - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/freerdp
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/winpr
-            - $(PROJECT_DIR)/Libraries/openssl-simulator/include
+            - $(PROJECT_DIR)/Libraries/cjson/lib/libcjson.a
         Release:
           SWIFT_OPTIMIZATION_LEVEL: "-Owholemodule"
-          GCC_OPTIMIZATION_LEVEL: "s"
-          # アーキテクチャ設定（シミュレーター用x86_64除外）
-          EXCLUDED_ARCHS[sdk=iphonesimulator*]: "x86_64"
-          VALID_ARCHS[sdk=iphonesimulator*]: "arm64"
-          # リリース用ライブラリパス（デバイス）
-          LIBRARY_SEARCH_PATHS[sdk=iphoneos*]:
+          GCC_PREPROCESSOR_DEFINITIONS:
+            - "$(inherited)"
+            - "FREERDP_API_VERSION=3"
+            - "WITH_FREERDP3=1"
+          # 実機向けのみ
+          LIBRARY_SEARCH_PATHS:
             - $(inherited)
             - $(PROJECT_DIR)/Libraries/freerdp-device/lib
             - $(PROJECT_DIR)/Libraries/openssl/lib
-          # リリース用ライブラリパス（シミュレーター）
-          LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]:
-            - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib
-            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib
-          # リリース用ヘッダーパス（デバイス）
-          HEADER_SEARCH_PATHS[sdk=iphoneos*]:
+          HEADER_SEARCH_PATHS:
             - $(inherited)
             - $(PROJECT_DIR)/Libraries/freerdp-device/include
             - $(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3
             - $(PROJECT_DIR)/Libraries/freerdp-device/include/winpr3
             - $(PROJECT_DIR)/Libraries/openssl/include
-          # リリース用ヘッダーパス（シミュレーター）
-          HEADER_SEARCH_PATHS[sdk=iphonesimulator*]:
-            - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/freerdp3
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/include/winpr3
-            - $(PROJECT_DIR)/Libraries/openssl-simulator/include
-          # デバイス用リンクフラグ
-          OTHER_LDFLAGS[sdk=iphoneos*]:
+          OTHER_LDFLAGS:
             - $(inherited)
             - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp3.a
             - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp-client3.a
             - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libwinpr3.a
             - $(PROJECT_DIR)/Libraries/openssl/lib/libssl.a
             - $(PROJECT_DIR)/Libraries/openssl/lib/libcrypto.a
-          # シミュレーター用リンクフラグ
-          OTHER_LDFLAGS[sdk=iphonesimulator*]:
-            - $(inherited)
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib/libfreerdp3.a
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib/libfreerdp-client3.a
-            - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib/libwinpr3.a
-            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib/libssl.a
-            - $(PROJECT_DIR)/Libraries/openssl-simulator/lib/libcrypto.a
     dependencies:
       - sdk: libc++.tbd
       - sdk: libz.tbd
+      - sdk: Foundation.framework
+      - sdk: CoreGraphics.framework
+      - sdk: UIKit.framework
       - sdk: SystemConfiguration.framework
       - sdk: Security.framework
     info:

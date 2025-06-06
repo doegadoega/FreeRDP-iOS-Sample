@@ -68,11 +68,33 @@ parse_arguments() {
 }
 
 # 依存関係のビルド
+# 依存関係のビルド
 build_dependencies() {
     log_info "=== 依存関係のビルドを開始します ==="
     
     # ディレクトリ作成
     create_build_directories
+    
+    # cJSONのビルド（FreeRDPの前に）
+    if [[ "$TARGET" == "all" || "$TARGET" == "device" ]]; then
+        log_info "cJSON (実機向け) のビルドを開始します..."
+        "${SCRIPT_DIR}/scripts/build_cjson.sh" device
+        if [ $? -ne 0 ]; then
+            log_warning "cJSON (実機向け) のビルドに失敗しましたが、継続します..."
+        else
+            log_success "cJSON (実機向け) のビルドが完了しました"
+        fi
+    fi
+    
+    if [[ "$TARGET" == "all" || "$TARGET" == "simulator" ]]; then
+        log_info "cJSON (シミュレータ向け) のビルドを開始します..."
+        "${SCRIPT_DIR}/scripts/build_cjson.sh" simulator
+        if [ $? -ne 0 ]; then
+            log_warning "cJSON (シミュレータ向け) のビルドに失敗しましたが、継続します..."
+        else
+            log_success "cJSON (シミュレータ向け) のビルドが完了しました"
+        fi
+    fi
     
     # OpenSSLのビルド
     if [[ "$TARGET" == "all" || "$TARGET" == "device" ]]; then
