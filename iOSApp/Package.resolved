@@ -1,0 +1,15 @@
+{
+  "originHash" : "06ebee45d0323067a5e559d39872aa40c7bec87ec0f46c78c19c738d57622c81",
+  "pins" : [
+    {
+      "identity" : "r.swift.library",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/mac-cain13/R.swift.Library.git",
+      "state" : {
+        "revision" : "8998cfe77f4fce79ee6dfab0c88a7d551659d8fb",
+        "version" : "5.4.0"
+      }
+    }
+  ],
+  "version" : 3
+}

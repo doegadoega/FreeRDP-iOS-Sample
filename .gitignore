@@ -57,6 +57,7 @@ DerivedData/
 # CocoaPods
 Pods/
 *.xcworkspace
+.build
 
 # Other
 *.lock

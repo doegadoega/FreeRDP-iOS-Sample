@@ -1,8 +1,22 @@
+import Foundation
 import UIKit
 
+protocol ConnectionListViewControllerDelegate: AnyObject {
+    func connectionListViewController(_ controller: ConnectionListViewController, didSelectConnection connection: RDPConnection)
+}
+
 class ConnectionListViewController: UIViewController {
-    private let tableView = UITableView()
+    
+    // MARK: - Outlets
+    
+    @IBOutlet weak var tableView: UITableView!
+    
+    // MARK: - Properties
+    
     private var connections: [RDPConnection] = []
+    weak var delegate: ConnectionListViewControllerDelegate?
+    
+    // MARK: - Lifecycle Methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -15,24 +29,11 @@ class ConnectionListViewController: UIViewController {
         loadConnections()
     }
     
+    // MARK: - Setup Methods
+    
     private func setupUI() {
         title = "接続先一覧"
         view.backgroundColor = .systemBackground
-        
-        // ナビゲーションバーの設定
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .add,
-            target: self,
-            action: #selector(addButtonTapped)
-        )
-        
-        // テーブルビューの設定
-        tableView.frame = view.bounds
-        tableView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ConnectionCell")
-        view.addSubview(tableView)
     }
     
     private func loadConnections() {
@@ -40,13 +41,17 @@ class ConnectionListViewController: UIViewController {
         tableView.reloadData()
     }
     
-    @objc private func addButtonTapped() {
-        let addConnectionVC = AddConnectionViewController()
-        let navigationController = UINavigationController(rootViewController: addConnectionVC)
-        navigationController.modalPresentationStyle = .fullScreen
-        present(navigationController, animated: true)
+    // MARK: - Actions
+    
+    @IBAction func addButtonTapped() {
+        let storyboard = UIStoryboard(name: "AddConnectionViewController", bundle: nil)
+        if let addConnectionVC = storyboard.instantiateInitialViewController() as? AddConnectionViewController {
+            navigationController?.pushViewController(addConnectionVC, animated: true)
+        }
     }
 }
+
+// MARK: - UITableViewDelegate, UITableViewDataSource
 
 extension ConnectionListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -68,7 +73,19 @@ extension ConnectionListViewController: UITableViewDelegate, UITableViewDataSour
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let connection = connections[indexPath.row]
-        // TODO: 接続処理の実装
+        
+        // 接続処理を実行
+        if let delegate = delegate {
+            delegate.connectionListViewController(self, didSelectConnection: connection)
+            navigationController?.popViewController(animated: true)
+        } else {
+            // RDPScreenViewControllerを表示
+            let storyboard = UIStoryboard(name: "RDPScreenViewController", bundle: nil)
+            if let rdpScreenVC = storyboard.instantiateInitialViewController() as? RDPScreenViewController {
+                rdpScreenVC.connection = connection
+                navigationController?.pushViewController(rdpScreenVC, animated: true)
+            }
+        }
     }
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
@@ -78,4 +95,4 @@ extension ConnectionListViewController: UITableViewDelegate, UITableViewDataSour
             loadConnections()
         }
     }
-} 
+}

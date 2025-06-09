@@ -87,6 +87,8 @@ class RDPConnectionManager {
   private var frameCount = 0
   private var performanceTimer: Timer?
   
+  private var connectionThread: Thread?
+  
   // MARK: - Initialization
   
   init() {
@@ -105,59 +107,46 @@ class RDPConnectionManager {
   
   // MARK: - Connection Management
   
-  func connect(to hostname: String, port: Int, username: String, password: String, domain: String = "") {
-    guard !isConnected && !isConnecting else {
-      debugPrint("Already connected or connecting")
-      return
-    }
+  func connect(to host: String, port: Int, username: String, password: String, domain: String = "") {
+    // 既存の接続を切断
+    disconnect()
     
-    self.hostname = hostname
+    // 接続情報を保存
+    self.hostname = host
     self.port = port
     self.username = username
     self.password = password
     self.domain = domain
     
+    // 接続状態を更新
     isConnecting = true
     
-    debugPrint("Connecting to \(hostname):\(port) as \(username)")
+    // FreeRDPBridgeを使用して接続
+      let success = bridge.connect(toHost: host, port: Int32(port), username: username, password: password, domain: domain.isEmpty ? nil : domain)
     
-    // バックグラウンドスレッドで接続処理を実行
-    DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-      guard let self = self else { return }
-      
-      let success = self.bridge.connect(
-        toHost: hostname,
-        port: Int32(port),
-        username: username,
-        password: password,
-        domain: domain
-      )
-      
-      DispatchQueue.main.async {
-        if !success {
-          self.isConnecting = false
-          let error = NSError(
-            domain: "RDPConnectionManager",
-            code: -1,
-            userInfo: [NSLocalizedDescriptionKey: "接続の開始に失敗しました"]
-          )
-          self.delegate?.connectionManager(self, didEncounterError: error)
-        }
-      }
+    if !success {
+      isConnecting = false
+      let error = RDPConnectionError.connectionFailed
+      delegate?.connectionManager(self, didEncounterError: error)
     }
   }
   
   func disconnect() {
-    guard isConnected || isConnecting else { return }
-    
-    debugPrint("Disconnecting from RDP session")
-    bridge.disconnect()
-    
+    // 接続状態のリセット
     isConnected = false
-    isConnecting = false
     
-    stopPerformanceMonitoring()
-    delegate?.connectionManager(self, didChangeState: false)
+    // 接続スレッドの終了
+    if let thread = connectionThread, thread.isExecuting {
+      thread.cancel()
+      
+      // スレッドの終了を待機
+      let deadline = Date().addingTimeInterval(2.0)
+      while thread.isExecuting && Date() < deadline {
+        Thread.sleep(forTimeInterval: 0.1)
+      }
+    }
+    
+    connectionThread = nil
   }
   
   // MARK: - Input Handling
@@ -196,7 +185,7 @@ class RDPConnectionManager {
   }
   
   func enableDebugLogging(_ enabled: Bool) {
-//    bridge.enableDebugLogging(<#T##Bool#>)
+    bridge.enableDebugLogging(enabled)
   }
   
   // MARK: - Network Monitoring

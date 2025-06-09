@@ -6,6 +6,7 @@
 //  Copyright © 2025 MyRDPApp. All rights reserved.
 //
 
+import Foundation
 import UIKit
 
 protocol RDPScreenViewDelegate: AnyObject {
@@ -76,16 +77,31 @@ class RDPScreenView: UIView {
     }
     
     private func setupView() {
-        // UIコンポーネントの初期設定
-        statusLabel.textAlignment = .center
-        statusLabel.textColor = .white
-        statusLabel.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        statusLabel.layer.cornerRadius = 8
-        statusLabel.layer.masksToBounds = true
-        statusLabel.isHidden = true
+        backgroundColor = .black
         
-        // 初期状態の設定
-        showDisconnected()
+        // 画像表示用ビューの設定
+        imageView = UIImageView(frame: bounds)
+        imageView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        imageView?.contentMode = .scaleAspectFit
+        imageView?.backgroundColor = .black
+        
+        if let imageView = imageView {
+            addSubview(imageView)
+        }
+        
+        // 接続中表示用ラベルの設定
+        statusLabel = UILabel(frame: bounds)
+        statusLabel?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        statusLabel?.textAlignment = .center
+        statusLabel?.textColor = .white
+        statusLabel?.font = .systemFont(ofSize: 18, weight: .medium)
+        statusLabel?.text = "接続中..."
+        statusLabel?.isHidden = true
+        
+        if let statusLabel = statusLabel {
+            addSubview(statusLabel)
+        }
+        
         // ジェスチャー認識の設定
         setupGestureRecognizers()
     }
@@ -292,6 +308,26 @@ class RDPScreenView: UIView {
         let scale = min(scaleX, scaleY)
         
         imageView.transform = CGAffineTransform(scaleX: scale, y: scale)
+    }
+    
+    func toggleKeyboard() {
+        // 実装例: キーボード表示/非表示の切り替え（必要に応じてカスタマイズ）
+        // ここでは何もしないダミー実装
+    }
+    
+    func handlePinchGesture(_ gesture: UIPinchGestureRecognizer) {
+        // 実装例: ピンチイン/アウトの処理（必要に応じてカスタマイズ）
+        // ここでは何もしないダミー実装
+    }
+    
+    func resetZoom() {
+        // 実装例: ズームリセット処理（必要に応じてカスタマイズ）
+        // ここでは何もしないダミー実装
+    }
+    
+    // 引数ラベルを修正
+    func updateScreen(_ image: CGImage) {
+        updateScreen(with: image)
     }
 }
 
