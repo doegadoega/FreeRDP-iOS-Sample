@@ -1,79 +1,102 @@
+import Foundation
 import UIKit
 
 class AddConnectionViewController: UIViewController {
-    private let scrollView = UIScrollView()
-    private let contentView = UIView()
     
-    private let nameTextField = UITextField()
-    private let hostTextField = UITextField()
-    private let portTextField = UITextField()
-    private let usernameTextField = UITextField()
-    private let passwordTextField = UITextField()
-    private let domainTextField = UITextField()
+    // MARK: - Properties
+    
+    // MARK: - Outlets
+    @IBOutlet weak private var nameTextField: UITextField! {
+        didSet {
+            nameTextField.delegate = self
+        }
+    }
+    @IBOutlet weak private var hostTextField: UITextField!
+    {
+        didSet {
+            hostTextField.delegate = self
+        }
+    }
+    @IBOutlet weak private var portTextField: UITextField!
+    {
+        didSet {
+            portTextField.delegate = self
+        }
+    }
+    @IBOutlet weak private var usernameTextField: UITextField!
+    {
+        didSet {
+            usernameTextField.delegate = self
+        }
+    }
+    @IBOutlet weak private var passwordTextField: UITextField!
+    {
+        didSet {
+            passwordTextField.delegate = self
+        }
+    }
+    @IBOutlet weak private var scrollView: UIScrollView!
+    @IBOutlet weak private var contentView: UIView!
+    
+    // MARK: - Lifecycle Methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupKeyboardHandling()
     }
     
+    // MARK: - Setup Methods
+        
     private func setupUI() {
         title = "新規接続先"
         view.backgroundColor = .systemBackground
-        
-        // ナビゲーションバーの設定
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(cancelButtonTapped)
-        )
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .save,
-            target: self,
-            action: #selector(saveButtonTapped)
-        )
-        
-        // スクロールビューの設定
-        scrollView.frame = view.bounds
-        scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.addSubview(scrollView)
-        
-        contentView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: 600)
-        scrollView.addSubview(contentView)
-        scrollView.contentSize = contentView.frame.size
-        
-        // テキストフィールドの設定
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = 16
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(stackView)
-        
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20)
-        ])
-        
-        // 各テキストフィールドの設定
-        nameTextField.placeholder = "接続名"
-        hostTextField.placeholder = "ホスト名またはIPアドレス"
-        portTextField.placeholder = "ポート番号（デフォルト: 3389）"
-        usernameTextField.placeholder = "ユーザー名"
-        passwordTextField.placeholder = "パスワード"
-        passwordTextField.isSecureTextEntry = true
-        domainTextField.placeholder = "ドメイン（オプション）"
-        
-        [nameTextField, hostTextField, portTextField, usernameTextField, passwordTextField, domainTextField].forEach { textField in
-            textField.borderStyle = .roundedRect
-            stackView.addArrangedSubview(textField)
-        }
     }
     
-    @objc private func cancelButtonTapped() {
-        dismiss(animated: true)
+    private func setupKeyboardHandling() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+        
+        // タップでキーボードを閉じる
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
     }
     
-    @objc private func saveButtonTapped() {
+    @objc private func keyboardWillShow(_ notification: Notification) {
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+        
+        // スクロールビューの調整
+        scrollView.contentInset.bottom = keyboardFrame.height
+        scrollView.verticalScrollIndicatorInsets.bottom = keyboardFrame.height
+    }
+    
+    @objc private func keyboardWillHide(_ notification: Notification) {
+        // スクロールビューの調整
+        scrollView.contentInset.bottom = 0
+        scrollView.horizontalScrollIndicatorInsets.bottom = 0
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    // MARK: - Actions
+    
+    @IBAction func cancelButtonTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @IBAction func saveButtonTapped() {
         guard let name = nameTextField.text, !name.isEmpty,
               let host = hostTextField.text, !host.isEmpty,
               let username = usernameTextField.text, !username.isEmpty else {
@@ -94,11 +117,33 @@ class AddConnectionViewController: UIViewController {
             host: host,
             port: port,
             username: username,
-            password: passwordTextField.text,
-            domain: domainTextField.text
+            password: passwordTextField.text
         )
         
         RDPConnectionManager.shared.addConnection(connection)
-        dismiss(animated: true)
+        navigationController?.popViewController(animated: true)
     }
-} 
+}
+
+// MARK: - UITextFieldDelegate
+
+extension AddConnectionViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        switch textField {
+        case nameTextField:
+            hostTextField.becomeFirstResponder()
+        case hostTextField:
+            portTextField.becomeFirstResponder()
+        case portTextField:
+            usernameTextField.becomeFirstResponder()
+        case usernameTextField:
+            passwordTextField.becomeFirstResponder()
+        case passwordTextField:
+            textField.resignFirstResponder()
+            saveButtonTapped()
+        default:
+            textField.resignFirstResponder()
+        }
+        return true
+    }
+}

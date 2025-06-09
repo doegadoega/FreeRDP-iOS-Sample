@@ -3,64 +3,58 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1263E32CB5D1E47A080C4837 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 31AE01115F773F48ABF26DBF /* CoreFoundation.framework */; };
+		083F05AB138305549461A936 /* RswiftLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 67B9D9EB13334DC5045981BC /* RswiftLibrary */; };
+		09BAFB5C0C7F8A86FBF70B68 /* ConnectionList.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 63385B3BEC77CD3B217AC38D /* ConnectionList.storyboard */; };
 		1FB954DDEE683F685D104E34 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A0410A4566C7E704DE1888CE /* LaunchScreen.storyboard */; };
-		20B530EAFC3BDAB2A0F9666C /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B5188A167594C45AED9ABB5A /* libc++.tbd */; };
-		2495BC47D0FA14A6184B501B /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = B4AB80129000F8DD501B04E3 /* libz.tbd */; };
-		2659B0341A03CC8212F8C032 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2C3F0D76167DC89E67553B9 /* UIKit.framework */; };
-		35215918A221A9B5C897001E /* RDPScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F9C0AFDCEBC8776EFCD228 /* RDPScreenView.swift */; };
-		443E742EFD3AA60BC4586250 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F86FC6071562C2C71A5587EC /* CoreGraphics.framework */; };
+		28AEA08906C03BA901240AF5 /* RDPScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C5711618FAE80BBA3DDD2D /* RDPScreenViewController.swift */; };
+		3AAFE864891BDC7B15E900DF /* RDPScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 989B7D1F4697AA43994D4285 /* RDPScreenView.swift */; };
 		4F90C6E03636F6CA8D8FB464 /* AWSIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55787D7F07071FE1597B4A9D /* AWSIntegration.swift */; };
+		67844D7BA376D7E4B3E84420 /* MainViewController.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F88AABEB7D0B43F10C021FE4 /* MainViewController.storyboard */; };
 		6A4C7E3BB696A049BC33A3E9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21572F28047C83358508F9F7 /* AppDelegate.swift */; };
 		6AD93496CE4501DC29873F00 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E50AAB4645FE08D05D2EAA7E /* ViewController.swift */; };
-		84D9362D6FA0AE590B005DA6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 87FAFB7FD60CFD98061ED5B3 /* Foundation.framework */; };
+		85B1AB3E2E1DCAF63291B88F /* RDPScreenView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B94870EB30F2ACF03BEE0DE /* RDPScreenView.xib */; };
+		8E6A908695696BE2B0CCC02E /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA4CD6277DD7BB4EEC7CAF68 /* MainViewController.swift */; };
 		978FA5686DC35ACF1D67BAE1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BC3A1EB563722694A39327A1 /* Main.storyboard */; };
 		A197785F4A0AF23F3148B9BE /* CredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A75BDCE29AE7FD27701890 /* CredentialStore.swift */; };
-		AA0235839FF93633C23130FF /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 23D417756CCB7EE6D05E8594 /* Security.framework */; };
 		B4A1ED77E3182273B23FE66D /* RDPConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A1D99FE2953A625C9EC358D /* RDPConnectionManager.swift */; };
-		C228B8F68AE89DC846DDF208 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7027340A3322FC172E440BE0 /* SystemConfiguration.framework */; };
+		C5C15AD9CD8AA304398B4650 /* AddConnection.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1364D42ACCDF8886FFD59E17 /* AddConnection.storyboard */; };
 		CB7B6BF18AA75944B35069CA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C847D06531DAFDBCF83F76E2 /* Assets.xcassets */; };
 		CD2E965525282CAE33607DC9 /* RDPConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925EBF8BF8385021709EF1B4 /* RDPConnection.swift */; };
 		DE835CD9D1B92BAFF4410C04 /* test.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BE0B87563C152ED25D770EB /* test.swift */; };
 		E437AB8722897F29F7883D81 /* ConnectionListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB0798A5FE5185A027DB6EC3 /* ConnectionListViewController.swift */; };
 		EBAA4DD87EE70B6D4D9FA119 /* FreeRDPBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = DE85A7A3F433FE9B9E588284 /* FreeRDPBridge.m */; };
-		F0BED240A176D7A142525016 /* RDPScreenView.xib in Resources */ = {isa = PBXBuildFile; fileRef = AF892D308B1421D79D12FDC8 /* RDPScreenView.xib */; };
 		FFA0A504A5AE9C1DD8850869 /* AddConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 197F6E8A3C5D1B9160700818 /* AddConnectionViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1364D42ACCDF8886FFD59E17 /* AddConnection.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AddConnection.storyboard; sourceTree = "<group>"; };
 		197F6E8A3C5D1B9160700818 /* AddConnectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddConnectionViewController.swift; sourceTree = "<group>"; };
 		21572F28047C83358508F9F7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		23D417756CCB7EE6D05E8594 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		31AE01115F773F48ABF26DBF /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		44D092BC93F7609A7B65036B /* MyRDPApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyRDPApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		46A35F41ADBB342A0B136C2A /* FreeRDPBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FreeRDPBridge.h; sourceTree = "<group>"; };
 		55787D7F07071FE1597B4A9D /* AWSIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AWSIntegration.swift; sourceTree = "<group>"; };
 		61A75BDCE29AE7FD27701890 /* CredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialStore.swift; sourceTree = "<group>"; };
+		63385B3BEC77CD3B217AC38D /* ConnectionList.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ConnectionList.storyboard; sourceTree = "<group>"; };
 		6CA3B4D65073CF1F0EDBE715 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		7027340A3322FC172E440BE0 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		7BE0B87563C152ED25D770EB /* test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = test.swift; sourceTree = "<group>"; };
-		87FAFB7FD60CFD98061ED5B3 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8A1D99FE2953A625C9EC358D /* RDPConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPConnectionManager.swift; sourceTree = "<group>"; };
+		8B94870EB30F2ACF03BEE0DE /* RDPScreenView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RDPScreenView.xib; sourceTree = "<group>"; };
 		925EBF8BF8385021709EF1B4 /* RDPConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPConnection.swift; sourceTree = "<group>"; };
+		989B7D1F4697AA43994D4285 /* RDPScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPScreenView.swift; sourceTree = "<group>"; };
 		9EBD7F0A7362CEA69BBB43C9 /* MyRDPApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MyRDPApp-Bridging-Header.h"; sourceTree = "<group>"; };
 		A0410A4566C7E704DE1888CE /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		AD7DCAA0E5A710F5AD6EB261 /* MyRDPApp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MyRDPApp-Bridging-Header.h"; sourceTree = "<group>"; };
-		AF892D308B1421D79D12FDC8 /* RDPScreenView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RDPScreenView.xib; sourceTree = "<group>"; };
-		B2C3F0D76167DC89E67553B9 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		B4AB80129000F8DD501B04E3 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
-		B5188A167594C45AED9ABB5A /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
+		A9C5711618FAE80BBA3DDD2D /* RDPScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPScreenViewController.swift; sourceTree = "<group>"; };
+		AA4CD6277DD7BB4EEC7CAF68 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		BC3A1EB563722694A39327A1 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		C847D06531DAFDBCF83F76E2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CB0798A5FE5185A027DB6EC3 /* ConnectionListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionListViewController.swift; sourceTree = "<group>"; };
-		D8F9C0AFDCEBC8776EFCD228 /* RDPScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPScreenView.swift; sourceTree = "<group>"; };
 		DE85A7A3F433FE9B9E588284 /* FreeRDPBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FreeRDPBridge.m; sourceTree = "<group>"; };
 		E50AAB4645FE08D05D2EAA7E /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		F86FC6071562C2C71A5587EC /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		F88AABEB7D0B43F10C021FE4 /* MainViewController.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MainViewController.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,40 +62,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				20B530EAFC3BDAB2A0F9666C /* libc++.tbd in Frameworks */,
-				2495BC47D0FA14A6184B501B /* libz.tbd in Frameworks */,
-				84D9362D6FA0AE590B005DA6 /* Foundation.framework in Frameworks */,
-				443E742EFD3AA60BC4586250 /* CoreGraphics.framework in Frameworks */,
-				2659B0341A03CC8212F8C032 /* UIKit.framework in Frameworks */,
-				C228B8F68AE89DC846DDF208 /* SystemConfiguration.framework in Frameworks */,
-				AA0235839FF93633C23130FF /* Security.framework in Frameworks */,
-				1263E32CB5D1E47A080C4837 /* CoreFoundation.framework in Frameworks */,
+				083F05AB138305549461A936 /* RswiftLibrary in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		23F414DF54F6F01B38BB6494 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				31AE01115F773F48ABF26DBF /* CoreFoundation.framework */,
-				F86FC6071562C2C71A5587EC /* CoreGraphics.framework */,
-				87FAFB7FD60CFD98061ED5B3 /* Foundation.framework */,
-				B5188A167594C45AED9ABB5A /* libc++.tbd */,
-				B4AB80129000F8DD501B04E3 /* libz.tbd */,
-				23D417756CCB7EE6D05E8594 /* Security.framework */,
-				7027340A3322FC172E440BE0 /* SystemConfiguration.framework */,
-				B2C3F0D76167DC89E67553B9 /* UIKit.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		2C165820477F96D24526811E = {
 			isa = PBXGroup;
 			children = (
 				EB03371C27FCBA27790F27ED /* MyRDPApp */,
-				23F414DF54F6F01B38BB6494 /* Frameworks */,
 				8BFB6254F2D1880BDDB37B80 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -111,11 +82,8 @@
 			children = (
 				46A35F41ADBB342A0B136C2A /* FreeRDPBridge.h */,
 				DE85A7A3F433FE9B9E588284 /* FreeRDPBridge.m */,
-				AD7DCAA0E5A710F5AD6EB261 /* MyRDPApp-Bridging-Header.h */,
 				925EBF8BF8385021709EF1B4 /* RDPConnection.swift */,
 				8A1D99FE2953A625C9EC358D /* RDPConnectionManager.swift */,
-				D8F9C0AFDCEBC8776EFCD228 /* RDPScreenView.swift */,
-				AF892D308B1421D79D12FDC8 /* RDPScreenView.xib */,
 			);
 			path = RDP;
 			sourceTree = "<group>";
@@ -131,16 +99,23 @@
 		EB03371C27FCBA27790F27ED /* MyRDPApp */ = {
 			isa = PBXGroup;
 			children = (
+				1364D42ACCDF8886FFD59E17 /* AddConnection.storyboard */,
 				197F6E8A3C5D1B9160700818 /* AddConnectionViewController.swift */,
 				21572F28047C83358508F9F7 /* AppDelegate.swift */,
 				C847D06531DAFDBCF83F76E2 /* Assets.xcassets */,
 				55787D7F07071FE1597B4A9D /* AWSIntegration.swift */,
+				63385B3BEC77CD3B217AC38D /* ConnectionList.storyboard */,
 				CB0798A5FE5185A027DB6EC3 /* ConnectionListViewController.swift */,
 				61A75BDCE29AE7FD27701890 /* CredentialStore.swift */,
 				6CA3B4D65073CF1F0EDBE715 /* Info.plist */,
 				A0410A4566C7E704DE1888CE /* LaunchScreen.storyboard */,
 				BC3A1EB563722694A39327A1 /* Main.storyboard */,
+				F88AABEB7D0B43F10C021FE4 /* MainViewController.storyboard */,
+				AA4CD6277DD7BB4EEC7CAF68 /* MainViewController.swift */,
 				9EBD7F0A7362CEA69BBB43C9 /* MyRDPApp-Bridging-Header.h */,
+				989B7D1F4697AA43994D4285 /* RDPScreenView.swift */,
+				8B94870EB30F2ACF03BEE0DE /* RDPScreenView.xib */,
+				A9C5711618FAE80BBA3DDD2D /* RDPScreenViewController.swift */,
 				7BE0B87563C152ED25D770EB /* test.swift */,
 				E50AAB4645FE08D05D2EAA7E /* ViewController.swift */,
 				723A006DEEB9886F0F242A19 /* RDP */,
@@ -165,6 +140,7 @@
 			);
 			name = MyRDPApp;
 			packageProductDependencies = (
+				67B9D9EB13334DC5045981BC /* RswiftLibrary */,
 			);
 			productName = MyRDPApp;
 			productReference = 44D092BC93F7609A7B65036B /* MyRDPApp.app */;
@@ -176,11 +152,10 @@
 		F30909F9BE2BD46ABA844E77 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1630;
 			};
 			buildConfigurationList = C7E28247F0D626A0BC32458A /* Build configuration list for PBXProject "MyRDPApp" */;
-			compatibilityVersion = "Xcode 14.0";
+			compatibilityVersion = "Xcode 10.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -188,7 +163,9 @@
 				en,
 			);
 			mainGroup = 2C165820477F96D24526811E;
-			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				ACE5B2B819F45F06D1EE23B6 /* XCRemoteSwiftPackageReference "R" */,
+			);
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -202,10 +179,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C5C15AD9CD8AA304398B4650 /* AddConnection.storyboard in Resources */,
 				CB7B6BF18AA75944B35069CA /* Assets.xcassets in Resources */,
+				09BAFB5C0C7F8A86FBF70B68 /* ConnectionList.storyboard in Resources */,
 				1FB954DDEE683F685D104E34 /* LaunchScreen.storyboard in Resources */,
 				978FA5686DC35ACF1D67BAE1 /* Main.storyboard in Resources */,
-				F0BED240A176D7A142525016 /* RDPScreenView.xib in Resources */,
+				67844D7BA376D7E4B3E84420 /* MainViewController.storyboard in Resources */,
+				85B1AB3E2E1DCAF63291B88F /* RDPScreenView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -222,9 +202,11 @@
 				E437AB8722897F29F7883D81 /* ConnectionListViewController.swift in Sources */,
 				A197785F4A0AF23F3148B9BE /* CredentialStore.swift in Sources */,
 				EBAA4DD87EE70B6D4D9FA119 /* FreeRDPBridge.m in Sources */,
+				8E6A908695696BE2B0CCC02E /* MainViewController.swift in Sources */,
 				CD2E965525282CAE33607DC9 /* RDPConnection.swift in Sources */,
 				B4A1ED77E3182273B23FE66D /* RDPConnectionManager.swift in Sources */,
-				35215918A221A9B5C897001E /* RDPScreenView.swift in Sources */,
+				3AAFE864891BDC7B15E900DF /* RDPScreenView.swift in Sources */,
+				28AEA08906C03BA901240AF5 /* RDPScreenViewController.swift in Sources */,
 				6AD93496CE4501DC29873F00 /* ViewController.swift in Sources */,
 				DE835CD9D1B92BAFF4410C04 /* test.swift in Sources */,
 			);
@@ -355,7 +337,8 @@
 					CoreGraphics,
 					"-lm",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.hakase.RemoteDesctop;
+				OTHER_SWIFT_FLAGS = "-Xfrontend -validate-tbd-against-ir=none";
+				PRODUCT_BUNDLE_IDENTIFIER = s;
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "MyRDPApp/MyRDPApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -474,7 +457,8 @@
 					CoreGraphics,
 					"-lm",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.hakase.RemoteDesctop;
+				OTHER_SWIFT_FLAGS = "-Xfrontend -validate-tbd-against-ir=none";
+				PRODUCT_BUNDLE_IDENTIFIER = s;
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "MyRDPApp/MyRDPApp-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -506,6 +490,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ACE5B2B819F45F06D1EE23B6 /* XCRemoteSwiftPackageReference "R" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mac-cain13/R.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		67B9D9EB13334DC5045981BC /* RswiftLibrary */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ACE5B2B819F45F06D1EE23B6 /* XCRemoteSwiftPackageReference "R" */;
+			productName = RswiftLibrary;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F30909F9BE2BD46ABA844E77 /* Project object */;
 }
