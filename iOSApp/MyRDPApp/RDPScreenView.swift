@@ -80,12 +80,12 @@ class RDPScreenView: UIView {
         backgroundColor = .black
         
         // 画像表示用ビューの設定
-        imageView = UIImageView(frame: bounds)
-        imageView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        imageView?.contentMode = .scaleAspectFit
-        imageView?.backgroundColor = .black
+        self.imageView = UIImageView(frame: bounds)
+        self.imageView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        self.imageView?.contentMode = .scaleAspectFit
+        self.imageView?.backgroundColor = .black
         
-        if let imageView = imageView {
+        if let imageView = self.imageView {
             addSubview(imageView)
         }
         
