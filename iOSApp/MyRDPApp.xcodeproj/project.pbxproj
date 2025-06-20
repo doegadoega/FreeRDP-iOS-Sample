@@ -10,6 +10,7 @@
 		0259CE1E2E0400C000FF1A05 /* ConnectionListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0259CE1D2E0400C000FF1A05 /* ConnectionListCell.swift */; };
 		0259CE282E0400E600FF1A05 /* ConnectionListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0259CE272E0400E600FF1A05 /* ConnectionListCell.xib */; };
 		0275C3632E02CEC700C20E7A /* RDPConnectionError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0275C3622E02CEC600C20E7A /* RDPConnectionError.swift */; };
+		02B00E072E0515CD0057C0A1 /* OpenSSLHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B00E062E0515CB0057C0A1 /* OpenSSLHelper.m */; };
 		02D8281F2E041CE300DB11B9 /* RswiftLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = 02D8281E2E041CE300DB11B9 /* RswiftLibrary */; };
 		02D8282D2E041D9B00DB11B9 /* ConnectionListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB0798A5FE5185A027DB6EC3 /* ConnectionListViewController.swift */; };
 		02D828332E041DDF00DB11B9 /* ConnectionList.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 02D828322E041DDF00DB11B9 /* ConnectionList.storyboard */; };
@@ -38,6 +39,8 @@
 		0259CE1D2E0400C000FF1A05 /* ConnectionListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionListCell.swift; sourceTree = "<group>"; };
 		0259CE272E0400E600FF1A05 /* ConnectionListCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConnectionListCell.xib; sourceTree = "<group>"; };
 		0275C3622E02CEC600C20E7A /* RDPConnectionError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RDPConnectionError.swift; sourceTree = "<group>"; };
+		02B00E052E0515C00057C0A1 /* OpenSSLHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenSSLHelper.h; sourceTree = "<group>"; };
+		02B00E062E0515CB0057C0A1 /* OpenSSLHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OpenSSLHelper.m; sourceTree = "<group>"; };
 		02D828322E041DDF00DB11B9 /* ConnectionList.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ConnectionList.storyboard; sourceTree = "<group>"; };
 		02D828492E0422B800DB11B9 /* RDPScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = RDPScreen.storyboard; sourceTree = "<group>"; };
 		02D828572E04258D00DB11B9 /* ConnectionListViewController+Segue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConnectionListViewController+Segue.swift"; sourceTree = "<group>"; };
@@ -119,6 +122,8 @@
 		723A006DEEB9886F0F242A19 /* RDP */ = {
 			isa = PBXGroup;
 			children = (
+				02B00E052E0515C00057C0A1 /* OpenSSLHelper.h */,
+				02B00E062E0515CB0057C0A1 /* OpenSSLHelper.m */,
 				46A35F41ADBB342A0B136C2A /* FreeRDPBridge.h */,
 				DE85A7A3F433FE9B9E588284 /* FreeRDPBridge.m */,
 				925EBF8BF8385021709EF1B4 /* RDPConnection.swift */,
@@ -251,6 +256,7 @@
 				3AAFE864891BDC7B15E900DF /* RDPScreenView.swift in Sources */,
 				28AEA08906C03BA901240AF5 /* RDPScreenViewController.swift in Sources */,
 				02D828582E04259600DB11B9 /* ConnectionListViewController+Segue.swift in Sources */,
+				02B00E072E0515CD0057C0A1 /* OpenSSLHelper.m in Sources */,
 				6AD93496CE4501DC29873F00 /* ViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -117,8 +117,19 @@ class RDPConnectionManager {
         setupBridgeCallbacks()
         debugPrint("RDPConnectionManager initialized")
         startNetworkMonitoring()
-    }
         
+        // TODO: 初回起動時のみデフォルトのEC2接続情報を追加
+        addDefaultConnectionIfNeeded()
+    }
+    
+    // EC2のデフォルト接続先を追加
+    private func addDefaultConnectionIfNeeded() {
+        // 既存の接続情報がない場合のみデフォルト接続を追加
+        if connections.isEmpty {
+
+        }
+    }
+    
     deinit {
         stopNetworkMonitoring()
         performanceTimer?.invalidate()
