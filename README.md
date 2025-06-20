@@ -199,6 +199,17 @@ FreeRDPiOSApp/
 - 重要設定ファイルの変更は事前承認が必要
 - 作業開始前は必ずTODO.mdを確認
 
+## ⚠️ OpenSSL 3.x + FreeRDP + iOS: MD4/RC4問題について
+
+- OpenSSL 3.x以降、MD4やRC4などの旧暗号アルゴリズムは「レガシープロバイダー」扱いとなり、デフォルトでは利用できません。
+- iOSは静的リンクのみ許可されており、OpenSSLのプロバイダー機構（動的ロード）が使えません。
+- そのため、FreeRDP/WinPR経由でNTLM認証時にMD4/RC4が利用できず、RDP接続が失敗する問題が発生します。
+- 本プロジェクトではFreeRDPの内部実装（CMakeオプション: `-DWITH_INTERNAL_MD4=ON -DWITH_INTERNAL_RC4=ON`）を有効化し、OpenSSLに依存しないMD4/RC4実装でNTLM認証を動作させています。
+- **MD4/RC4は現代のセキュリティ基準では非推奨です。将来的にはCredSSP/NLAやTLS等の安全な認証方式への移行を推奨します。**
+- iOSシミュレータ向けにもFreeRDPライブラリをビルドしますが、シミュレータ上ではRDP接続が正常に動作しない場合があります。必ず実機で検証してください。
+
+詳細な作業ログ・技術的な教訓は [`docs/development-logs/openssl3_md4_issue.md`](docs/development-logs/openssl3_md4_issue.md) を参照してください。
+
 ## 📄 ライセンス
 
 このプロジェクトはMITライセンスの下で公開されています。詳細については[LICENSE](LICENSE)ファイルを参照してください。
