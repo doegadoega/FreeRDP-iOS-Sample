@@ -226,7 +226,10 @@ get_common_cmake_options() {
         -DWITH_NEON=OFF \
         -DWITH_PRIMITIVE_OPTIMIZATIONS=OFF \
         -DWITH_JSON=OFF \
-        -DWITH_CJSON=OFF"
+        -DWITH_CJSON=OFF \
+        -DWITH_INTERNAL_MD4=ON \
+        -DWITH_INTERNAL_RC4=ON"
+
 }
 
 # シミュレータ用の共通オプション関数を追加
@@ -266,7 +269,9 @@ get_simulator_cmake_options() {
         -DWITH_NEON=OFF \
         -DWITH_PRIMITIVE_OPTIMIZATIONS=OFF \
         -DWITH_JSON=ON \
-        -DWITH_CJSON=ON"
+        -DWITH_CJSON=ON \
+        -DWITH_INTERNAL_MD4=ON \
+        -DWITH_INTERNAL_RC4=ON"
 }
 
 # iOS実機向けFreeRDPビルド
