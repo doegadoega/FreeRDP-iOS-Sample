@@ -9,39 +9,35 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Connection List View Controller-->
+        <!--Screen View Controller-->
         <scene sceneID="s0d-6b-0kx">
             <objects>
-                <viewController id="Y6W-OH-hqX" customClass="ConnectionListViewController" customModule="MyRDPApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Y6W-OH-hqX" customClass="RDPScreenViewController" customModule="MyRDPApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Inf-Vg-KOd">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5Lt-cF-QWf" customClass="RDPScreenView" customModule="MyRDPApp" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="118" width="393" height="666"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                <connections>
-                                    <outlet property="dataSource" destination="Y6W-OH-hqX" id="WfQ-3z-jec"/>
-                                    <outlet property="delegate" destination="Y6W-OH-hqX" id="Jej-Po-ViA"/>
-                                </connections>
-                            </tableView>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="Inf-Vg-KOd" secondAttribute="trailing" id="4Se-TU-fxG"/>
-                            <constraint firstItem="Inf-Vg-KOd" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="9Ow-bg-N9m"/>
-                            <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="Inf-Vg-KOd" secondAttribute="bottom" id="qSN-rN-Gdi"/>
-                            <constraint firstItem="Inf-Vg-KOd" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="tTf-CE-Xm9"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="bottom" secondItem="5Lt-cF-QWf" secondAttribute="bottom" id="Ntn-fF-n1k"/>
+                            <constraint firstItem="5Lt-cF-QWf" firstAttribute="top" secondItem="vDu-zF-Fre" secondAttribute="top" id="PNd-z3-zIt"/>
+                            <constraint firstItem="5Lt-cF-QWf" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="YnZ-Ec-tYa"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="5Lt-cF-QWf" secondAttribute="trailing" id="cQI-0b-PF2"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="tableView" destination="Inf-Vg-KOd" id="RWr-DM-2fJ"/>
+                        <outlet property="rdpScreenView" destination="5Lt-cF-QWf" id="87E-x7-dEA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="132" y="-28"/>
+            <point key="canvasLocation" x="138" y="-17"/>
         </scene>
     </scenes>
     <resources>

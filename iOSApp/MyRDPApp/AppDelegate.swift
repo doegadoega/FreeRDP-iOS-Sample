@@ -293,8 +293,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let port = url.port ?? 3389
         let username = url.user ?? ""
-        let password = url.password ?? ""
-        
+        let password = url.password ?? ""        
         debugPrint("Handling RDP URL - Host: \(host), Port: \(port), User: \(username)")
         
         // メインビューコントローラーに接続要求を送信

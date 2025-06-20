@@ -109,14 +109,29 @@
                                                 </subviews>
                                                 <viewLayoutGuide key="safeArea" id="Lcu-ZS-3wa"/>
                                             </stackView>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NDN-Zv-Fcs">
+                                                <rect key="frame" x="16" y="513.66666666666663" width="361" height="50"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="50" id="Aao-IZ-exD"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                                <connections>
+                                                    <action selector="cancelButtonTapped" destination="Y6W-OH-hqX" eventType="touchUpInside" id="lOs-Oh-EP1"/>
+                                                    <action selector="saveButtonTapped" destination="Y6W-OH-hqX" eventType="touchUpInside" id="6ts-DN-tuY"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                         <viewLayoutGuide key="safeArea" id="HnE-e2-ZAl"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
                                             <constraint firstItem="IMJ-pI-pDW" firstAttribute="leading" secondItem="HnE-e2-ZAl" secondAttribute="leading" constant="16" id="3J8-Yn-LS7"/>
                                             <constraint firstItem="HnE-e2-ZAl" firstAttribute="trailing" secondItem="IMJ-pI-pDW" secondAttribute="trailing" constant="16" id="GHh-B7-er6"/>
+                                            <constraint firstItem="HnE-e2-ZAl" firstAttribute="trailing" secondItem="NDN-Zv-Fcs" secondAttribute="trailing" constant="16" id="R5Q-ZE-RjJ"/>
                                             <constraint firstItem="IMJ-pI-pDW" firstAttribute="top" secondItem="HnE-e2-ZAl" secondAttribute="top" id="S4D-Lj-hfk"/>
+                                            <constraint firstItem="NDN-Zv-Fcs" firstAttribute="leading" secondItem="HnE-e2-ZAl" secondAttribute="leading" constant="16" id="SdH-5y-43U"/>
                                             <constraint firstAttribute="height" constant="2000" id="X5n-8q-xNo"/>
+                                            <constraint firstItem="NDN-Zv-Fcs" firstAttribute="top" secondItem="IMJ-pI-pDW" secondAttribute="bottom" constant="16" id="YHp-rj-zxg"/>
                                             <constraint firstAttribute="width" secondItem="gKj-0Z-V2C" secondAttribute="height" multiplier="393:2000" id="iXF-qm-zSd"/>
                                         </constraints>
                                     </view>
@@ -140,6 +155,7 @@
                         <color key="backgroundColor" red="0.91722470238095233" green="0.83014455782312924" blue="0.69989657402038574" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="Yff-lY-AG5" firstAttribute="trailing" secondItem="vDu-zF-Fre" secondAttribute="trailing" id="8a6-Tm-Z4g"/>
+                            <constraint firstItem="NDN-Zv-Fcs" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="16" id="DnJ-8Z-Uhb"/>
                             <constraint firstItem="Yff-lY-AG5" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" id="Muh-pj-8yT"/>
                             <constraint firstItem="Yff-lY-AG5" firstAttribute="top" secondItem="5EZ-qb-Rvc" secondAttribute="top" id="Wdz-k2-jxW"/>
                             <constraint firstAttribute="bottom" secondItem="Yff-lY-AG5" secondAttribute="bottom" id="xhz-uB-iLW"/>
