@@ -29,6 +29,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // AWS設定の初期化
         configureAWS()
         
+        // OpenSSLの設定
+         setupOpenSSL()
+        
         // デバッグ設定
         #if DEBUG
         setupDebugConfiguration()
@@ -84,16 +87,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func setupMainWindow() {
-        // メインウィンドウの作成
+        // メインウィンドウの作成 - Storyboardを使用
         window = UIWindow(frame: UIScreen.main.bounds)
         
-        let mainViewController = ViewController()
-        let navigationController = UINavigationController(rootViewController: mainViewController)
+        // Main.storyboardからUIStoryboardを作成
+        let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
         
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
-        
-        debugPrint("Main window setup completed")
+        // 初期ビューコントローラを取得
+        if let initialViewController = mainStoryboard.instantiateInitialViewController() {
+            window?.rootViewController = initialViewController
+            window?.makeKeyAndVisible()
+            debugPrint("Main window setup completed with storyboard")
+        } else {
+            debugPrint("Failed to load initial view controller from Main.storyboard")
+        }
     }
     
     private func configureAWS() {
@@ -289,13 +296,65 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let port = url.port ?? 3389
         let username = url.user ?? ""
-        let password = url.password ?? ""
-        
+        let password = url.password ?? ""        
         debugPrint("Handling RDP URL - Host: \(host), Port: \(port), User: \(username)")
         
         // メインビューコントローラーに接続要求を送信
         // 実際の実装では適切なナビゲーション処理を行う
         
         return true
+    }
+
+    // MARK: - OpenSSL Setup
+    private func setupOpenSSL() {
+        // 初期化
+        OpenSSLHelper.initializeOpenSSL()
+        
+        // MD4を強制登録
+        OpenSSLHelper.forceMD4Registration()
+        
+        // 確認
+        if OpenSSLHelper.isMD4Available() {
+            print("✓ MD4 setup successful!")
+        } else {
+            print("✗ MD4 setup failed")
+        }
+    }
+
+    private func testMD4DirectAccess() {
+        print("\n=== Testing MD4 Direct Access ===")
+        
+        // EVP_get_digestbynameでテスト
+        let md4 = EVP_get_digestbyname("MD4")
+        if md4 != nil {
+            print("✓ MD4 accessible via EVP_get_digestbyname")
+            
+            // 実際にハッシュ計算してみる
+            var md = [UInt8](repeating: 0, count: Int(EVP_MAX_MD_SIZE))
+            var md_len: UInt32 = 0
+            let testString = "test"
+            let data = testString.data(using: .utf8)!
+            
+            let result = data.withUnsafeBytes { bytes in
+                EVP_Digest(
+                    bytes.baseAddress,
+                    data.count,
+                    &md,
+                    &md_len,
+                    md4,
+                    nil
+                )
+            }
+            
+            if result == 1 && md_len > 0 {
+                let hash = md.prefix(Int(md_len)).map { String(format: "%02x", $0) }.joined()
+                print("✓ MD4 hash of '\(testString)': \(hash)")
+                // MD4("test") = db346d691d7acc4dc2625db19f9e3f52
+            } else {
+                print("✗ MD4 hash calculation failed")
+            }
+        } else {
+            print("✗ MD4 not accessible")
+        }
     }
 }

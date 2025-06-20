@@ -2,84 +2,122 @@ name: MyRDPApp
 options:
   bundleIdPrefix: com.example
   deploymentTarget:
-    iOS: "15.0"  # iOS 15.0に更新
+    iOS: "16.0"
   xcodeVersion: "16.3"
   generateEmptyDirectories: true
-  usesTabs: false
-  indentWidth: 4
-  tabWidth: 4
-  projectPath: ../MyRDPApp.xcodeproj
+
+packages:
+  RswiftLibrary:
+    url: https://github.com/mac-cain13/R.swift
+    from: 7.0.0
 
 targets:
   MyRDPApp:
     type: application
     platform: iOS
-    sources: 
+    sources:
       - path: MyRDPApp/
-        excludes:
-          - "build/**"
+    dependencies:
+      - package: RswiftLibrary
+        product: RswiftLibrary
+    buildToolPlugins:
+      - plugin: RswiftGenerateInternalResources
+        package: RswiftLibrary
     settings:
       base:
         SWIFT_OBJC_BRIDGING_HEADER: MyRDPApp/MyRDPApp-Bridging-Header.h
         SWIFT_VERSION: "5.0"
         CLANG_ENABLE_MODULES: "YES"
         CLANG_ENABLE_OBJC_ARC: "YES"
+        VALID_ARCHS[sdk=iphonesimulator*]: "arm64 x86_64"
+        EXCLUDED_ARCHS[sdk=iphonesimulator*]: ""
+        ONLY_ACTIVE_ARCH: NO
+        OTHER_LDFLAGS:
+          - -ObjC
+          - -lc++
+          - -lz
+        OTHER_SWIFT_FLAGS:
+          - "-Xfrontend"
+          - "-validate-tbd-against-ir=none"
       configs:
-        debug:
+        Debug:
           ENABLE_TESTABILITY: "YES"
-        release:
+          GCC_PREPROCESSOR_DEFINITIONS:
+            - "$(inherited)"
+            - "DEBUG=1"
+            - "FREERDP_API_VERSION=3"
+            - "WITH_FREERDP3=1"
+          LIBRARY_SEARCH_PATHS:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3
+            - $(PROJECT_DIR)/Libraries/openssl/lib
+            - $(PROJECT_DIR)/Libraries/cjson/lib
+          HEADER_SEARCH_PATHS:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include/winpr3
+            - $(PROJECT_DIR)/Libraries/openssl/include
+            - $(PROJECT_DIR)/Libraries/cjson/include
+          OTHER_LDFLAGS:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp-client3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libwinpr3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3/librdpsnd-common.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3/libremdesk-common.a
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libssl.a
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libcrypto.a
+            - $(PROJECT_DIR)/Libraries/cjson/lib/libcjson.a
+            - -framework Foundation
+            - -framework CoreFoundation
+            - -framework SystemConfiguration
+            - -framework Security
+            - -framework CoreGraphics
+            - -lm
+        Release:
           SWIFT_OPTIMIZATION_LEVEL: "-Owholemodule"
-    dependencies:
-      - sdk: libc++.tbd
-      - sdk: libz.tbd
+          GCC_PREPROCESSOR_DEFINITIONS:
+            - "$(inherited)"
+            - "FREERDP_API_VERSION=3"
+            - "WITH_FREERDP3=1"
+          LIBRARY_SEARCH_PATHS:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3
+            - $(PROJECT_DIR)/Libraries/openssl/lib
+          HEADER_SEARCH_PATHS:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include/freerdp3
+            - $(PROJECT_DIR)/Libraries/freerdp-device/include/winpr3
+            - $(PROJECT_DIR)/Libraries/openssl/include
+          OTHER_LDFLAGS:
+            - $(inherited)
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libfreerdp-client3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/libwinpr3.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3/librdpsnd-common.a
+            - $(PROJECT_DIR)/Libraries/freerdp-device/lib/freerdp3/libremdesk-common.a
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libssl.a
+            - $(PROJECT_DIR)/Libraries/openssl/lib/libcrypto.a
+            - -framework Foundation
+            - -framework CoreFoundation
+            - -framework SystemConfiguration
+            - -framework Security
+            - -framework CoreGraphics
+            - -lm
     info:
       path: MyRDPApp/Info.plist
       properties:
         CFBundleDisplayName: MyRDPApp
-        UILaunchStoryboardName: MyRDPApp/LaunchScreen
+        UILaunchStoryboardName: LaunchScreen
         UIMainStoryboardFile: Main
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
-    
-    preBuildScripts:
-      - name: "Copy FreeRDP Libraries"
-        script: |
-          # シミュレータと実機でライブラリを切り替え
-          mkdir -p "$BUILT_PRODUCTS_DIR/Libraries"
-          if [[ "$PLATFORM_NAME" == "iphonesimulator" ]]; then
-            cp -f "$PROJECT_DIR/Libraries/freerdp-simulator/lib/"*.a "$BUILT_PRODUCTS_DIR/Libraries/"
-            cp -f "$PROJECT_DIR/Libraries/openssl-simulator/lib/"*.a "$BUILT_PRODUCTS_DIR/Libraries/"
-          else
-            cp -f "$PROJECT_DIR/Libraries/freerdp/lib/"*.a "$BUILT_PRODUCTS_DIR/Libraries/"
-            cp -f "$PROJECT_DIR/Libraries/openssl/lib/"*.a "$BUILT_PRODUCTS_DIR/Libraries/"
-          fi
-        outputFiles:
-          - "$(BUILT_PRODUCTS_DIR)/Libraries/libfreerdp3.a"
-          - "$(BUILT_PRODUCTS_DIR)/Libraries/libwinpr3.a"
-          - "$(BUILT_PRODUCTS_DIR)/Libraries/libssl.a"
-          - "$(BUILT_PRODUCTS_DIR)/Libraries/libcrypto.a"
-    
-    buildSettings:
-      LIBRARY_SEARCH_PATHS:
-        - $(inherited)
-        - $(PROJECT_DIR)/Libraries/freerdp/lib
-        - $(PROJECT_DIR)/Libraries/freerdp-simulator/lib
-        - $(PROJECT_DIR)/Libraries/openssl/lib
-        - $(PROJECT_DIR)/Libraries/openssl-simulator/lib
-      HEADER_SEARCH_PATHS:
-        - $(inherited)
-        - $(PROJECT_DIR)/Libraries/freerdp/include
-        - $(PROJECT_DIR)/Libraries/freerdp-simulator/include
-        - $(PROJECT_DIR)/Libraries/openssl/include
-        - $(PROJECT_DIR)/Libraries/openssl-simulator/include
-      OTHER_LDFLAGS:
-        - -lfreerdp3
-        - -lwinpr3
-        - -lssl
-        - -lcrypto
-        - -lz
 
 schemes:
   MyRDPApp:
@@ -93,4 +131,4 @@ schemes:
     analyze:
       config: Debug
     archive:
-      config: Release 
+      config: Release

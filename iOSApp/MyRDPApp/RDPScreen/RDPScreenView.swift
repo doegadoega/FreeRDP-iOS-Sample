@@ -6,6 +6,7 @@
 //  Copyright © 2025 MyRDPApp. All rights reserved.
 //
 
+import Foundation
 import UIKit
 
 protocol RDPScreenViewDelegate: AnyObject {
@@ -17,17 +18,26 @@ protocol RDPScreenViewDelegate: AnyObject {
 }
 
 class RDPScreenView: UIView {
+    weak var delegate: RDPScreenViewDelegate?
     
     // MARK: - Properties
-    
-    private var imageView: UIImageView
-    private var activityIndicator: UIActivityIndicatorView
-    private var statusLabel: UILabel
+    @IBOutlet weak var imageView: UIImageView! {
+        didSet {
+            imageView.contentMode = .scaleAspectFit
+            imageView.backgroundColor = .black
+        }
+    }
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView! {
+        didSet {
+            activityIndicator.hidesWhenStopped = true
+            activityIndicator.color = .white
+        }
+    }
+    @IBOutlet weak var statusLabel: UILabel!
     
     private var lastImage: CGImage?
     private var connectionState: ConnectionState = .disconnected
     
-    weak var delegate: RDPScreenViewDelegate?
     
     // Gesture recognizers
     private var tapGesture: UITapGestureRecognizer!
@@ -41,66 +51,56 @@ class RDPScreenView: UIView {
     private var isScrolling = false
     
     // MARK: - Initialization
-    
     override init(frame: CGRect) {
-        // UIコンポーネントの初期化
-        imageView = UIImageView(frame: CGRect(origin: .zero, size: frame.size))
-        imageView.contentMode = .scaleAspectFit
-        imageView.backgroundColor = .black
-        
-        activityIndicator = UIActivityIndicatorView(style: .large)
-        activityIndicator.hidesWhenStopped = true
-        activityIndicator.color = .white
-        
-        statusLabel = UILabel()
-        statusLabel.textAlignment = .center
-        statusLabel.textColor = .white
-        statusLabel.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        statusLabel.layer.cornerRadius = 8
-        statusLabel.layer.masksToBounds = true
-        statusLabel.isHidden = true
-        
         super.init(frame: frame)
-        
-        // サブビューの追加
-        addSubview(imageView)
-        addSubview(activityIndicator)
-        addSubview(statusLabel)
-        
-        // レイアウト設定
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-        statusLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            imageView.topAnchor.constraint(equalTo: topAnchor),
-            imageView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            imageView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            imageView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            
-            activityIndicator.centerXAnchor.constraint(equalTo: centerXAnchor),
-            activityIndicator.centerYAnchor.constraint(equalTo: centerYAnchor),
-            
-            statusLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            statusLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -30),
-            statusLabel.widthAnchor.constraint(lessThanOrEqualTo: widthAnchor, constant: -40),
-            statusLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 30)
-        ])
-        
-        // 初期状態の設定
-        showDisconnected()
-        
-        // ジェスチャー認識の設定
-        setupGestureRecognizers()
-        
-        debugPrint("RDPScreenView initialized")
+        setupFromNib()
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
+        setupFromNib()
     }
     
-    // MARK: - Public Methods
+    private func setupFromNib() {
+        // Xibファイルからビューを読み込む
+        let bundle = Bundle(for: type(of: self))
+        let nib = UINib(nibName: "RDPScreenView", bundle: bundle)
+        let view = nib.instantiate(withOwner: self, options: nil).first as! UIView
+        view.frame = bounds
+        view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        addSubview(view)
+        
+        // 初期設定
+        setupView()
+    }
+    
+    private func setupView() {
+        backgroundColor = .black
+        
+        // 画像表示用ビューの設定
+        self.imageView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        self.imageView?.contentMode = .scaleAspectFit
+        self.imageView?.backgroundColor = .black
+        
+        if let imageView = self.imageView {
+            addSubview(imageView)
+        }
+        
+        // 接続中表示用ラベルの設定
+        statusLabel?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        statusLabel?.textAlignment = .center
+        statusLabel?.textColor = .white
+        statusLabel?.font = .systemFont(ofSize: 18, weight: .medium)
+        statusLabel?.text = "接続中..."
+        statusLabel?.isHidden = true
+        
+        if let statusLabel = statusLabel {
+            addSubview(statusLabel)
+        }
+        
+        // ジェスチャー認識の設定
+        setupGestureRecognizers()
+    }
     
     func updateScreen(with image: CGImage) {
         lastImage = image
@@ -250,17 +250,40 @@ class RDPScreenView: UIView {
     
     // MARK: - Coordinate Conversion
     
-    private func convertPointToRemoteCoordinates(_ point: CGPoint) -> CGPoint {
-        guard let image = imageView.image else { return point }
+    // タッチ座標をリモート座標系に変換
+    func convertPointToRemoteCoordinates(_ point: CGPoint) -> CGPoint {
+        guard let image = lastImage,
+              let size = imageView.image?.size else {
+            return point
+        }
         
-        let imageSize = image.size
-        let viewSize = imageView.bounds.size
+        // UIImageViewの実際の表示領域を計算
+        let viewFrame = imageView.frame
         
-        // アスペクト比を考慮した座標変換
-        let scaleX = imageSize.width / viewSize.width
-        let scaleY = imageSize.height / viewSize.height
+        // 画像のアスペクト比に基づいて実際の表示サイズを計算
+        let aspectRatio = size.width / size.height
+        let viewAspectRatio = viewFrame.width / viewFrame.height
         
-        return CGPoint(x: point.x * scaleX, y: point.y * scaleY)
+        var imageRect = CGRect.zero
+        
+        if aspectRatio > viewAspectRatio {
+            // 幅に合わせる
+            let scaledHeight = viewFrame.width / aspectRatio
+            let yOffset = (viewFrame.height - scaledHeight) / 2
+            imageRect = CGRect(x: 0, y: yOffset, width: viewFrame.width, height: scaledHeight)
+        } else {
+            // 高さに合わせる
+            let scaledWidth = viewFrame.height * aspectRatio
+            let xOffset = (viewFrame.width - scaledWidth) / 2
+            imageRect = CGRect(x: xOffset, y: 0, width: scaledWidth, height: viewFrame.height)
+        }
+        
+        // タッチ座標を画像内の座標に変換
+        let x = ((point.x - imageRect.origin.x) / imageRect.width) * CGFloat(image.width)
+        let y = ((point.y - imageRect.origin.y) / imageRect.height) * CGFloat(image.height)
+        
+        return CGPoint(x: max(0, min(CGFloat(image.width), x)),
+                      y: max(0, min(CGFloat(image.height), y)))
     }
     
     // MARK: - Layout
@@ -268,10 +291,10 @@ class RDPScreenView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        // 画面回転時の処理
-        if let image = imageView.image {
-            updateImageViewConstraints(for: image.size)
-        }
+//        // 画面回転時の処理
+//        if let image = imageView.image {
+//            updateImageViewConstraints(for: image.size)
+//        }
     }
     
     private func updateImageViewConstraints(for imageSize: CGSize) {
@@ -281,6 +304,26 @@ class RDPScreenView: UIView {
         let scale = min(scaleX, scaleY)
         
         imageView.transform = CGAffineTransform(scaleX: scale, y: scale)
+    }
+    
+    func toggleKeyboard() {
+        // 実装例: キーボード表示/非表示の切り替え（必要に応じてカスタマイズ）
+        // ここでは何もしないダミー実装
+    }
+    
+    func handlePinchGesture(_ gesture: UIPinchGestureRecognizer) {
+        // 実装例: ピンチイン/アウトの処理（必要に応じてカスタマイズ）
+        // ここでは何もしないダミー実装
+    }
+    
+    func resetZoom() {
+        // 実装例: ズームリセット処理（必要に応じてカスタマイズ）
+        // ここでは何もしないダミー実装
+    }
+    
+    // 引数ラベルを修正
+    func updateScreen(_ image: CGImage) {
+        updateScreen(with: image)
     }
 }
 
