@@ -585,12 +585,13 @@ static BOOL gdi_end_paint(rdpContext* context);
     [self stopUpdateTimer];
     
     // 画面更新チェックタイマー (30FPS)
-    self.updateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/30.0
-                                                        target:self
-                                                      selector:@selector(checkForScreenUpdates)
-                                                      userInfo:nil
-                                                       repeats:YES];
-    [[NSRunLoop currentRunLoop] addTimer:self.updateTimer forMode:NSRunLoopCommonModes];
+    self.updateTimer = [NSTimer scheduledTimerWithTimeInterval: 1.0/30.0
+                                                        target: self
+                                                      selector: @selector(checkForScreenUpdates)
+                                                      userInfo: nil
+                                                       repeats: YES];
+    [[NSRunLoop currentRunLoop] addTimer: self.updateTimer
+                                 forMode: NSRunLoopCommonModes];
 }
 
 - (void)stopUpdateTimer {
@@ -612,21 +613,23 @@ static BOOL gdi_end_paint(rdpContext* context);
 }
 
 - (void)captureAndNotifyScreenUpdate {
-    if (!_rdpContext || !_rdpContext->drawContext) {
-        return;
-    }
-    
-    EnterCriticalSection(&_rdpContext->updateLock);
-    
-    // GDIコンテキストから画像を作成
-    CGImageRef image = CGBitmapContextCreateImage(_rdpContext->drawContext);
-    
-    LeaveCriticalSection(&_rdpContext->updateLock);
-    
-    if (image) {
-        [self notifyScreenUpdate:image];
-        CGImageRelease(image);
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        if (!self.rdpContext || !self.rdpContext->drawContext) {
+            return;
+        }
+        
+        EnterCriticalSection(&self.rdpContext->updateLock);
+        
+        // GDIコンテキストから画像を作成
+        CGImageRef image = CGBitmapContextCreateImage(self.rdpContext->drawContext);
+        LeaveCriticalSection(&self.rdpContext->updateLock);
+        
+        if (image) {
+            [self notifyScreenUpdate: image];
+            CGImageRelease(image);
+        }
+    });
 }
 
 #pragma mark - Input Handling
@@ -708,20 +711,18 @@ static BOOL gdi_end_paint(rdpContext* context);
 
 #pragma mark - Notifications
 
+// 画面更新通知
 - (void)notifyScreenUpdate:(CGImageRef)image {
     if (_onScreenUpdateBlock) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self->_onScreenUpdateBlock(image);
-        });
+        self.onScreenUpdateBlock(image);
     }
 }
 
+// エラーメッセージ通知 
 - (void)notifyError:(NSString *)errorMessage {
     NSLog(@"RDP Error: %@", errorMessage);
     if (_onErrorBlock) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self->_onErrorBlock(errorMessage);
-        });
+        self.onErrorBlock(errorMessage);
     }
 }
 
