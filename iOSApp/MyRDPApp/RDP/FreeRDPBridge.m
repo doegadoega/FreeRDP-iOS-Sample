@@ -11,6 +11,7 @@
 #import <netdb.h>
 #import <sys/socket.h>
 #import <netinet/in.h>
+#import "OpenSSLHelper.h"
 
 // FreeRDPヘッダーのインポート
 #include <freerdp/freerdp.h>
@@ -21,7 +22,6 @@
 #include <winpr/stream.h>
 #include <winpr/wlog.h>
 #include <winpr/synch.h>
-
 // FreeRDP用のコンテキスト構造体
 typedef struct {
     rdpContext context;  // 最初のメンバーとしてrdpContextを配置
@@ -112,7 +112,19 @@ static BOOL gdi_end_paint(rdpContext* context);
 - (instancetype)init {
     self = [super init];
     if (self) {
-        // デフォルト設定
+        NSLog(@"FreeRDPBridge initialized");
+        
+        // OpenSSLの初期化（重要！）
+        [OpenSSLHelper initializeOpenSSL];
+        [OpenSSLHelper forceMD4Registration];
+        
+        // MD4が利用可能か確認
+        if ([OpenSSLHelper isMD4Available]) {
+            NSLog(@"✓ MD4 is available in FreeRDP context");
+        } else {
+            NSLog(@"✗ MD4 is NOT available in FreeRDP context");
+        }
+                
         _screenSize = CGSizeMake(1024, 768);
         _colorDepth = 32;
         _compressionEnabled = YES;
@@ -121,13 +133,9 @@ static BOOL gdi_end_paint(rdpContext* context);
         _isConnecting = NO;
         _hasUpdates = NO;
         
-        // 接続条件変数の初期化
         _connectionCondition = [[NSCondition alloc] init];
         
-        // WinPRの初期化
         WLog_SetLogLevel(WLog_GetRoot(), WLOG_INFO);
-        
-        NSLog(@"FreeRDPBridge initialized");
     }
     return self;
 }
@@ -219,11 +227,14 @@ static BOOL gdi_end_paint(rdpContext* context);
     _port = port;
     _username = [username copy];
     _password = [password copy];
-    _domain = [domain copy];
+    
+    // ドメインはデフォルトで空文字列に設定（ローカルログイン）
+    _domain = @""; // ドメインは指定しない（未指定としても問題ないようにする）
     
     _isConnecting = YES;
     
-    NSLog(@"Connecting to %@:%d as %@", host, port, username);
+    NSLog(@"Connecting to %@:%d as %@ (domain: '%@')", host, port, username, domain ? domain : @"未指定");
+    NSLog(@"テスト中のポート番号: %d （標準RDPポートは3389）", port);
     
     // 接続スレッドの開始
     _rdpThread = [[NSThread alloc] initWithTarget:self selector:@selector(rdpThreadMain) object:nil];
@@ -336,41 +347,92 @@ static BOOL gdi_end_paint(rdpContext* context);
         return NO;
     }
     
+    NSLog(@"ホスト名設定: %@", _host);
+    
     freerdp_settings_set_uint32(settings, FreeRDP_ServerPort, _port);
+    NSLog(@"ポート設定: %d", _port);
     
     if (_username) {
         freerdp_settings_set_string(settings, FreeRDP_Username, [_username UTF8String]);
+        NSLog(@"ユーザー名設定: %@", _username);
     }
     if (_password) {
         freerdp_settings_set_string(settings, FreeRDP_Password, [_password UTF8String]);
+        NSLog(@"パスワード設定: (セキュリティのため非表示)");
     }
-    if (_domain && _domain.length > 0) {
-        freerdp_settings_set_string(settings, FreeRDP_Domain, [_domain UTF8String]);
-    }
+    
+    // ドメインは空文字列を設定（必須項目）
+    freerdp_settings_set_string(settings, FreeRDP_Domain, "");
+    NSLog(@"ドメイン設定: ''（空）");
     
     // 画面設定
     freerdp_settings_set_uint32(settings, FreeRDP_DesktopWidth, (UINT32)_screenSize.width);
     freerdp_settings_set_uint32(settings, FreeRDP_DesktopHeight, (UINT32)_screenSize.height);
     freerdp_settings_set_uint32(settings, FreeRDP_ColorDepth, _colorDepth);
+    NSLog(@"画面設定: %d x %d, %dビット", (int)_screenSize.width, (int)_screenSize.height, _colorDepth);
     
-    // セキュリティ設定
+    // セキュリティ設定 - Hybrid認証を許可
+//    // EC2インスタンスはHYBRID_REQUIRED_BY_SERVERエラーが出るため、NLAを有効にする
+//    freerdp_settings_set_bool(settings, FreeRDP_NlaSecurity, TRUE);
+//    freerdp_settings_set_bool(settings, FreeRDP_TlsSecurity, TRUE);
+//    freerdp_settings_set_bool(settings, FreeRDP_RdpSecurity, TRUE);
+//    freerdp_settings_set_bool(settings, FreeRDP_IgnoreCertificate, TRUE);
+//    // NLAに必要なOpenSSLレガシープロバイダを強制的に有効化
+//    freerdp_settings_set_bool(settings, FreeRDP_UseRdpSecurityLayer, FALSE);
+//    // 設定項目の型修正
+//    freerdp_settings_set_bool(settings, FreeRDP_OffscreenSupportLevel, TRUE);
+//    freerdp_settings_set_bool(settings, FreeRDP_FastPathInput, TRUE);
+//    freerdp_settings_set_bool(settings, FreeRDP_FastPathOutput, TRUE);
+
+    // セキュリティ設定の部分を変更
+    // サーバーがNLAを要求しているので、NLAを有効にしたまま
     freerdp_settings_set_bool(settings, FreeRDP_NlaSecurity, TRUE);
     freerdp_settings_set_bool(settings, FreeRDP_TlsSecurity, TRUE);
     freerdp_settings_set_bool(settings, FreeRDP_RdpSecurity, TRUE);
     freerdp_settings_set_bool(settings, FreeRDP_IgnoreCertificate, TRUE);
+
+    // EarlyCapabilityFlagsはUINT32型なので、正しい関数を使用
+    freerdp_settings_set_uint32(settings, FreeRDP_EarlyCapabilityFlags, 1);
+
+    // 型エラーが出ている設定項目の修正
+    // OffscreenSupportLevelもUINT32タイプ
+    freerdp_settings_set_uint32(settings, FreeRDP_OffscreenSupportLevel, 1);
+
+    // 追加: NTLMサポートの設定
+    freerdp_settings_set_bool(settings, FreeRDP_Authentication, TRUE);
+    freerdp_settings_set_bool(settings, FreeRDP_DisableCredentialsDelegation, FALSE);
+
+    // 追加: ネゴシエーションプロトコルを設定
+    // PROTOCOL_HYBRID = 0 (NLA), PROTOCOL_SSL = 1 (TLS), PROTOCOL_RDP = 2 (RDP)
+    freerdp_settings_set_uint32(settings, FreeRDP_NegotiationFlags, 0); // NLA (PROTOCOL_HYBRID)
+
+    // UseRdpSecurityLayerはログファイルでは特に問題になっていないので削除
+    // freerdp_settings_set_bool(settings, FreeRDP_UseRdpSecurityLayer, FALSE);
+
+    // 元の設定を残す
+    freerdp_settings_set_bool(settings, FreeRDP_FastPathInput, TRUE);
+    freerdp_settings_set_bool(settings, FreeRDP_FastPathOutput, TRUE);
+    
+    
+    
+    // 以下のOpenSSL関連の設定を追加
+    // OpenSSLが適切に初期化されるようにする
+    freerdp_settings_set_bool(settings, FreeRDP_EarlyCapabilityFlags, TRUE);
+    
+    // 以下のコメントアウトまたは削除を検討（問題の原因かもしれない）
+    // freerdp_settings_set_bool(settings, FreeRDP_UseRdpSecurityLayer, FALSE);
+    
+    // 型エラーが出ている設定項目の修正
+    // OffscreenSupportLevelはUINT32タイプなので、BOOLではなくUINT32として設定
+    freerdp_settings_set_uint32(settings, FreeRDP_OffscreenSupportLevel, 1);
+    
+    NSLog(@"セキュリティ設定: NLA=有効, TLS=有効, RDP=有効, 証明書検証=無効");
     
     // 圧縮設定
     freerdp_settings_set_bool(settings, FreeRDP_CompressionEnabled, _compressionEnabled);
     
     // その他の設定
     freerdp_settings_set_bool(settings, FreeRDP_BitmapCacheEnabled, TRUE);
-    freerdp_settings_set_bool(settings, FreeRDP_OffscreenSupportLevel, TRUE);
-    freerdp_settings_set_bool(settings, FreeRDP_FastPathInput, TRUE);
-    freerdp_settings_set_bool(settings, FreeRDP_FastPathOutput, TRUE);
-    
-    // 入力設定 - 適切な設定名を使用
-    freerdp_settings_set_bool(settings, FreeRDP_HasHorizontalWheel, TRUE);
-    freerdp_settings_set_bool(settings, FreeRDP_HasExtendedMouseEvent, TRUE);
     
     return YES;
 }
@@ -380,13 +442,75 @@ static BOOL gdi_end_paint(rdpContext* context);
         return NO;
     }
     
+    // ★★★ 重要：WinPRがOpenSSLを初期化する前に環境変数を設定 ★★★
+    // OpenSSL設定ファイルのパスを設定
+    NSString *configPath = [[NSBundle mainBundle] pathForResource:@"openssl" ofType:@"cnf"];
+    if (configPath) {
+        setenv("OPENSSL_CONF", [configPath UTF8String], 1);
+        NSLog(@"Set OPENSSL_CONF for WinPR: %@", configPath);
+    }
+    
+    // OpenSSLモジュールディレクトリを設定
+    NSString *opensslDir = [[NSBundle mainBundle] bundlePath];
+    setenv("OPENSSL_MODULES", [[opensslDir stringByAppendingPathComponent:@"lib/ossl-modules"] UTF8String], 1);
+    
+    // 接続前にMD4を再確認（Objective-Cで）
+    if ([OpenSSLHelper isMD4Available]) {
+        NSLog(@"✓ MD4 available before FreeRDP connection");
+    } else {
+        NSLog(@"✗ MD4 NOT available before connection!");
+        // 再度初期化を試みる
+        [OpenSSLHelper forceMD4Registration];
+    }
+    
+    // 接続前にエラーハンドリングを強化
+    freerdp_settings_set_bool(_rdpInstance->context->settings, FreeRDP_GfxH264, FALSE);
+    
+    NSLog(@"RDP接続を開始します...");
+    
     // 接続処理
     if (!freerdp_connect(_rdpInstance)) {
         UINT32 error = freerdp_get_last_error(_rdpInstance->context);
-        NSLog(@"Failed to connect to RDP server: error code %u", error);
+        NSString *errorName = [NSString stringWithUTF8String:freerdp_get_last_error_name(error)];
+        NSLog(@"接続エラー: コード=%u (%@)", error, errorName);
+        
+        // エラーコードを分析
+        switch (error) {
+            case 0x2001D: // FREERDP_ERROR_CONNECT_CANCELLED
+                NSLog(@"接続がキャンセルされました（NLA認証エラーの可能性）");
+                break;
+            case 0x20006: // FREERDP_ERROR_CONNECT_TRANSPORT_FAILED
+                NSLog(@"トランスポート接続エラー（ポート番号または接続先に問題がある可能性）");
+                // TLS接続の問題を解決するためNLAを無効化して再試行
+                freerdp_settings_set_bool(_rdpInstance->context->settings, FreeRDP_NlaSecurity, FALSE);
+                freerdp_settings_set_bool(_rdpInstance->context->settings, FreeRDP_TlsSecurity, TRUE);
+                freerdp_settings_set_bool(_rdpInstance->context->settings, FreeRDP_RdpSecurity, TRUE);
+                NSLog(@"NLAを無効にして再接続を試みます...");
+                
+                // 再接続を試みる
+                if (!freerdp_connect(_rdpInstance)) {
+                    error = freerdp_get_last_error(_rdpInstance->context);
+                    NSLog(@"再接続も失敗: コード=%u (%s)",
+                          error,
+                          freerdp_get_last_error_name(error));
+                    return NO;
+                } else {
+                    NSLog(@"再接続成功!");
+                    return YES;
+                }
+                break;
+            case 0x20009: // FREERDP_ERROR_AUTHENTICATION_FAILED
+                NSLog(@"認証エラー（ユーザー名、パスワード、ドメインに問題がある可能性）");
+                break;
+            default:
+                NSLog(@"その他のエラー: %@", errorName);
+                break;
+        }
+        
         return NO;
     }
     
+    NSLog(@"RDP接続が正常に確立されました！");
     return YES;
 }
 
@@ -461,12 +585,13 @@ static BOOL gdi_end_paint(rdpContext* context);
     [self stopUpdateTimer];
     
     // 画面更新チェックタイマー (30FPS)
-    self.updateTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/30.0
-                                                        target:self
-                                                      selector:@selector(checkForScreenUpdates)
-                                                      userInfo:nil
-                                                       repeats:YES];
-    [[NSRunLoop currentRunLoop] addTimer:self.updateTimer forMode:NSRunLoopCommonModes];
+    self.updateTimer = [NSTimer scheduledTimerWithTimeInterval: 1.0/30.0
+                                                        target: self
+                                                      selector: @selector(checkForScreenUpdates)
+                                                      userInfo: nil
+                                                       repeats: YES];
+    [[NSRunLoop currentRunLoop] addTimer: self.updateTimer
+                                 forMode: NSRunLoopCommonModes];
 }
 
 - (void)stopUpdateTimer {
@@ -488,21 +613,23 @@ static BOOL gdi_end_paint(rdpContext* context);
 }
 
 - (void)captureAndNotifyScreenUpdate {
-    if (!_rdpContext || !_rdpContext->drawContext) {
-        return;
-    }
-    
-    EnterCriticalSection(&_rdpContext->updateLock);
-    
-    // GDIコンテキストから画像を作成
-    CGImageRef image = CGBitmapContextCreateImage(_rdpContext->drawContext);
-    
-    LeaveCriticalSection(&_rdpContext->updateLock);
-    
-    if (image) {
-        [self notifyScreenUpdate:image];
-        CGImageRelease(image);
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        if (!self.rdpContext || !self.rdpContext->drawContext) {
+            return;
+        }
+        
+        EnterCriticalSection(&self.rdpContext->updateLock);
+        
+        // GDIコンテキストから画像を作成
+        CGImageRef image = CGBitmapContextCreateImage(self.rdpContext->drawContext);
+        LeaveCriticalSection(&self.rdpContext->updateLock);
+        
+        if (image) {
+            [self notifyScreenUpdate: image];
+            CGImageRelease(image);
+        }
+    });
 }
 
 #pragma mark - Input Handling
@@ -584,20 +711,18 @@ static BOOL gdi_end_paint(rdpContext* context);
 
 #pragma mark - Notifications
 
+// 画面更新通知
 - (void)notifyScreenUpdate:(CGImageRef)image {
     if (_onScreenUpdateBlock) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self->_onScreenUpdateBlock(image);
-        });
+        self.onScreenUpdateBlock(image);
     }
 }
 
+// エラーメッセージ通知 
 - (void)notifyError:(NSString *)errorMessage {
     NSLog(@"RDP Error: %@", errorMessage);
     if (_onErrorBlock) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self->_onErrorBlock(errorMessage);
-        });
+        self.onErrorBlock(errorMessage);
     }
 }
 
