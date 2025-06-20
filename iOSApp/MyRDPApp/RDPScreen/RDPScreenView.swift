@@ -78,7 +78,6 @@ class RDPScreenView: UIView {
         backgroundColor = .black
         
         // 画像表示用ビューの設定
-        self.imageView = UIImageView(frame: bounds)
         self.imageView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.imageView?.contentMode = .scaleAspectFit
         self.imageView?.backgroundColor = .black
@@ -88,7 +87,6 @@ class RDPScreenView: UIView {
         }
         
         // 接続中表示用ラベルの設定
-        statusLabel = UILabel(frame: bounds)
         statusLabel?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         statusLabel?.textAlignment = .center
         statusLabel?.textColor = .white

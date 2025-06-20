@@ -117,8 +117,31 @@ class RDPConnectionManager {
         setupBridgeCallbacks()
         debugPrint("RDPConnectionManager initialized")
         startNetworkMonitoring()
-    }
         
+        // TODO: 初回起動時のみデフォルトのEC2接続情報を追加
+        addDefaultConnectionIfNeeded()
+    }
+    
+    // EC2のデフォルト接続先を追加
+    private func addDefaultConnectionIfNeeded() {
+        // 既存の接続情報がない場合のみデフォルト接続を追加
+        if connections.isEmpty {
+            // TODO: EC2のデフォルト接続情報を設定
+            let defaultConnection = RDPConnection(
+                id: UUID().uuidString,
+                name: "AWS EC2 デモサーバー",
+                host: "",
+                port: 3389,
+                username: "",
+                password: ""
+            )
+            
+            // デフォルト接続を保存
+            addConnection(defaultConnection)
+            debugPrint("デフォルトのEC2接続情報を追加しました")
+        }
+    }
+    
     deinit {
         stopNetworkMonitoring()
         performanceTimer?.invalidate()
