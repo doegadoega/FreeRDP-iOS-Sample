@@ -84,16 +84,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func setupMainWindow() {
-        // メインウィンドウの作成
+        // メインウィンドウの作成 - Storyboardを使用
         window = UIWindow(frame: UIScreen.main.bounds)
         
-        let mainViewController = ViewController()
-        let navigationController = UINavigationController(rootViewController: mainViewController)
+        // Main.storyboardからUIStoryboardを作成
+        let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
         
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
-        
-        debugPrint("Main window setup completed")
+        // 初期ビューコントローラを取得
+        if let initialViewController = mainStoryboard.instantiateInitialViewController() {
+            window?.rootViewController = initialViewController
+            window?.makeKeyAndVisible()
+            debugPrint("Main window setup completed with storyboard")
+        } else {
+            debugPrint("Failed to load initial view controller from Main.storyboard")
+        }
     }
     
     private func configureAWS() {
@@ -289,8 +293,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let port = url.port ?? 3389
         let username = url.user ?? ""
-        let password = url.password ?? ""
-        
+        let password = url.password ?? ""        
         debugPrint("Handling RDP URL - Host: \(host), Port: \(port), User: \(username)")
         
         // メインビューコントローラーに接続要求を送信

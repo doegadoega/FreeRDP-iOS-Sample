@@ -1,104 +1,168 @@
+import Foundation
 import UIKit
 
 class AddConnectionViewController: UIViewController {
-    private let scrollView = UIScrollView()
-    private let contentView = UIView()
     
-    private let nameTextField = UITextField()
-    private let hostTextField = UITextField()
-    private let portTextField = UITextField()
-    private let usernameTextField = UITextField()
-    private let passwordTextField = UITextField()
-    private let domainTextField = UITextField()
+    // MARK: - Properties
+    
+    // MARK: - Outlets
+    @IBOutlet weak private var nameTextField: UITextField! {
+        didSet {
+            nameTextField.delegate = self
+        }
+    }
+    
+    @IBOutlet weak private var hostTextField: UITextField!
+    {
+        didSet {
+            hostTextField.delegate = self
+        }
+    }
+    
+    @IBOutlet weak private var portTextField: UITextField!
+    {
+        didSet {
+            portTextField.delegate = self
+        }
+    }
+    
+    @IBOutlet weak private var usernameTextField: UITextField!
+    {
+        didSet {
+            usernameTextField.delegate = self
+        }
+    }
+    
+    @IBOutlet weak private var passwordTextField: UITextField!
+    {
+        didSet {
+            passwordTextField.delegate = self
+        }
+    }
+    
+    @IBOutlet weak private var scrollView: UIScrollView!
+    @IBOutlet weak private var contentView: UIView!
+    
+    @IBAction func cancelButtonTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @IBAction func saveButtonTapped() {
+        guard let name = nameTextField.text, !name.isEmpty,
+              let host = hostTextField.text, !host.isEmpty,
+              let portText = portTextField.text, !portText.isEmpty,
+              let username = usernameTextField.text, !username.isEmpty,
+              let password = passwordTextField.text, !password.isEmpty,
+              let port = Int(portText) else {
+            // 入力検証に失敗した場合はアラートを表示
+            showErrorAlert(message: "すべての項目を正しく入力してください")
+            return
+        }
+        
+        // 新しいRDP接続を作成
+        let newConnection = RDPConnection(
+            id: UUID().uuidString,            name: name,
+            host: host,
+            port: port,
+            username: username,
+            password: password
+        )
+        
+        // 接続情報を保存
+        let connectionManager = RDPConnectionManager.shared
+        connectionManager.saveConnection(newConnection)
+        
+        // 前の画面に戻る
+        navigationController?.popViewController(animated: true)
+    }
+    
+    
+    // MARK: - Lifecycle Methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupKeyboardHandling()
     }
     
+    // MARK: - Setup Methods
+        
     private func setupUI() {
         title = "新規接続先"
         view.backgroundColor = .systemBackground
-        
-        // ナビゲーションバーの設定
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .cancel,
-            target: self,
-            action: #selector(cancelButtonTapped)
-        )
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .save,
-            target: self,
-            action: #selector(saveButtonTapped)
-        )
-        
-        // スクロールビューの設定
-        scrollView.frame = view.bounds
-        scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.addSubview(scrollView)
-        
-        contentView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: 600)
-        scrollView.addSubview(contentView)
-        scrollView.contentSize = contentView.frame.size
-        
-        // テキストフィールドの設定
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.spacing = 16
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(stackView)
-        
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20)
-        ])
-        
-        // 各テキストフィールドの設定
-        nameTextField.placeholder = "接続名"
-        hostTextField.placeholder = "ホスト名またはIPアドレス"
-        portTextField.placeholder = "ポート番号（デフォルト: 3389）"
-        usernameTextField.placeholder = "ユーザー名"
-        passwordTextField.placeholder = "パスワード"
-        passwordTextField.isSecureTextEntry = true
-        domainTextField.placeholder = "ドメイン（オプション）"
-        
-        [nameTextField, hostTextField, portTextField, usernameTextField, passwordTextField, domainTextField].forEach { textField in
-            textField.borderStyle = .roundedRect
-            stackView.addArrangedSubview(textField)
-        }
     }
     
-    @objc private func cancelButtonTapped() {
-        dismiss(animated: true)
-    }
-    
-    @objc private func saveButtonTapped() {
-        guard let name = nameTextField.text, !name.isEmpty,
-              let host = hostTextField.text, !host.isEmpty,
-              let username = usernameTextField.text, !username.isEmpty else {
-            // エラー表示
-            let alert = UIAlertController(
-                title: "エラー",
-                message: "必須項目を入力してください",
-                preferredStyle: .alert
-            )
-            alert.addAction(UIAlertAction(title: "OK", style: .default))
-            present(alert, animated: true)
-            return
-        }
-        
-        let port = Int(portTextField.text ?? "") ?? 3389
-        let connection = RDPConnection(
-            name: name,
-            host: host,
-            port: port,
-            username: username,
-            password: passwordTextField.text,
-            domain: domainTextField.text
+    private func setupKeyboardHandling() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
         )
         
-        RDPConnectionManager.shared.addConnection(connection)
-        dismiss(animated: true)
+        // タップでキーボードを閉じる
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tapGesture)
     }
-} 
+    
+    @objc private func keyboardWillShow(_ notification: Notification) {
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+        
+        // スクロールビューの調整
+        scrollView.contentInset.bottom = keyboardFrame.height
+        scrollView.verticalScrollIndicatorInsets.bottom = keyboardFrame.height
+    }
+    
+    @objc private func keyboardWillHide(_ notification: Notification) {
+        // スクロールビューの調整
+        scrollView.contentInset.bottom = 0
+        scrollView.horizontalScrollIndicatorInsets.bottom = 0
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    // MARK: - Actions
+    
+
+    // エラーアラートを表示する補助メソッド
+    private func showErrorAlert(message: String) {
+        let alert = UIAlertController(
+            title: "エラー",
+            message: message,
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+}
+
+// MARK: - UITextFieldDelegate
+
+extension AddConnectionViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        switch textField {
+        case nameTextField:
+            hostTextField.becomeFirstResponder()
+        case hostTextField:
+            portTextField.becomeFirstResponder()
+        case portTextField:
+            usernameTextField.becomeFirstResponder()
+        case usernameTextField:
+            passwordTextField.becomeFirstResponder()
+        case passwordTextField:
+            textField.resignFirstResponder()
+            saveButtonTapped()
+        default:
+            textField.resignFirstResponder()
+        }
+        return true
+    }
+}
