@@ -31,14 +31,10 @@ class MainViewController: UIViewController {
     }
     
     // MARK: - Actions
-    
+    /// 接続先一覧を表示するアクション
     @IBAction func showConnectionList(_ sender: UIButton) {
-        let storyboard = UIStoryboard(name: "ConnectionList", bundle: nil)
-        if let connectionListVC = storyboard.instantiateInitialViewController() as? ConnectionListViewController {
-            // デリゲートを設定
-            connectionListVC.delegate = self
-            navigationController?.pushViewController(connectionListVC, animated: true)
-        }
+        self.performSegue(withIdentifier: R.segue.mainViewController.showConnectionList.identifier,
+                          sender: self)
     }
     
     @IBAction func addNewConnection(_ sender: UIButton) {
@@ -47,9 +43,7 @@ class MainViewController: UIViewController {
         
         // R.swiftが正しく設定されたらコメントアウトを解除して以下を使用
         // スペルミスと参照方法を修正
-        // if let segueIdentifier = R.segue.mainViewController.showAddConnection?.identifier {
-        //     self.performSegue(withIdentifier: segueIdentifier, sender: self)
-        // }
+         self.performSegue(withIdentifier: R.segue.mainViewController.showAddConnection, sender: self)
     }
 }
 

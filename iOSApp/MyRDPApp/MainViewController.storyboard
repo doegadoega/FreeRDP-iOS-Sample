@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BAy-fU-2eg">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
@@ -57,11 +57,22 @@
                     <navigationItem key="navigationItem" title="FreeRDP Client" id="Ygd-Oa-Qxp"/>
                     <connections>
                         <segue destination="Agq-83-62v" kind="show" identifier="showAddConnection" id="gvd-ln-Lfe"/>
+                        <segue destination="dOf-Fx-lAy" kind="show" identifier="showConnectionList" id="Rs2-EB-dbT"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="925.95419847328242" y="3.5211267605633805"/>
+        </scene>
+        <!--ConnectionList-->
+        <scene sceneID="QsL-hO-vj1">
+            <objects>
+                <viewControllerPlaceholder storyboardName="ConnectionList" id="dOf-Fx-lAy" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="WRg-db-SSg"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="wFW-Xn-WjD" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1673" y="-85"/>
         </scene>
         <!--AddConnection-->
         <scene sceneID="qkR-pA-dbd">
@@ -71,25 +82,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="M7v-I6-1Zo" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1668.7022900763359" y="-74.647887323943664"/>
-        </scene>
-        <!--FreeRDP Client-->
-        <scene sceneID="MpO-e8-x3Z">
-            <objects>
-                <navigationController title="FreeRDP Client" automaticallyAdjustsScrollViewInsets="NO" id="BAy-fU-2eg" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="j39-pX-uqa">
-                        <rect key="frame" x="0.0" y="118" width="393" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="pHG-RN-IVQ"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Ewr-rk-sdU" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-0.76335877862595414" y="3.5211267605633805"/>
+            <point key="canvasLocation" x="1676" y="61"/>
         </scene>
     </scenes>
     <resources>

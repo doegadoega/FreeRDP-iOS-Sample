@@ -18,9 +18,9 @@ protocol RDPScreenViewDelegate: AnyObject {
 }
 
 class RDPScreenView: UIView {
+    weak var delegate: RDPScreenViewDelegate?
     
     // MARK: - Properties
-    
     @IBOutlet weak var imageView: UIImageView! {
         didSet {
             imageView.contentMode = .scaleAspectFit
@@ -38,7 +38,6 @@ class RDPScreenView: UIView {
     private var lastImage: CGImage?
     private var connectionState: ConnectionState = .disconnected
     
-    weak var delegate: RDPScreenViewDelegate?
     
     // Gesture recognizers
     private var tapGesture: UITapGestureRecognizer!
@@ -52,7 +51,6 @@ class RDPScreenView: UIView {
     private var isScrolling = false
     
     // MARK: - Initialization
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupFromNib()
@@ -295,10 +293,10 @@ class RDPScreenView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        // 画面回転時の処理
-        if let image = imageView.image {
-            updateImageViewConstraints(for: image.size)
-        }
+//        // 画面回転時の処理
+//        if let image = imageView.image {
+//            updateImageViewConstraints(for: image.size)
+//        }
     }
     
     private func updateImageViewConstraints(for imageSize: CGSize) {
