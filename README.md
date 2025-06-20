@@ -16,29 +16,6 @@
   xcode-select --install
   ```
 
-- **Homebrew**
-  ```bash
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  ```
-
-- **Git**
-  - https://git-scm.com/download/mac から最新版をダウンロード
-  - インストーラーを実行してインストール
-
-- **Ruby環境とCocoaPods**
-  ```bash
-  # Rubyのインストール
-  brew install ruby
-
-  # Rubyのパスを設定（~/.zshrcまたは~/.bash_profileに追加）
-  echo 'export PATH="/usr/local/opt/ruby/bin:$PATH"' >> ~/.zshrc
-  source ~/.zshrc
-
-  # CocoaPodsのインストール
-  gem install cocoapods
-  pod setup
-  ```
-
 ### 自動インストールされるソフトウェア
 - **CMake** 3.13以上
   - ビルド時に自動的にGitHubからソースビルド
